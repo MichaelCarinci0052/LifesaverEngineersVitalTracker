@@ -13,6 +13,14 @@ import android.view.ViewGroup;
  * Use the {@link GPSFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
+
+/**
+ * Jason Macdonald N01246828 section: 0CB
+ * Michael Carinci n01480052 section: 0CB
+ * Patrik Prenga n01428752  section: 0CB
+ * Nicholas Rafuse n01440073 section: 0CB
+ */
 public class GPSFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match

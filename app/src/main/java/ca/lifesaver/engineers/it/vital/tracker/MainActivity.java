@@ -17,6 +17,13 @@ import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
 
+
+/**
+ * Jason Macdonald N01246828 section: 0CB
+ * Michael Carinci n01480052 section: 0CB
+ * Patrik Prenga n01428752  section: 0CB
+ * Nicholas Rafuse n01440073 section: 0CB
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     //FOR DESIGN
