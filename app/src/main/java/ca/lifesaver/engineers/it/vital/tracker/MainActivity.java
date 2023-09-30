@@ -54,16 +54,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         builder.setIcon(R.drawable.baseline_heart_broken_24);
 
-        builder.setTitle("Confirm Exit");
-        builder.setMessage("Do you really want to exit the app?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.confirmexit);
+        builder.setMessage(R.string.areyousure);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 MainActivity.super.onBackPressed();
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

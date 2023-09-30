@@ -11,4 +11,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="vitaltracker">VitalTracker</string>
     <string name="splashlogo">Splash Logo</string>
+    <string name="confirmexit">Confirm Exit</string>
+    <string name="areyousure">Do you really want to exit the app?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
