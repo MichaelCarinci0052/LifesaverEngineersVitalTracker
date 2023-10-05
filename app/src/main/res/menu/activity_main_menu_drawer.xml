@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="navigation_view">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/activity_main_drawer_account"
-            android:icon="@drawable/ic_account"
-            android:title="@string/account" />
-    </group>
+    <item
+        android:id="@+id/activity_main_drawer_account"
+        android:icon="@drawable/ic_account"
+        android:title="@string/account" />
 
-    <item android:title="@string/tools">
-        <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/activity_main_drawer_gps"
-                    android:icon="@drawable/ic_gps"
-                    android:title="@string/gps" />
-                <item
-                    android:id="@+id/activity_main_drawer_vitals"
-                    android:icon="@drawable/ic_vitals"
-                    android:title="@string/vitals" />
-            </group>
-        </menu>
-    </item>
+    <item
+        android:id="@+id/activity_main_drawer_home"
+        android:icon="@mipmap/app_logo_foreground"
+        android:title="@string/home" />
+
+    <item
+        android:id="@+id/activity_main_drawer_gps"
+        android:icon="@drawable/ic_gps"
+        android:title="@string/gps" />
+
+    <item
+        android:id="@+id/activity_main_drawer_vitals"
+        android:icon="@drawable/ic_vitals"
+        android:title="@string/vitals" />
 
 </menu>
