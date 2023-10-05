@@ -1,16 +1,13 @@
 
 package ca.lifesaver.engineers.it.vital.tracker;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -38,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showExitConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setIcon(R.drawable.baseline_heart_broken_24);
+        builder.setIcon(R.mipmap.app_logo);
         builder.setTitle(R.string.confirmexit);
         builder.setMessage(R.string.areyousure);
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
