@@ -15,7 +15,7 @@ import android.os.Bundle;
  * Patrik Prenga n01428752  section: 0CB
  * Nicholas Rafuse n01440073 section: 0CB
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Menu {
 
     private Toolbar toolbar;
     private BottomNavigationView bottomNavigationView;
@@ -67,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.activity_main_drawer_account:
                     AccountFragment account = new AccountFragment();
                     fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, account).commit();
+                    break;
+                case R.id.activity_main_drawer_home:
+                    HomeFragment home = new HomeFragment();
+                    fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, home).commit();
                     break;
                 case R.id.activity_main_drawer_gps:
                     GPSFragment gps = new GPSFragment();

@@ -19,4 +19,13 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
     </style>
+
+    <style name="Theme.VitalTracker.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.VitalTracker.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.VitalTracker.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
