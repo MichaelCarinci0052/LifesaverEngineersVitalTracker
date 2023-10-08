@@ -63,6 +63,14 @@ public class SettingsFragment extends Fragment {
 
         RadioGroup languageRadioGroup = view.findViewById(R.id.languages);
 
+        Locale currentLocale = getResources().getConfiguration().locale;
+
+        if (currentLocale.getLanguage().equals("fr")) {
+            frenchRadioButton.setChecked(true);
+        } else {
+            englishRadioButton.setChecked(true);
+        }
+
         languageRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
