@@ -1,13 +1,21 @@
 
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
+
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -15,10 +23,12 @@ import android.os.Bundle;
  * Patrik Prenga n01428752  section: 0CB
  * Nicholas Rafuse n01440073 section: 0CB
  */
+@SuppressWarnings("deprecation")
 public class MainActivity extends Menu {
 
-    private Toolbar toolbar;
     private BottomNavigationView bottomNavigationView;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private View rootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +36,7 @@ public class MainActivity extends Menu {
         setContentView(R.layout.activity_main);
         this.configureToolBar();
         this.configureBottomNavigationView();
+        rootView = findViewById(android.R.id.content);
 
         // Set the default fragment to HomeFragment
         if (savedInstanceState == null) {
@@ -38,6 +49,7 @@ public class MainActivity extends Menu {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         showExitConfirmationDialog();
     }
 
@@ -46,27 +58,20 @@ public class MainActivity extends Menu {
         builder.setIcon(R.mipmap.app_logo);
         builder.setTitle(R.string.confirmexit);
         builder.setMessage(R.string.areyousure);
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                MainActivity.super.onBackPressed();
-            }
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+            dialog.dismiss();
+            MainActivity.super.onBackPressed();
         });
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 
     private void configureToolBar(){
-        this.toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void configureBottomNavigationView(){
         FragmentManager fragmentManager = getSupportFragmentManager();
         this.bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -91,5 +96,22 @@ public class MainActivity extends Menu {
             }
             return true;
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showPermissionSnackbar("Location permission granted");
+            } else {
+                showPermissionSnackbar("Location permission denied");
+            }
+        }
+    }
+    private void showPermissionSnackbar(String message) {
+        if (rootView != null) {
+            Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+        }
     }
 }

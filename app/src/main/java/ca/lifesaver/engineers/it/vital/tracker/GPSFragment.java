@@ -21,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -119,7 +120,16 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 onMapReady(mMap);
+                showPermissionSnackbar("Location permission granted");
+            } else {
+                showPermissionSnackbar("Location permission denied");
             }
+        }
+    }
+    private void showPermissionSnackbar(String message) {
+        View rootView = getView(); // Get the root view of the fragment
+        if (rootView != null) {
+            Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
         }
     }
 }
