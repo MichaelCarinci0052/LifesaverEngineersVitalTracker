@@ -1,22 +1,27 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
-import android.content.res.Configuration;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
-import java.util.Locale;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Jason Macdonald N01246828 section: 0CB
+ * Michael Carinci n01480052 section: 0CB
+ * Patrik Prenga n01428752  section: 0CB
+ * Nicholas Rafuse n01440073 section: 0CB
  */
 public class SettingsFragment extends Fragment {
 
@@ -33,7 +38,12 @@ public class SettingsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    RadioButton englishRadioButton, frenchRadioButton;
+    TextInputLayout textInputLayout;
+    TextInputEditText editText;
+    SharedPreferences sharedPreferences;
+    Button apply;
+    TextView current;
+
     public static SettingsFragment newInstance(String param1, String param2) {
         SettingsFragment fragment = new SettingsFragment();
         Bundle args = new Bundle();
@@ -58,50 +68,54 @@ public class SettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        englishRadioButton = view.findViewById(R.id.englishbutton);
-        frenchRadioButton = view.findViewById(R.id.frenchbutton);
+        textInputLayout = view.findViewById(R.id.locationlayout);
+        editText = view.findViewById(R.id.locationtext);
+        apply = view.findViewById(R.id.apply);
+        current = view.findViewById(R.id.current);
 
-        RadioGroup languageRadioGroup = view.findViewById(R.id.languages);
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
-        Locale currentLocale = getResources().getConfiguration().locale;
+        String savedText = sharedPreferences.getString("userText", "");
+        editText.setText(savedText);
 
-        if (currentLocale.getLanguage().equals("fr")) {
-            frenchRadioButton.setChecked(true);
-        } else {
-            englishRadioButton.setChecked(true);
-        }
-
-        languageRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                switch (checkedId) {
-                    case R.id.englishbutton:
-                        setAppLanguage("en");
-                        break;
-                    case R.id.frenchbutton:
-                        setAppLanguage("fr");
-                        break;
-                }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                apply.setEnabled(!editable.toString().isEmpty());
             }
         });
+
+        apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String userInput = editText.getText().toString();
+                saveInputToSharedPreferences(userInput);
+            }
+        });
+
+        String savedTextForTextView = sharedPreferences.getString("userText", "");
+        String currenthome = "Current Home: " + savedTextForTextView;
+        current.setText(currenthome);
 
         return view;
     }
 
-    private void setAppLanguage(String languageCode) {
-        Locale locale = new Locale(languageCode);
-        Locale.setDefault(locale);
+    private void saveInputToSharedPreferences(String input) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userText", input);
+        editor.apply();
 
-        Configuration config = new Configuration();
-        config.locale = locale;
-
-        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-
-        // Refresh the current fragment to apply language changes
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .detach(this)
-                .attach(this)
-                .commit();
+        String currenthome2 = "Current Home: " + input;
+        current.setText(currenthome2);
     }
+
+
 }

@@ -18,5 +18,8 @@
     <string name="config">Configuration</string>
     <string name="english">Anglais</string>
     <string name="french">Francais</string>
-    <string name="language">Langue</string>
+    <string name="location">Home Location</string>
+    <string name="hint">Enter home address</string>
+    <string name="apply">Apply</string>
+    <string name="current">Current Home: </string>
 </resources>

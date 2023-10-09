@@ -18,6 +18,9 @@
     <string name="config">Config</string>
     <string name="english">English</string>
     <string name="french">French</string>
-    <string name="language">Language</string>
+    <string name="location">Home Location</string>
+    <string name="hint">Enter home address</string>
+    <string name="apply">Apply</string>
+    <string name="current">Current Home: </string>
     <string name="map_api_key" translatable="false">AIzaSyCwr1NKUl7n7fGvrdVFW_H2pXYPMgp2dqc</string>
 </resources>
