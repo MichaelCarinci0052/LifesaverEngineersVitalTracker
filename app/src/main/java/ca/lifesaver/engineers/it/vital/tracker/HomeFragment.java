@@ -1,5 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +22,8 @@ public class HomeFragment extends Fragment {
 
         userAccountName = view.findViewById(R.id.userAccountName);
 
-        // Assuming you have a method or a way to get the user's account name from within the fragment
-        String accountName = getAccountName();
-        userAccountName.setText(accountName);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "Default User");
 
         // Load the GPS Fragment
         GPSFragment gpsFragment = new GPSFragment();
@@ -39,9 +40,4 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private String getAccountName() {
-        // Logic to get the user's account name.
-        // For this example, returning a static name.
-        return "John Doe";
-    }
 }

@@ -26,6 +26,14 @@ public class MainActivity extends Menu {
         setContentView(R.layout.activity_main);
         this.configureToolBar();
         this.configureBottomNavigationView();
+
+        // Set the default fragment to HomeFragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.activity_main_frame_layout, new HomeFragment())
+                    .commit();
+            bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_home); // Assuming this is the ID of the home item
+        }
     }
 
     @Override
