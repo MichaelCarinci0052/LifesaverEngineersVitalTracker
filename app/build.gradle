@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'ca.lifesaver.engineers.it.vital.tracker'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "ca.lifesaver.engineers.it.vital.tracker"
