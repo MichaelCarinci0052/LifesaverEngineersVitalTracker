@@ -25,6 +25,8 @@ public class HomeFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", "Default User");
 
+        userAccountName.setText(username);
+
         // Load the GPS Fragment
         GPSFragment gpsFragment = new GPSFragment();
         getChildFragmentManager().beginTransaction()
