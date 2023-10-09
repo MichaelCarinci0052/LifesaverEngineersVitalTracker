@@ -19,4 +19,5 @@
     <string name="english">English</string>
     <string name="french">French</string>
     <string name="language">Language</string>
+    <string name="map_api_key" translatable="false">AIzaSyCwr1NKUl7n7fGvrdVFW_H2pXYPMgp2dqc</string>
 </resources>
