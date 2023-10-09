@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
-    // Duration of wait
     private final int SPLASH_DISPLAY_LENGTH = 3000;
 
     @Override
@@ -18,10 +17,9 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                // After the splash screen duration, start LoginActivity
                 Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                SplashActivity.this.startActivity(intent);
-                SplashActivity.this.finish();
+                startActivity(intent);
+                finish();
             }
         }, SPLASH_DISPLAY_LENGTH);
     }
