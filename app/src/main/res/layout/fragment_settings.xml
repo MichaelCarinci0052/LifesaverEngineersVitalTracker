@@ -16,9 +16,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="93dp"
+            android:layout_marginTop="25dp"
             android:layout_marginEnd="319dp"
-            android:layout_marginBottom="611dp"
+            android:layout_marginBottom="679dp"
             android:text="@string/settings"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -32,16 +32,14 @@
             android:layout_width="53dp"
             android:layout_height="62dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="323dp"
-            android:layout_marginBottom="657dp"
+            android:layout_marginTop="61dp"
+            android:layout_marginEnd="342dp"
+            android:layout_marginBottom="608dp"
             android:src="@mipmap/app_logo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView2"
