@@ -96,10 +96,10 @@ public class VitalsFragment extends Fragment {
                 if (heartRate < 60 || heartRate > 100) {
                     sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");
                 }
-                if (oxygenLevel < 95) {
+                if (oxygenLevel < 91) {
                     sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");
                 }
-                if (bodyTemp < 97.0f || bodyTemp > 99.5f) {
+                if (bodyTemp < 97.0f || bodyTemp > 100.1f) {
                     sendNotification("Abnormal Body Temperature", String.format("Detected body temperature: %.1f°F", bodyTemp));
                 }
 
