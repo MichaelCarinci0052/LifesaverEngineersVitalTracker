@@ -5,11 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import ca.lifesaver.engineers.it.vital.tracker.R;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -34,9 +33,15 @@ public class DeviceFragment extends Fragment {
                 if ("Turn On".equals(currentText)) {
                     toggleDeviceButton.setText("Turn Off");
                     // Logic to turn the device ON goes here
+
+                    // Toast message for feedback
+                    Toast.makeText(getActivity(), "Device turned ON", Toast.LENGTH_SHORT).show();
                 } else {
                     toggleDeviceButton.setText("Turn On");
                     // Logic to turn the device OFF goes here
+
+                    // Toast message for feedback
+                    Toast.makeText(getActivity(), "Device turned OFF", Toast.LENGTH_SHORT).show();
                 }
             }
         });
