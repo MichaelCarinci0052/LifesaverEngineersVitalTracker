@@ -32,4 +32,5 @@
     <string name="mylocation">My Location</string>
     <string name="granted">Location permission granted</string>
     <string name="denied">Location permission denied</string>
+    <string name="turn_off_notifications">Notifications:</string>
 </resources>

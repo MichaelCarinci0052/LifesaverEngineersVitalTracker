@@ -3,7 +3,10 @@ package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -39,6 +42,16 @@ public class MainActivity extends Menu {
                     .replace(R.id.activity_main_frame_layout, new HomeFragment())
                     .commit();
             bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_home); // Assuming this is the ID of the home item
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            NotificationChannel existingChannel = notificationManager.getNotificationChannel("VITALS_CHANNEL_ID");
+
+            if (existingChannel == null) {
+                NotificationChannel channel = new NotificationChannel("VITALS_CHANNEL_ID", "Vitals Alerts", NotificationManager.IMPORTANCE_HIGH);
+                channel.setDescription("Notifications for abnormal vitals data");
+                notificationManager.createNotificationChannel(channel);
+            }
         }
     }
 

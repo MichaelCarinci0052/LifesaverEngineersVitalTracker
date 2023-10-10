@@ -1,5 +1,6 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -42,7 +43,10 @@ public class SettingsFragment extends Fragment {
     Button apply;
     TextView current;
     Switch lockswitch;
+    Switch notifswitch;
     String SWITCH_STATE_KEY = "switch_state";
+    private static final String SHARED_PREFERENCES_KEY = "NotificationFragmentPrefs";
+    private static final String SWITCH_STATE = "notificationSwitchState";
 
 
     @Override
@@ -61,6 +65,8 @@ public class SettingsFragment extends Fragment {
         apply = view.findViewById(R.id.apply);
         current = view.findViewById(R.id.current);
         lockswitch = view.findViewById(R.id.lockswitch);
+        notifswitch = view.findViewById(R.id.notifswitch);
+        notifswitch.setChecked(true);
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
@@ -71,7 +77,7 @@ public class SettingsFragment extends Fragment {
 
         boolean isSwitchOn = sharedPreferences.getBoolean(SWITCH_STATE_KEY, false);
         lockswitch.setChecked(isSwitchOn);
-        updateSwitchText(isSwitchOn);
+        updateSwitchText(lockswitch,isSwitchOn);
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -113,10 +119,20 @@ public class SettingsFragment extends Fragment {
 
                 sharedPreferences.edit().putBoolean(SWITCH_STATE_KEY, isChecked).apply();
 
-                updateSwitchText(isChecked);
+                updateSwitchText(lockswitch,isChecked);
             }
         });
 
+        notifswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                toggleNotifications();
+                saveSwitchState(isChecked);
+                updateSwitchText(notifswitch,isChecked);
+            }
+        });
+
+        restoreSwitchState();
         return view;
     }
 
@@ -129,8 +145,30 @@ public class SettingsFragment extends Fragment {
         current.setText(currenthome2);
     }
 
-    private void updateSwitchText(boolean isSwitchOn) {
-        lockswitch.setText(isSwitchOn ? "On" : "Off");
+    private void updateSwitchText(Switch whichSwitch, boolean isSwitchOn) {
+        whichSwitch.setText(isSwitchOn ? "On" : "Off");
+    }
+
+    private void toggleNotifications() {
+        NotificationManager notificationManager = requireActivity().getSystemService(NotificationManager.class);
+        if (notificationManager.getNotificationChannel("VITALS_CHANNEL_ID").getImportance() != NotificationManager.IMPORTANCE_NONE) {
+            notificationManager.getNotificationChannel("VITALS_CHANNEL_ID").setImportance(NotificationManager.IMPORTANCE_NONE);
+        } else {
+            notificationManager.getNotificationChannel("VITALS_CHANNEL_ID").setImportance(NotificationManager.IMPORTANCE_DEFAULT);
+        }
+    }
+
+    private void saveSwitchState(boolean isChecked) {
+        SharedPreferences preferences = requireActivity().getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(SWITCH_STATE, isChecked);
+        editor.apply();
+    }
+
+    private void restoreSwitchState() {
+        SharedPreferences preferences = requireActivity().getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
+        boolean switchState = preferences.getBoolean(SWITCH_STATE, true);
+        notifswitch.setChecked(switchState);
     }
 
 

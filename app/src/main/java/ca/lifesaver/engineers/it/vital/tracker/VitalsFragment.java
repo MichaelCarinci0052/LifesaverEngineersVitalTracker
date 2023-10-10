@@ -77,12 +77,7 @@ public class VitalsFragment extends Fragment {
         }
         handler = new Handler();
         random = new Random();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("VITALS_CHANNEL_ID", "Vitals Alerts", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Notifications for abnormal vitals data");
-            NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+
     }
 
     @Override
