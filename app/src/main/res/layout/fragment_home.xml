@@ -19,14 +19,43 @@
         android:textSize="40sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Device"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
     <FrameLayout
         android:id="@+id/deviceContainer"
         android:layout_width="320dp"
         android:layout_height="150dp"
         android:layout_marginTop="8dp"
-        android:background="#A9A9A9"> <!-- You can change this background as you wish -->
+        android:background="#514B4B">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/batteryLifeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Battery: 100%"
+                android:textSize="16sp" />
+        </LinearLayout>
     </FrameLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
 
     <FrameLayout
         android:id="@+id/gpsContainer"
@@ -36,7 +65,14 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/rectangular_shape" />
 
-    <!-- Container for Vitals Fragment or other content -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vitals"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
     <FrameLayout
         android:id="@+id/vitalsContainer"
         android:layout_width="320dp"
@@ -48,26 +84,26 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/heartRate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="Heart Rate"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/oxygenRate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="Oxygen Rate"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/temp"
