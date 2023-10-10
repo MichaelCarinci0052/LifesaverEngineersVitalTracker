@@ -153,4 +153,5 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         fusedLocationClient.removeLocationUpdates(locationCallback);
         locationUpdatesStarted = false;
     }
+    
 }

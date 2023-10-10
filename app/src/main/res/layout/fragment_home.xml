@@ -9,12 +9,15 @@
     <!-- Display the User Account Name -->
 
     <!-- Container for GPS Fragment -->
+
     <TextView
         android:id="@+id/userAccountName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
         android:text="Default User"
-        android:textSize="20sp" />
+        android:textSize="40sp"
+        android:textStyle="bold" />
 
     <FrameLayout
         android:id="@+id/gpsContainer"
