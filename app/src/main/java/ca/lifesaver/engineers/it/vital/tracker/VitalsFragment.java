@@ -30,6 +30,7 @@ public class VitalsFragment extends Fragment {
 
     private String mParam1;
     private String mParam2;
+    private OnVitalsDataChangedListener mListener;
 
     private Handler handler;
     private Runnable updateRunnable;
@@ -37,6 +38,22 @@ public class VitalsFragment extends Fragment {
 
     public VitalsFragment() {
         // Required empty public constructor
+    }
+
+    public interface OnVitalsDataChangedListener {
+        void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp);
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof OnVitalsDataChangedListener) {
+            mListener = (OnVitalsDataChangedListener) parentFragment;
+        } else if (context instanceof OnVitalsDataChangedListener) {
+            mListener = (OnVitalsDataChangedListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnVitalsDataChangedListener");
+        }
     }
 
     public static VitalsFragment newInstance(String param1, String param2) {
@@ -107,7 +124,13 @@ public class VitalsFragment extends Fragment {
                 tvHeartRate.setText("Heart Rate: " + heartRate + " BPM");
                 tvOxygenLevel.setText("Oxygen Level: " + oxygenLevel + "%");
                 tvBodyTemp.setText(String.format("Body Temperature: %.1f°F", bodyTemp));
-
+                if (mListener != null) {
+                    mListener.onDataChanged(
+                            "Heart Rate: " + heartRate + " BPM",
+                            "Oxygen Level: " + oxygenLevel + "%",
+                            String.format("Body Temperature: %.1f°F", bodyTemp)
+                    );
+                }
                 // Schedule the next update
                 handler.postDelayed(this, 2000);  // Update every 2 seconds
             }

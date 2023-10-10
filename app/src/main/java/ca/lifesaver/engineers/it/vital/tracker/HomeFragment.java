@@ -11,9 +11,18 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDataChangedListener {
 
     private TextView userAccountName;
+    public void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp) {
+
+        TextView tvHeartRateHome = getView().findViewById(R.id.heartRate);
+        TextView tvOxygenLevel = getView().findViewById(R.id.oxygenRate);
+        TextView tvBodyTemp = getView().findViewById(R.id.temp);
+        tvHeartRateHome.setText(heartRate);
+        tvOxygenLevel.setText(oxygenLevel);
+        tvBodyTemp.setText(bodyTemp);
+    }
 
     @Nullable
     @Override
@@ -36,7 +45,7 @@ public class HomeFragment extends Fragment {
         // Load the Vitals Fragment (if you want to display it)
         VitalsFragment vitalsFragment = new VitalsFragment();
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.vitalsContainer, vitalsFragment)
+                .add(vitalsFragment, "vitalfragment")
                 .commit();
 
         return view;
