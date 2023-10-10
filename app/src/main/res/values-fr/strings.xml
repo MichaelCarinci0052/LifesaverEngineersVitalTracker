@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">VitalTracker</string>
-    <!-- Used in NavigationDrawer -->
     <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
     <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
     <string name="account">Compte</string>
@@ -18,17 +17,19 @@
     <string name="config">Configuration</string>
     <string name="english">Anglais</string>
     <string name="french">Francais</string>
-    <string name="location">Home Location</string>
-    <string name="hint">Enter home address</string>
-    <string name="apply">Apply</string>
-    <string name="current">Current Home: </string>
-    <string name="username">Username: </string>
-    <string name="password">Password: </string>
-    <string name="changepass">Change Password</string>
-    <string name="newpass">Enter new password</string>
-    <string name="lock">Lock Screen to Portait Mode</string>
-    <string name="on">On</string>
-    <string name="off">Off</string>
-    <string name="mylocation">My Location</string>
-    <string name="granted">Location permission granted</string>
+    <string name="location">Emplacement de la maison</string>
+    <string name="hint">Entrez l\'adresse du domicile</string>
+    <string name="apply">Appliquer</string>
+    <string name="current">Maison actuelle: </string>
+    <string name="username">Nom d\'utilisateur: </string>
+    <string name="password">Mot de passe: </string>
+    <string name="changepass">Changer le mot de passe</string>
+    <string name="newpass">Entrez un nouveau mot de passe</string>
+    <string name="lock">Verrouiller l\'écran en mode portrait</string>
+    <string name="map_api_key">AIzaSyCwr1NKUl7n7fGvrdVFW_H2pXYPMgp2dqc</string>
+    <string name="on">Sur</string>
+    <string name="off">Désactivé</string>
+    <string name="mylocation">Ma position</string>
+    <string name="granted">Autorisation de localisation accordée</string>
+    <string name="denied">Autorisation de localisation refusée</string>
 </resources>
