@@ -22,5 +22,9 @@
     <string name="hint">Enter home address</string>
     <string name="apply">Apply</string>
     <string name="current">Current Home: </string>
+    <string name="username">Username: </string>
+    <string name="password">Password: </string>
+    <string name="changepass">Change Password</string>
+    <string name="newpass">Enter new password</string>
     <string name="map_api_key" translatable="false">AIzaSyCwr1NKUl7n7fGvrdVFW_H2pXYPMgp2dqc</string>
 </resources>
