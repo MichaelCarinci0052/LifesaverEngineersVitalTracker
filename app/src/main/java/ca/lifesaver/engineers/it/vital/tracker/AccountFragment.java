@@ -1,5 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +9,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +37,9 @@ public class AccountFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private TextView usernameTextView;
+    private EditText passwordEditText;
+    private Button changePasswordButton;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -68,6 +78,21 @@ public class AccountFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account, container, false);
 
+        usernameTextView = view.findViewById(R.id.username3);
+        passwordEditText = view.findViewById(R.id.editTextpassword);
+        changePasswordButton = view.findViewById(R.id.changepassword);
+
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String user = sharedPreferences.getString("username", "username3");
+
+        usernameTextView.setText(user);
+
+        changePasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // no function for now
+            }
+        });
 
 
         return view;
