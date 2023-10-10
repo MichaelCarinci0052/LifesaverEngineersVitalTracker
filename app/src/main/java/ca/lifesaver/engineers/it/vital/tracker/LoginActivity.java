@@ -9,6 +9,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Jason Macdonald N01246828 section: 0CB
+ * Michael Carinci n01480052 section: 0CB
+ * Patrik Prenga n01428752  section: 0CB
+ * Nicholas Rafuse n01440073 section: 0CB
+ */
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextUsername;

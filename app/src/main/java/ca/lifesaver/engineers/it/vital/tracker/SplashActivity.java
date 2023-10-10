@@ -5,6 +5,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Jason Macdonald N01246828 section: 0CB
+ * Michael Carinci n01480052 section: 0CB
+ * Patrik Prenga n01428752  section: 0CB
+ * Nicholas Rafuse n01440073 section: 0CB
+ */
+
 public class SplashActivity extends AppCompatActivity {
 
     private final int SPLASH_DISPLAY_LENGTH = 3000;

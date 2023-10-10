@@ -11,6 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+/**
+ * Jason Macdonald N01246828 section: 0CB
+ * Michael Carinci n01480052 section: 0CB
+ * Patrik Prenga n01428752  section: 0CB
+ * Nicholas Rafuse n01440073 section: 0CB
+ */
+
 public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDataChangedListener {
 
     private TextView userAccountName;
