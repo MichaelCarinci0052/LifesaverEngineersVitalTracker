@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- Title Row -->
+    <TableRow>
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:text="@string/configurations"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+    </TableRow>
+
+    <!-- Header Row -->
+    <TableRow>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/feature"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:text="@string/description"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/value"
+            android:textStyle="bold" />
+    </TableRow>
+
+    <!-- Row 1: Home Location -->
+    <TableRow>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/location" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:text="@string/set_home_location" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/user_input" />
+    </TableRow>
+
+    <!-- Row 2: Lock Orientation -->
+    <TableRow>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/lock_orientation" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:text="@string/prevent_screen_rotation" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/on_off" />
+    </TableRow>
+
+    <!-- Row 3: Notification Toggle -->
+    <TableRow>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/notification_toggle" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:text="@string/handle_notifications" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/on_off" />
+    </TableRow>
+
+    <!-- Row 4: Restore Default -->
+    <TableRow>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/restore" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:text="@string/reset" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/button_input" />
+    </TableRow>
+</TableLayout>

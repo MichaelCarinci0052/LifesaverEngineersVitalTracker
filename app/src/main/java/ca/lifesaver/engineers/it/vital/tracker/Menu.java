@@ -33,6 +33,8 @@ public class Menu extends AppCompatActivity {
                 fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, settings).commit();
                 return true;
             case R.id.config:
+                ConfigurationFragment config = new ConfigurationFragment();
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, config).commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

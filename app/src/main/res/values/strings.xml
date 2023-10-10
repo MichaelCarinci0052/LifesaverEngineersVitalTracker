@@ -33,4 +33,18 @@
     <string name="granted">Location permission granted</string>
     <string name="denied">Location permission denied</string>
     <string name="turn_off_notifications">Notifications:</string>
+    <string name="restore">Restore Default</string>
+    <string name="feature">Feature</string>
+    <string name="description">Description</string>
+    <string name="value">Value</string>
+    <string name="set_home_location">Set home location</string>
+    <string name="user_input">User Input</string>
+    <string name="lock_orientation">Lock Orientation</string>
+    <string name="prevent_screen_rotation">Prevent screen rotation</string>
+    <string name="on_off">On/Off</string>
+    <string name="notification_toggle">Notification Toggle</string>
+    <string name="handle_notifications">Handle Notifications</string>
+    <string name="reset">Reset settings to default</string>
+    <string name="button_input">Button Input</string>
+    <string name="configurations">Configurations</string>
 </resources>
