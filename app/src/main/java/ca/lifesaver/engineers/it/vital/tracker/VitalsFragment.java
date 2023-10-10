@@ -1,13 +1,26 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.os.Handler;
+
 import java.util.Random;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import java.util.ArrayList;
 
 public class VitalsFragment extends Fragment {
@@ -21,6 +34,7 @@ public class VitalsFragment extends Fragment {
     private Handler handler;
     private Runnable updateRunnable;
     private Random random;
+
     public VitalsFragment() {
         // Required empty public constructor
     }
@@ -43,6 +57,12 @@ public class VitalsFragment extends Fragment {
         }
         handler = new Handler();
         random = new Random();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("VITALS_CHANNEL_ID", "Vitals Alerts", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Notifications for abnormal vitals data");
+            NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     @Override
@@ -72,6 +92,17 @@ public class VitalsFragment extends Fragment {
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
+
+                if (heartRate < 60 || heartRate > 100) {
+                    sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");
+                }
+                if (oxygenLevel < 91) {
+                    sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");
+                }
+                if (bodyTemp < 97.0f || bodyTemp > 100.1f) {
+                    sendNotification("Abnormal Body Temperature", String.format("Detected body temperature: %.1f°F", bodyTemp));
+                }
+
                 // Update the UI
                 tvHeartRate.setText("Heart Rate: " + heartRate + " BPM");
                 tvOxygenLevel.setText("Oxygen Level: " + oxygenLevel + "%");
@@ -85,9 +116,29 @@ public class VitalsFragment extends Fragment {
         // Start the updates
         handler.post(updateRunnable);
     }
+
     public void onDestroyView() {
         super.onDestroyView();
         // Stop the updates when the fragment is destroyed
         handler.removeCallbacks(updateRunnable);
+    }
+
+    private void sendNotification(String title, String message) {
+
+        Notification.Builder notificationBuilder = new Notification.Builder(getContext(), "VITALS_CHANNEL_ID")
+                .setSmallIcon(R.drawable.ic_vitals)  // replace with your icon
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
+        }
+        // Get the NotificationManager service
+        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Issue the notification
+        int notificationId = random.nextInt();  // Generate a random ID for the notification
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }
