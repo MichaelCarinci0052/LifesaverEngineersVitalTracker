@@ -3,6 +3,7 @@ package ca.lifesaver.engineers.it.vital.tracker;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import android.annotation.SuppressLint;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
@@ -15,6 +16,7 @@ public class Menu extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         FragmentManager fragmentManager = getSupportFragmentManager();

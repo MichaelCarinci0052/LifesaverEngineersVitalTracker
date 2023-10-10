@@ -92,7 +92,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     // Update the user's current location on the map
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.clear();
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.mylocation)));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                 }
             }
@@ -120,9 +120,9 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 onMapReady(mMap);
-                showPermissionSnackbar("Location permission granted");
+                showPermissionSnackbar(getString(R.string.granted));
             } else {
-                showPermissionSnackbar("Location permission denied");
+                showPermissionSnackbar(getString(R.string.denied));
             }
         }
     }

@@ -3,19 +3,14 @@ package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.FragmentManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.Snackbar;
-
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -67,7 +62,7 @@ public class MainActivity extends Menu {
     }
 
     private void configureToolBar(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        Toolbar toolbar = findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -103,9 +98,9 @@ public class MainActivity extends Menu {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showPermissionSnackbar("Location permission granted");
+                showPermissionSnackbar(getString(R.string.granted));
             } else {
-                showPermissionSnackbar("Location permission denied");
+                showPermissionSnackbar(getString(R.string.denied));
             }
         }
     }

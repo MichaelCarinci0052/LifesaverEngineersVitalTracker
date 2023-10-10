@@ -27,4 +27,8 @@
     <string name="changepass">Change Password</string>
     <string name="newpass">Enter new password</string>
     <string name="lock">Lock Screen to Portait Mode</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="mylocation">My Location</string>
+    <string name="granted">Location permission granted</string>
 </resources>
