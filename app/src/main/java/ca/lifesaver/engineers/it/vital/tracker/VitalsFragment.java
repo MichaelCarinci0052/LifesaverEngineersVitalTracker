@@ -49,10 +49,6 @@ public class VitalsFragment extends Fragment {
         Fragment parentFragment = getParentFragment();
         if (parentFragment instanceof OnVitalsDataChangedListener) {
             mListener = (OnVitalsDataChangedListener) parentFragment;
-        } else if (context instanceof OnVitalsDataChangedListener) {
-            mListener = (OnVitalsDataChangedListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement OnVitalsDataChangedListener");
         }
     }
 
@@ -148,7 +144,7 @@ public class VitalsFragment extends Fragment {
 
     private void sendNotification(String title, String message) {
 
-        Notification.Builder notificationBuilder = new Notification.Builder(getContext(), "VITALS_CHANNEL_ID")
+        Notification.Builder notificationBuilder = new Notification.Builder(requireContext(), "VITALS_CHANNEL_ID")
                 .setSmallIcon(R.drawable.ic_vitals)  // replace with your icon
                 .setContentTitle(title)
                 .setContentText(message)
