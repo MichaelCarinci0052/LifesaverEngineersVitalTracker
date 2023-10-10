@@ -21,4 +21,10 @@
         android:icon="@drawable/ic_vitals"
         android:title="@string/vitals" />
 
+    <item
+        android:id="@+id/navigation_device"
+        android:icon="@drawable/ic_baseline_devices_24"
+        android:title="Device" />
+
+
 </menu>

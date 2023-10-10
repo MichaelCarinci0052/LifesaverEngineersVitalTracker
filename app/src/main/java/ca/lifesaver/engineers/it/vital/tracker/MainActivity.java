@@ -88,6 +88,11 @@ public class MainActivity extends Menu {
                     VitalsFragment vitals = new VitalsFragment();
                     fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, vitals).commit();
                     break;
+                case R.id.navigation_device:
+                    DeviceFragment device = new DeviceFragment();
+                    fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, device).commit();
+                    break;
+
             }
             return true;
         });

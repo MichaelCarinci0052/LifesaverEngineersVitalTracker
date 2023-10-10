@@ -36,6 +36,13 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
 
         userAccountName.setText(username);
 
+
+        DeviceFragment deviceFragment = new DeviceFragment();
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.deviceContainer, deviceFragment)
+                .commit();
+
+
         // Load the GPS Fragment
         GPSFragment gpsFragment = new GPSFragment();
         getChildFragmentManager().beginTransaction()
