@@ -39,7 +39,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-
+    private boolean locationUpdatesStarted = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +107,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     .setInterval(5000); // Update location every 5 seconds
 
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            locationUpdatesStarted = true;
         } else {
             // You can handle the case where permission is not granted, e.g., request permission again.
             ActivityCompat.requestPermissions(requireActivity(),
@@ -131,5 +132,25 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         if (rootView != null) {
             Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
         }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Stop location updates when the fragment is not visible
+        stopLocationUpdates();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Resume location updates when the fragment becomes visible
+        if (locationUpdatesStarted) {
+            startLocationUpdates();
+        }
+    }
+
+    private void stopLocationUpdates() {
+        // Stop location updates
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+        locationUpdatesStarted = false;
     }
 }
