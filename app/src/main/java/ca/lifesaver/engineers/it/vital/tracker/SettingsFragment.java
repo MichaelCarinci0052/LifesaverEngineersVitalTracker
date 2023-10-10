@@ -2,6 +2,7 @@ package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -43,6 +46,8 @@ public class SettingsFragment extends Fragment {
     SharedPreferences sharedPreferences;
     Button apply;
     TextView current;
+    Switch lockswitch;
+    String SWITCH_STATE_KEY = "switch_state";
 
     public static SettingsFragment newInstance(String param1, String param2) {
         SettingsFragment fragment = new SettingsFragment();
@@ -72,11 +77,18 @@ public class SettingsFragment extends Fragment {
         editText = view.findViewById(R.id.locationtext);
         apply = view.findViewById(R.id.apply);
         current = view.findViewById(R.id.current);
+        lockswitch = view.findViewById(R.id.lockswitch);
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         String savedText = sharedPreferences.getString("userText", "");
         editText.setText(savedText);
+
+        sharedPreferences = getActivity().getSharedPreferences("lockoption", Context.MODE_PRIVATE);
+
+        boolean isSwitchOn = sharedPreferences.getBoolean(SWITCH_STATE_KEY, false);
+        lockswitch.setChecked(isSwitchOn);
+        updateSwitchText(isSwitchOn);
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -105,6 +117,23 @@ public class SettingsFragment extends Fragment {
         String currenthome = "Current Home: " + savedTextForTextView;
         current.setText(currenthome);
 
+        lockswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    lockswitch.setText("On");
+                } else {
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                    lockswitch.setText("Off");
+                }
+
+                sharedPreferences.edit().putBoolean(SWITCH_STATE_KEY, isChecked).apply();
+
+                updateSwitchText(isChecked);
+            }
+        });
+
         return view;
     }
 
@@ -115,6 +144,10 @@ public class SettingsFragment extends Fragment {
 
         String currenthome2 = "Current Home: " + input;
         current.setText(currenthome2);
+    }
+
+    private void updateSwitchText(boolean isSwitchOn) {
+        lockswitch.setText(isSwitchOn ? "On" : "Off");
     }
 
 

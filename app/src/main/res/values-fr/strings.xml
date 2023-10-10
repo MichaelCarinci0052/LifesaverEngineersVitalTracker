@@ -26,4 +26,5 @@
     <string name="password">Password: </string>
     <string name="changepass">Change Password</string>
     <string name="newpass">Enter new password</string>
+    <string name="lock">Lock Screen to Portait Mode</string>
 </resources>
