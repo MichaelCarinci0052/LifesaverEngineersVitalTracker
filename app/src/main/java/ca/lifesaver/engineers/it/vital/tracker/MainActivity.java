@@ -12,6 +12,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
@@ -28,7 +30,7 @@ public class MainActivity extends Menu {
     private BottomNavigationView bottomNavigationView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private View rootView;
-
+    private SharedViewModal viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +38,6 @@ public class MainActivity extends Menu {
         this.configureToolBar();
         this.configureBottomNavigationView();
         rootView = findViewById(android.R.id.content);
-
         // Set the default fragment to HomeFragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

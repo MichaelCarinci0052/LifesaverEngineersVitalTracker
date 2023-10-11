@@ -1,5 +1,6 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,12 +17,21 @@ import android.os.Handler;
 
 import java.util.Random;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -81,12 +91,14 @@ public class VitalsFragment extends Fragment {
         handler = new Handler();
         random = new Random();
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_vitals, container, false);
     }
 
@@ -95,7 +107,6 @@ public class VitalsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
-
         viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), isChecked  -> {
             if (isChecked ) {
                 notifs = true;
@@ -120,7 +131,6 @@ public class VitalsFragment extends Fragment {
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
-                notifs = viewModel.getSwitchStatus().getValue();
 
                 if (heartRate < 60 || heartRate > 100) {
                    if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
@@ -162,6 +172,7 @@ public class VitalsFragment extends Fragment {
 
     private void sendNotification(String title, String message) {
 
+
         Notification.Builder notificationBuilder = new Notification.Builder(requireContext(), "VITALS_CHANNEL_ID")
                 .setSmallIcon(R.drawable.ic_vitals)  // replace with your icon
                 .setContentTitle(title)
@@ -178,4 +189,6 @@ public class VitalsFragment extends Fragment {
         int notificationId = random.nextInt();  // Generate a random ID for the notification
         notificationManager.notify(notificationId, notificationBuilder.build());
     }
+
+
 }

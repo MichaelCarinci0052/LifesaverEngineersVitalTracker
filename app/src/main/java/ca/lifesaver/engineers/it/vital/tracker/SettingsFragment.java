@@ -6,12 +6,14 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,12 @@ import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -57,14 +64,24 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
-
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = user != null ? user.getUid() : null;
+
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
+        viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), isChecked  -> {
+            if (isChecked ) {
+                notifswitch.setChecked(true);
+            } else {
+                notifswitch.setChecked(false);
+            }
+        });
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -148,7 +165,15 @@ public class SettingsFragment extends Fragment {
                 saveSwitchState(isChecked);
                 updateSwitchText(notifswitch,isChecked);
                 viewModel.setSwitchStatus(isChecked);
+
+                if (uid != null) {
+                    Map<String, Object> notification = new HashMap<>();
+                    notification.put("notifications", isChecked);
+                    db.collection("userId").document(uid).update(notification);
+                }
             }
+
+
         });
 
         restoreSwitchState();
