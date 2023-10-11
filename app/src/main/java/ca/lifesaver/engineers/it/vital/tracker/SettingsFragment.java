@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -48,17 +49,24 @@ public class SettingsFragment extends Fragment {
     private static final String SHARED_PREFERENCES_KEY = "NotificationFragmentPrefs";
     private static final String SWITCH_STATE = "notificationSwitchState";
 
+    private SharedViewModal viewModel;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
 
         textInputLayout = view.findViewById(R.id.locationlayout);
         editText = view.findViewById(R.id.locationtext);
@@ -66,7 +74,6 @@ public class SettingsFragment extends Fragment {
         current = view.findViewById(R.id.current);
         lockswitch = view.findViewById(R.id.lockswitch);
         notifswitch = view.findViewById(R.id.notifswitch);
-        notifswitch.setChecked(true);
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
@@ -129,12 +136,14 @@ public class SettingsFragment extends Fragment {
                 toggleNotifications();
                 saveSwitchState(isChecked);
                 updateSwitchText(notifswitch,isChecked);
+                viewModel.setButtonStatus(isChecked);
             }
         });
 
         restoreSwitchState();
         return view;
     }
+
 
     private void saveInputToSharedPreferences(String input) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -157,6 +166,7 @@ public class SettingsFragment extends Fragment {
             notificationManager.getNotificationChannel("VITALS_CHANNEL_ID").setImportance(NotificationManager.IMPORTANCE_DEFAULT);
         }
     }
+
 
     private void saveSwitchState(boolean isChecked) {
         SharedPreferences preferences = requireActivity().getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);

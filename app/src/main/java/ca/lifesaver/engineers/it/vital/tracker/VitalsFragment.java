@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 
@@ -34,7 +36,8 @@ public class VitalsFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private SharedViewModal viewModel;
+    private Boolean notifs;
     private String mParam1;
     private String mParam2;
     private OnVitalsDataChangedListener mListener;
@@ -90,6 +93,16 @@ public class VitalsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
+
+        viewModel.getButtonStatus().observe(getViewLifecycleOwner(), isChecked  -> {
+            if (isChecked ) {
+                notifs = true;
+            } else {
+                notifs = false;
+            }
+        });
         // Reference the TextViews
         TextView tvHeartRate = view.findViewById(R.id.heartRateValue);
         TextView tvOxygenLevel = view.findViewById(R.id.oxygenValue);
@@ -107,15 +120,20 @@ public class VitalsFragment extends Fragment {
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
+                notifs = viewModel.getButtonStatus().getValue();
 
                 if (heartRate < 60 || heartRate > 100) {
-                    sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");
+                   if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
                 }
                 if (oxygenLevel < 91) {
-                    sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");
+                    if (notifs)  {sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");};
                 }
-                if (bodyTemp < 97.0f || bodyTemp > 100.1f) {
-                    sendNotification("Abnormal Body Temperature", String.format("Detected body temperature: %.1f°F", bodyTemp));
+                if (bodyTemp < 97.0f || bodyTemp > 97.1f) {
+                    Log.d("asdf","this is being run");
+                    if (notifs)  {
+                        sendNotification("Abnormal Body Temperature", String.format("Detected body temperature: %.1f°F", bodyTemp)
+                        );
+                        Log.d("asdf","this is being run inside of");};
                 }
 
                 // Update the UI
