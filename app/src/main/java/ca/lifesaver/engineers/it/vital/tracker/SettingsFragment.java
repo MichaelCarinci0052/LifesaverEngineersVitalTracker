@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
@@ -58,6 +59,7 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
 
+
     }
 
     @Override
@@ -73,7 +75,16 @@ public class SettingsFragment extends Fragment {
         apply = view.findViewById(R.id.apply);
         current = view.findViewById(R.id.current);
         lockswitch = view.findViewById(R.id.lockswitch);
+
+        //notification switch handler
         notifswitch = view.findViewById(R.id.notifswitch);
+        viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isChecked) {
+                notifswitch.setChecked(isChecked);
+                updateSwitchText(notifswitch, isChecked);
+            }
+        });
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
@@ -136,7 +147,7 @@ public class SettingsFragment extends Fragment {
                 toggleNotifications();
                 saveSwitchState(isChecked);
                 updateSwitchText(notifswitch,isChecked);
-                viewModel.setButtonStatus(isChecked);
+                viewModel.setSwitchStatus(isChecked);
             }
         });
 

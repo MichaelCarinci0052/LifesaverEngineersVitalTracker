@@ -96,7 +96,7 @@ public class VitalsFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
 
-        viewModel.getButtonStatus().observe(getViewLifecycleOwner(), isChecked  -> {
+        viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), isChecked  -> {
             if (isChecked ) {
                 notifs = true;
             } else {
@@ -120,7 +120,7 @@ public class VitalsFragment extends Fragment {
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
-                notifs = viewModel.getButtonStatus().getValue();
+                notifs = viewModel.getSwitchStatus().getValue();
 
                 if (heartRate < 60 || heartRate > 100) {
                    if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
@@ -129,11 +129,9 @@ public class VitalsFragment extends Fragment {
                     if (notifs)  {sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");};
                 }
                 if (bodyTemp < 97.0f || bodyTemp > 97.1f) {
-                    Log.d("asdf","this is being run");
                     if (notifs)  {
                         sendNotification("Abnormal Body Temperature", String.format("Detected body temperature: %.1f°F", bodyTemp)
-                        );
-                        Log.d("asdf","this is being run inside of");};
+                        );};
                 }
 
                 // Update the UI
