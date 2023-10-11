@@ -14,7 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.FirebaseApp;
+
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -28,6 +28,8 @@ public class MainActivity extends Menu {
     private BottomNavigationView bottomNavigationView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private View rootView;
+    private AlertDialog exitDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,6 @@ public class MainActivity extends Menu {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         showExitConfirmationDialog();
     }
 
@@ -72,7 +73,7 @@ public class MainActivity extends Menu {
             MainActivity.super.onBackPressed();
         });
         builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
-        builder.show();
+        exitDialog = builder.show();
     }
 
     private void configureToolBar(){
@@ -128,4 +129,12 @@ public class MainActivity extends Menu {
             Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
         }
     }
+    @Override
+    protected void onDestroy() {
+        if (exitDialog != null && exitDialog.isShowing()) {
+            exitDialog.dismiss();
+        }
+        super.onDestroy();
+    }
+
 }
