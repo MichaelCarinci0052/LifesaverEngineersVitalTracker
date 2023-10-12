@@ -12,7 +12,20 @@
           "package_name": "ca.lifesaver.engineers.it.vital.tracker"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "927967858924-gdb58as3j5ff3altsl8jq29jrvuelclk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ca.lifesaver.engineers.it.vital.tracker",
+            "certificate_hash": "a49fe6511f39e87a8a2ad512e034ed2f0da4d29c"
+          }
+        },
+        {
+          "client_id": "927967858924-bavg9t7kc1q6j7ucfe4ce0b5r4g8jpea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDya25tNQzeh2iJbzw2kmnSdhnnWx9Apfs"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "927967858924-bavg9t7kc1q6j7ucfe4ce0b5r4g8jpea.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

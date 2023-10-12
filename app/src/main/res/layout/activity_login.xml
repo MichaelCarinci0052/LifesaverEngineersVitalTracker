@@ -7,6 +7,21 @@
     android:background="#AABA9E"
     android:padding="16dp">
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="143dp"
+        android:layout_height="158dp"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="166dp"
+        android:visibility="gone"
+        app:indicatorColor="@color/gray"
+        app:indicatorSize="34dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:trackThickness="4dp"
+        tools:visibility="visible" />
+
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="249dp"
