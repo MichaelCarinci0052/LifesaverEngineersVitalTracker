@@ -108,10 +108,6 @@ public class LoginActivity extends AppCompatActivity {
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     // Sign in success
-                                    SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putString("username", username);
-                                    editor.apply();
                                     Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                                     intent.putExtra("START_MAIN_ACTIVITY", true);
                                     startActivity(intent);

@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 /**
  * Jason Macdonald N01246828 section: 0CB
  * Michael Carinci n01480052 section: 0CB
@@ -16,6 +19,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private final int SPLASH_DISPLAY_LENGTH = 3000;
 
+    FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +32,15 @@ public class SplashActivity extends AppCompatActivity {
                 if (getIntent().getBooleanExtra("START_MAIN_ACTIVITY", false)) {
                     nextIntent = new Intent(SplashActivity.this, MainActivity.class);
                 } else {
-                    nextIntent = new Intent(SplashActivity.this, LoginActivity.class);
+                    mAuth = FirebaseAuth.getInstance();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    if (user != null) {
+                        nextIntent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(nextIntent);
+                    }else{
+                        nextIntent = new Intent(SplashActivity.this, LoginActivity.class);
+
+                    }
                 }
                 startActivity(nextIntent);
                 finish();

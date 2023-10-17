@@ -13,7 +13,13 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- other theme properties -->
+    </style>
+    <style name="CustomBottomSheetAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
     <!-- Toolbar theme. -->
     <style name="ToolBarStyle" parent="Theme.VitalTracker">
         <item name="android:textColorPrimary">@android:color/white</item>

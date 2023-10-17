@@ -30,7 +30,7 @@ public class Menu extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.settings:
                 SettingsFragment settings = new SettingsFragment();
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, settings).commit();
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, settings).addToBackStack(null).commit();
                 return true;
             case R.id.config:
                 ConfigurationFragment config = new ConfigurationFragment();
