@@ -14,13 +14,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Toolbar -->
+        <!-- Toolbar
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/activity_main_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:theme="@style/ToolBarStyle"/>
+            android:background="@color/kaki"
+            app:theme="@style/ToolBarStyle" />-->
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/activity_main_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/kaki"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                app:titleCentered="true"
+                />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <!-- FrameLayout for our fragments -->
         <FrameLayout
@@ -28,7 +44,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/bottom_navigation"/>
-
     </LinearLayout>
 
     <!-- BottomNavigationView -->

@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout passwordLayout;
     private TextInputLayout emailLayout;
     private Button buttonLogin;
-    private ProgressBar progressBar;
+        private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 9001;
@@ -62,11 +62,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         viewModel = new ViewModelProvider(this).get(SharedViewModal.class);
         passwordLayout = findViewById(R.id.passwordLayout);
         emailLayout = findViewById(R.id.emailLayout);
         mAuth = FirebaseAuth.getInstance();
-        progressBar = findViewById(R.id.progressBar);
+
 
 
         //google Sign in button
@@ -88,7 +89,6 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
                 mGoogleSignInClient.signOut().addOnCompleteListener(LoginActivity.this, task -> {
                     Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                     startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -112,7 +112,8 @@ public class LoginActivity extends AppCompatActivity {
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
                                     editor.putString("username", username);
                                     editor.apply();
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
+                                    intent.putExtra("START_MAIN_ACTIVITY", true);
                                     startActivity(intent);
                                     Log.d("user", mAuth.getCurrentUser().toString());
                                     finish();
@@ -208,7 +209,8 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         Log.d("firebase authentication-google","Success");
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
+                        intent.putExtra("START_MAIN_ACTIVITY", true);
                         startActivity(intent);
                         Log.d("user", mAuth.getCurrentUser().getDisplayName());
                         finish();

@@ -40,8 +40,6 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         mAuth = FirebaseAuth.getInstance();
         userAccountName = view.findViewById(R.id.userAccountName);
 
-        //SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        //String username = sharedPreferences.getString("username", "Default User");
         String username = mAuth.getCurrentUser().getDisplayName();
         userAccountName.setText(username);
 

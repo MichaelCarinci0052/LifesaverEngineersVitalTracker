@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
+    android:background="@color/ashGreen"
     android:padding="16dp">  <!-- Center child views -->
 
     <!-- Display the User Account Name -->
