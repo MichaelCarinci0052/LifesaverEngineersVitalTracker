@@ -37,6 +37,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:fadingEdge="horizontal"
+        app:backgroundTint="@color/kaki"
+        app:elevation="10dp"
+        app:itemIconTint="@color/nav_menu_bar"
+        app:itemTextColor="@color/black"
         app:menu="@menu/activity_main_menu_drawer" />
 
 </RelativeLayout>

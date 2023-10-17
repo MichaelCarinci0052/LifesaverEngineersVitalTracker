@@ -114,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                                     editor.apply();
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
+                                    Log.d("user", mAuth.getCurrentUser().toString());
                                     finish();
                                 } else {
                                     // Sign in failed
@@ -209,6 +210,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("firebase authentication-google","Success");
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
+                        Log.d("user", mAuth.getCurrentUser().getDisplayName());
                         finish();
                     } else {
                         // Sign in failed

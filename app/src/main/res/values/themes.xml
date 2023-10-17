@@ -28,4 +28,5 @@
     <style name="Theme.VitalTracker.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.VitalTracker.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

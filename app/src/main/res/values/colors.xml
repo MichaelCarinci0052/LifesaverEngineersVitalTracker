@@ -24,4 +24,9 @@
     <color name="kaki">#C6B89E</color>
     <color name="gray">#B5B8A3</color>
     <color name="ashGreen">#AABA9E</color>
+
+
+
+    <color name="active_tab">#FCB97D</color>   <!-- change to your active color -->
+    <color name="inactive_tab">#BDBDBD</color>
 </resources>
