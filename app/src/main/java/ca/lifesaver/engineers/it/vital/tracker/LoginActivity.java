@@ -1,41 +1,37 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
-import static java.security.AccessController.getContext;
-
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -52,10 +48,12 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout passwordLayout;
     private TextInputLayout emailLayout;
     private Button buttonLogin;
+    private Button buttonRegister;
         private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 9001;
+
 
     private SharedViewModal viewModel;
     @Override
@@ -70,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+
         //google Sign in button
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setColorScheme(0);
@@ -77,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("927967858924-bavg9t7kc1q6j7ucfe4ce0b5r4g8jpea.apps.googleusercontent.com")
                 .requestEmail()
+                .requestScopes(new Scope("https://www.googleapis.com/auth/user.phonenumbers.read"))
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
@@ -85,12 +85,21 @@ public class LoginActivity extends AppCompatActivity {
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
+        buttonRegister = findViewById(R.id.buttonRegister);
+        buttonRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+                };
 
+            });
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mGoogleSignInClient.signOut().addOnCompleteListener(LoginActivity.this, task -> {
                     Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+
                     startActivityForResult(signInIntent, RC_SIGN_IN);
                 });
 
@@ -111,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
                                     Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                                     intent.putExtra("START_MAIN_ACTIVITY", true);
                                     startActivity(intent);
-                                    Log.d("user", mAuth.getCurrentUser().toString());
                                     finish();
                                 } else {
                                     // Sign in failed
@@ -201,9 +209,27 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                        if (user != null) {
+                            DocumentReference userDocRef = db.collection("userId").document(user.getUid());
+                            userDocRef.get().addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    DocumentSnapshot document = task1.getResult();
+                                    if (document != null && !document.exists()) {
+                                        // User doesn't exist in Firestore, add them with preset fields
+                                        UserData userData = new UserData(user.getDisplayName(), user.getEmail(), user.getPhoneNumber(), false);
+                                        userDocRef.set(userData);
+                                    }
+                                } else {
+                                    Log.w("Firestore", "Error getting document.", task1.getException());
+                                }
+                        });
+
                         Log.d("firebase authentication-google","Success");
                         Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                         intent.putExtra("START_MAIN_ACTIVITY", true);
@@ -219,9 +245,7 @@ public class LoginActivity extends AppCompatActivity {
                         snackbarView.setLayoutParams(params);
                         snackbar.show();
                     }
-                });
+                }
+    });
     }
-
-
-
 }
