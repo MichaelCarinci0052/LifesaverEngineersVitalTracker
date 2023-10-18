@@ -3,6 +3,8 @@ package ca.lifesaver.engineers.it.vital.tracker;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +36,7 @@ public class SplashActivity extends AppCompatActivity {
                 } else {
                     mAuth = FirebaseAuth.getInstance();
                     FirebaseUser user = mAuth.getCurrentUser();
+
                     if (user != null) {
                         nextIntent = new Intent(SplashActivity.this, MainActivity.class);
                         startActivity(nextIntent);

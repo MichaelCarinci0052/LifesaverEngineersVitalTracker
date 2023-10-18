@@ -3,6 +3,7 @@ package ca.lifesaver.engineers.it.vital.tracker;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,10 +51,11 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
                 .commit();
 
 
-        // Load the GPS Fragment
+         //Load the GPS Fragment
         GPSFragment gpsFragment = new GPSFragment();
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.gpsContainer, gpsFragment)
+                .addToBackStack(null)
                 .commit();
 
         // Load the Vitals Fragment (if you want to display it)
