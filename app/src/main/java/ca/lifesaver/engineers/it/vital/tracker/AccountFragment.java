@@ -1,6 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -12,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
@@ -40,6 +44,8 @@ public class AccountFragment extends Fragment {
     private TextView usernameTextView;
     private EditText passwordEditText;
     private Button changePasswordButton;
+    private Button buttonLogout;
+    FirebaseAuth mAuth  ;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -77,16 +83,28 @@ public class AccountFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account, container, false);
+        mAuth = FirebaseAuth.getInstance();
 
         usernameTextView = view.findViewById(R.id.username3);
         passwordEditText = view.findViewById(R.id.editTextpassword);
         changePasswordButton = view.findViewById(R.id.changepassword);
+        buttonLogout = view.findViewById(R.id.buttonLogout);
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String user = sharedPreferences.getString("username", "username3");
 
         usernameTextView.setText(user);
 
+        //handle logout
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+                requireActivity().finish();
+            }
+        });
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

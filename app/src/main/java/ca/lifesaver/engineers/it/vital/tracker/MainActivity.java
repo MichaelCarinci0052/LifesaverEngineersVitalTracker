@@ -12,6 +12,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -28,9 +30,7 @@ public class MainActivity extends Menu {
     private BottomNavigationView bottomNavigationView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private View rootView;
-    private AlertDialog exitDialog;
-
-
+    private SharedViewModal viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +38,6 @@ public class MainActivity extends Menu {
         this.configureToolBar();
         this.configureBottomNavigationView();
         rootView = findViewById(android.R.id.content);
-
         // Set the default fragment to HomeFragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -60,6 +59,7 @@ public class MainActivity extends Menu {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         showExitConfirmationDialog();
     }
 
@@ -73,7 +73,7 @@ public class MainActivity extends Menu {
             MainActivity.super.onBackPressed();
         });
         builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
-        exitDialog = builder.show();
+        builder.show();
     }
 
     private void configureToolBar(){
@@ -109,6 +109,7 @@ public class MainActivity extends Menu {
                     break;
 
             }
+
             return true;
         });
     }
@@ -129,12 +130,4 @@ public class MainActivity extends Menu {
             Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
         }
     }
-    @Override
-    protected void onDestroy() {
-        if (exitDialog != null && exitDialog.isShowing()) {
-            exitDialog.dismiss();
-        }
-        super.onDestroy();
-    }
-
 }

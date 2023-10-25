@@ -16,4 +16,17 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!--
+        colors for  theming purposes
+        -->
+    <color name="fawn">#FCB97D</color>
+    <color name="flax">#EDD892</color>
+    <color name="kaki">#C6B89E</color>
+    <color name="gray">#B5B8A3</color>
+    <color name="ashGreen">#AABA9E</color>
+
+
+
+    <color name="active_tab">#FCB97D</color>   <!-- change to your active color -->
+    <color name="inactive_tab">#BDBDBD</color>
 </resources>

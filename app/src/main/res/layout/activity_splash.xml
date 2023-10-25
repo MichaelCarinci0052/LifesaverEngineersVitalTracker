@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/splash"
+    android:background="@color/ashGreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SplashActivity">
@@ -29,7 +30,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/app_logo" />
-
+<!--
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -38,7 +39,24 @@
         android:layout_marginStart="181dp"
         android:layout_marginBottom="179dp"
         android:indeterminate="true"
+        android:indeterminateTint="@color/fawn"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="invisible"
+        />
+-->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="168dp"
+        android:layout_marginBottom="172dp"
+        android:indeterminate="true"
+        app:indicatorColor="@color/fawn"
+        app:indicatorSize="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:trackThickness="20dp"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

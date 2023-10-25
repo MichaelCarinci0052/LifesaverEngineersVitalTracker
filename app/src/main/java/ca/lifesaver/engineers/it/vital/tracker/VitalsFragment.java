@@ -1,27 +1,53 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.os.Handler;
 
 import java.util.Random;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -32,7 +58,8 @@ import java.util.ArrayList;
  * Nicholas Rafuse n01440073 section: 0CB
  */
 
-public class VitalsFragment extends Fragment {
+public class VitalsFragment extends Fragment implements
+        OnChartValueSelectedListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -45,7 +72,11 @@ public class VitalsFragment extends Fragment {
     private Handler handler;
     private Runnable updateRunnable;
     private Random random;
-
+    private LineChart lineChart;
+    private LineData lineData;
+    private LineDataSet lineDataSet;
+    private ArrayList<Entry> values;
+    private SeekBar seekBarX, seekBarY;
     public VitalsFragment() {
         // Required empty public constructor
     }
@@ -81,21 +112,49 @@ public class VitalsFragment extends Fragment {
         handler = new Handler();
         random = new Random();
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_vitals, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        lineChart = view.findViewById(R.id.lineChart);
+        values = new ArrayList<>();
+        lineChart.setOnChartValueSelectedListener(this);
+        lineDataSet = new LineDataSet(values, "Real Time Data");
+        lineData = new LineData(lineDataSet);
+        lineChart.setData(lineData);
+        Legend l = lineChart.getLegend();
+        lineChart.setViewPortOffsets(0, 0, 0, 0);
+        lineChart.setBackgroundColor(Color.rgb(104, 241, 175));
+        lineChart.getDescription().setEnabled(false);
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setMaxHighlightDistance(300);
+        // modify the legend ...
+        l.setForm(Legend.LegendForm.LINE);
+        l.setTextColor(Color.WHITE);
+        XAxis x = lineChart.getXAxis();
+        x.setEnabled(false);
 
+        YAxis y = lineChart.getAxisLeft();
+        y.setLabelCount(6, false);
+        y.setTextColor(Color.WHITE);
+        y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        y.setDrawGridLines(false);
+        y.setAxisLineColor(Color.WHITE);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.animateXY(2000, 2000);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
-
         viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), isChecked  -> {
             if (isChecked ) {
                 notifs = true;
@@ -108,10 +167,6 @@ public class VitalsFragment extends Fragment {
         TextView tvOxygenLevel = view.findViewById(R.id.oxygenValue);
         TextView tvBodyTemp = view.findViewById(R.id.bodyTempValue);
 
-        // Set dummy data
-        tvHeartRate.setText("Heart Rate: 80 BPM");
-        tvOxygenLevel.setText("Oxygen Level: 98%");
-        tvBodyTemp.setText("Body Temperature: 98.6°F");
         updateRunnable = new Runnable() {
             @Override
             public void run() {
@@ -120,7 +175,52 @@ public class VitalsFragment extends Fragment {
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
-                notifs = viewModel.getSwitchStatus().getValue();
+                LineData data = lineChart.getData();
+
+                if (data != null) {
+                    lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    lineDataSet.setCubicIntensity(0.2f);
+                    lineDataSet.setDrawFilled(true);
+                    lineDataSet.setDrawCircles(false);
+                    lineDataSet.setLineWidth(1.8f);
+                    lineDataSet.setCircleRadius(4f);
+                    lineDataSet.setCircleColor(Color.WHITE);
+                    lineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+                    lineDataSet.setColor(Color.WHITE);
+                    lineDataSet.setFillColor(Color.WHITE);
+                    lineDataSet.setFillAlpha(100);
+                    lineDataSet.setDrawHorizontalHighlightIndicator(false);
+
+                    lineDataSet.setFillFormatter(new IFillFormatter() {
+                        @Override
+                        public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+                            return lineChart.getAxisLeft().getAxisMinimum();
+                        }
+                    });
+                    ILineDataSet set = data.getDataSetByIndex(0);
+                    // set.addEntry(...); // can be called as well
+
+                    if (set == null) {
+                        set = createSet();
+                        data.addDataSet(set);
+                    }
+
+                    data.addEntry(new Entry(set.getEntryCount(),(heartRate)), 0);
+                    data.notifyDataChanged();
+
+                    // let the chart know it's data has changed
+                    lineChart.notifyDataSetChanged();
+
+                    // limit the number of visible entries
+                    lineChart.setVisibleXRangeMaximum(10);
+                    // chart.setVisibleYRange(30, AxisDependency.LEFT);
+
+                    // move to the latest entry
+                    lineChart.moveViewToX(data.getEntryCount());
+
+                }
+
+
 
                 if (heartRate < 60 || heartRate > 100) {
                    if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
@@ -159,8 +259,34 @@ public class VitalsFragment extends Fragment {
         // Stop the updates when the fragment is destroyed
         handler.removeCallbacks(updateRunnable);
     }
+    private LineDataSet createSet() {
 
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(ColorTemplate.getHoloBlue());
+        set.setCircleColor(Color.WHITE);
+        set.setLineWidth(2f);
+        set.setCircleRadius(4f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setValueTextColor(Color.WHITE);
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        return set;
+    }
+
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+        Log.i("Entry selected", e.toString());
+    }
+
+    @Override
+    public void onNothingSelected() {
+        Log.i("Nothing selected", "Nothing selected.");
+    }
     private void sendNotification(String title, String message) {
+
 
         Notification.Builder notificationBuilder = new Notification.Builder(requireContext(), "VITALS_CHANNEL_ID")
                 .setSmallIcon(R.drawable.ic_vitals)  // replace with your icon
@@ -178,4 +304,6 @@ public class VitalsFragment extends Fragment {
         int notificationId = random.nextInt();  // Generate a random ID for the notification
         notificationManager.notify(notificationId, notificationBuilder.build());
     }
+
+
 }
