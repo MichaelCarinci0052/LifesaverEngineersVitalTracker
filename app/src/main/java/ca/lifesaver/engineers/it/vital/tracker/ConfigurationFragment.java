@@ -61,9 +61,9 @@ public class ConfigurationFragment extends Fragment {
         if (user != null) {
             boolean isVerified = user.isEmailVerified();
             if (isVerified) {
-                emailStatus.setText("Email is Verified");
+                emailStatus.setText(R.string.email_is_verified);
             } else {
-                emailStatus.setText("Email is not Verified");
+                emailStatus.setText(R.string.email_is_not_verified);
             }
         }
         return view;
