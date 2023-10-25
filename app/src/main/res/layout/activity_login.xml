@@ -93,6 +93,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="7dp"
         android:backgroundTint="#EDD892"
+        android:drawablePadding="8dp"
+        android:padding="8dp"
         android:text="Login"
         app:layout_constraintBottom_toTopOf="@+id/buttonRegister"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,6 +110,8 @@
         android:layout_marginBottom="240dp"
         android:backgroundTint="#C6B89E"
         android:text="Register"
+        android:drawablePadding="8dp"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -123,9 +127,11 @@
         android:layout_marginBottom="240dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.612"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonRegister"
         app:layout_constraintVertical_bias="0.0" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

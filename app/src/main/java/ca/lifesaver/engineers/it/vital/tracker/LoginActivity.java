@@ -6,12 +6,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -25,10 +28,14 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.OAuthProvider;
+import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,11 +56,9 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout emailLayout;
     private Button buttonLogin;
     private Button buttonRegister;
-        private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 9001;
-
 
     private SharedViewModal viewModel;
     @Override
@@ -81,11 +86,12 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
-
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
         buttonRegister = findViewById(R.id.buttonRegister);
+
+
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(isValidEmail()&&isValidPassword()){
                     String username = editTextUsername.getText().toString().trim();
                     String password = editTextPassword.getText().toString().trim();
+
                     //Firebase initialization
                     mAuth.signInWithEmailAndPassword(username, password)
                             .addOnCompleteListener(task -> {
@@ -207,6 +214,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
+
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -234,7 +243,6 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                         intent.putExtra("START_MAIN_ACTIVITY", true);
                         startActivity(intent);
-                        Log.d("user", mAuth.getCurrentUser().getDisplayName());
                         finish();
                     } else {
                         // Sign in failed
@@ -248,4 +256,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
     });
     }
+
+
 }

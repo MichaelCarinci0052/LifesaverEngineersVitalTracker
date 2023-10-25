@@ -99,4 +99,15 @@
             android:layout_weight="2"
             android:text="@string/button_input" />
     </TableRow>
+    <TableRow>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="Email Verification Status" />
+        <TextView
+            android:id="@+id/emailStatusTextView"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+             />
+    </TableRow>
 </TableLayout>

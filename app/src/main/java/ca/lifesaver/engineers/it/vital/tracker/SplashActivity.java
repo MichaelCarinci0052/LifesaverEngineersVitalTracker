@@ -26,28 +26,38 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
+        mAuth = FirebaseAuth.getInstance();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent nextIntent;
+
+
                 if (getIntent().getBooleanExtra("START_MAIN_ACTIVITY", false)) {
-                    nextIntent = new Intent(SplashActivity.this, MainActivity.class);
+                    Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
+                    startActivity(mainIntent);
+                    finish();
                 } else {
-                    mAuth = FirebaseAuth.getInstance();
                     FirebaseUser user = mAuth.getCurrentUser();
-
                     if (user != null) {
-                        nextIntent = new Intent(SplashActivity.this, MainActivity.class);
-                        startActivity(nextIntent);
-                    }else{
-                        nextIntent = new Intent(SplashActivity.this, LoginActivity.class);
-                        startActivity(nextIntent);
-
+                        user.reload()
+                                .addOnCompleteListener(task -> {
+                                    Intent nextIntent;
+                                    if (task.isSuccessful()) {
+                                        // User exists
+                                        nextIntent = new Intent(SplashActivity.this, MainActivity.class);
+                                    } else {
+                                        // User doesn't exist anymore
+                                        nextIntent = new Intent(SplashActivity.this, LoginActivity.class);
+                                    }
+                                    startActivity(nextIntent);
+                                    finish();
+                                });
+                    } else {
+                        Intent loginIntent = new Intent(SplashActivity.this, LoginActivity.class);
+                        startActivity(loginIntent);
+                        finish();
                     }
                 }
-                startActivity(nextIntent);
-                finish();
             }
         }, SPLASH_DISPLAY_LENGTH);
     }
