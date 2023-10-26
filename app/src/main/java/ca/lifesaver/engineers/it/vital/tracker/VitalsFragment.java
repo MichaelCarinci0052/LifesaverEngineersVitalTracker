@@ -18,6 +18,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.os.Handler;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import androidx.annotation.NonNull;
@@ -45,8 +49,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -126,6 +132,11 @@ public class VitalsFragment extends Fragment implements
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = currentUser.getUid();
+        DocumentReference vitalsRef = db.collection(userId).document("vitals");
+
         lineChart = view.findViewById(R.id.lineChart);
         values = new ArrayList<>();
         lineChart.setOnChartValueSelectedListener(this);
@@ -174,7 +185,39 @@ public class VitalsFragment extends Fragment implements
                 int heartRate = 60 + random.nextInt(40);  // Random value between 60 and 100
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
+                if (currentUser != null) {
+                    String userId = currentUser.getUid();
 
+                    // Reference to the specific 'vitals' document inside the user's document
+                    DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document("data");
+
+                    Map<String, Object> vitalsDataMap = new HashMap<>();
+                    vitalsDataMap.put("heartRate", heartRate);
+                    vitalsDataMap.put("oxygenLevel", oxygenLevel);
+                    vitalsDataMap.put("bodyTemp", bodyTemp);
+
+                    vitalsDocRef.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // Document exists, update it
+                                List<Map<String, Object>> currentData = (List<Map<String, Object>>) document.get("vitalsData");
+                                if (currentData == null) {
+                                    currentData = new ArrayList<>();
+                                }
+                                currentData.add(vitalsDataMap);
+                                vitalsDocRef.update("vitalsData", currentData);
+                            } else {
+                                // Document doesn't exist, create it
+                                List<Map<String, Object>> initialData = new ArrayList<>();
+                                initialData.add(vitalsDataMap);
+                                vitalsDocRef.set(Collections.singletonMap("vitalsData", initialData));
+                            }
+                        } else {
+                            Log.d("Data retrieval failed: ", task.getException().toString());
+                        }
+                    });
+                }
                 LineData data = lineChart.getData();
 
                 if (data != null) {
@@ -198,7 +241,7 @@ public class VitalsFragment extends Fragment implements
                         }
                     });
                     ILineDataSet set = data.getDataSetByIndex(0);
-                    // set.addEntry(...); // can be called as well
+
 
                     if (set == null) {
                         set = createSet();
