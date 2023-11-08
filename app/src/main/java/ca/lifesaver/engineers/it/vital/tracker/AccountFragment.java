@@ -43,6 +43,7 @@ public class AccountFragment extends Fragment {
     private String mParam2;
     private TextView usernameTextView;
     private EditText passwordEditText;
+    private TextView fullname;
     private Button changePasswordButton;
     private Button buttonLogout;
     FirebaseAuth mAuth  ;
@@ -89,13 +90,16 @@ public class AccountFragment extends Fragment {
         passwordEditText = view.findViewById(R.id.editTextpassword);
         changePasswordButton = view.findViewById(R.id.changepassword);
         buttonLogout = view.findViewById(R.id.buttonLogout);
+        fullname = view.findViewById(R.id.fullname);
 
         //SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         //String user = sharedPreferences.getString("username", "username3");
 
         FirebaseUser user = mAuth.getCurrentUser();
         String email = user.getEmail();
+        String firstname = user.getDisplayName();
         usernameTextView.setText(email);
+        fullname.setText(firstname);
 
 
         //handle logout

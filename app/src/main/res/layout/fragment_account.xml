@@ -31,6 +31,7 @@
         android:layout_marginEnd="172dp"
         android:layout_marginBottom="521dp"
         android:text="@string/username"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,10 +41,10 @@
         android:id="@+id/username3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="172dp"
-        android:layout_marginTop="218dp"
-        android:layout_marginEnd="177dp"
-        android:layout_marginBottom="494dp"
+        android:layout_marginStart="174dp"
+        android:layout_marginTop="210dp"
+        android:layout_marginEnd="175dp"
+        android:layout_marginBottom="502dp"
         android:text="username"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,14 +52,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/passwordtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="173dp"
+        android:layout_marginStart="185dp"
         android:layout_marginTop="237dp"
-        android:layout_marginEnd="172dp"
+        android:layout_marginEnd="185dp"
         android:layout_marginBottom="475dp"
-        android:text="@string/password"
+        android:text="Name:"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,19 +109,32 @@
         app:layout_constraintTop_toBottomOf="@+id/changepassword" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/fullname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="173dp"
-        android:layout_marginTop="267dp"
-        android:layout_marginEnd="177dp"
-        android:layout_marginBottom="445dp"
+        android:layout_marginStart="175dp"
+        android:layout_marginTop="256dp"
+        android:layout_marginEnd="175dp"
+        android:layout_marginBottom="456dp"
         android:text="**********"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="156dp"
+        android:layout_marginTop="282dp"
+        android:layout_marginEnd="157dp"
+        android:layout_marginBottom="430dp"
+        android:text="New Password:"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
