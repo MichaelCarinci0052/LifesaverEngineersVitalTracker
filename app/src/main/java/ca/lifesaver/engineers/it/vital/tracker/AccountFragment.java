@@ -90,10 +90,13 @@ public class AccountFragment extends Fragment {
         changePasswordButton = view.findViewById(R.id.changepassword);
         buttonLogout = view.findViewById(R.id.buttonLogout);
 
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        String user = sharedPreferences.getString("username", "username3");
+        //SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        //String user = sharedPreferences.getString("username", "username3");
 
-        usernameTextView.setText(user);
+        FirebaseUser user = mAuth.getCurrentUser();
+        String email = user.getEmail();
+        usernameTextView.setText(email);
+
 
         //handle logout
         buttonLogout.setOnClickListener(new View.OnClickListener() {
