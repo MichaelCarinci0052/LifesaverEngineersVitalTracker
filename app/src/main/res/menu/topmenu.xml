@@ -2,14 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/settings"
-        android:icon="@drawable/settings"
-        android:title="@string/settings"
-        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_settings"
+        android:title="@string/options"
+        android:icon="@drawable/options"
+        app:showAsAction="always">
+        <menu>
+            <item android:id="@+id/settings"
+                android:title="@string/settings"
+                app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/config"
-        android:icon="@drawable/config"
-        android:title="@string/home"
-        app:showAsAction="ifRoom" />
-
+            <item android:id="@+id/config"
+                android:title="@string/configurations"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
 </menu>
