@@ -21,41 +21,7 @@
             android:textSize="40sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Device"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <FrameLayout
-            android:id="@+id/deviceContainer"
-            android:layout_width="320dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="8dp"
-            android:background="#514B4B">
-            <!-- Device container content -->
-        </FrameLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Location"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <FrameLayout
-            android:id="@+id/gpsContainer"
-            android:layout_width="320dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rectangular_shape">
-            <!-- GPS container content -->
-        </FrameLayout>
-
+        <!-- Vitals Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -102,6 +68,43 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
+        </FrameLayout>
+
+        <!-- GPS Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <FrameLayout
+            android:id="@+id/gpsContainer"
+            android:layout_width="320dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rectangular_shape">
+            <!-- GPS container content -->
+        </FrameLayout>
+
+        <!-- Device Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <FrameLayout
+            android:id="@+id/deviceContainer"
+            android:layout_width="320dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="8dp"
+            android:background="#514B4B">
+            <!-- Device container content -->
         </FrameLayout>
 
     </LinearLayout>
