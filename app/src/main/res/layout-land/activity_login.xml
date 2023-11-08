@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#AABA9E"
+    android:padding="16dp">
+
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="143dp"
+        android:layout_height="158dp"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="166dp"
+        android:visibility="gone"
+        app:indicatorColor="@color/gray"
+        app:indicatorSize="34dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:trackThickness="4dp"
+        tools:visibility="visible" />
+
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="126dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="295dp"
+        android:layout_marginTop="66dp"
+        android:layout_marginEnd="295dp"
+        android:layout_marginBottom="209dp"
+        android:contentDescription="@string/splashlogo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/app_logo" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="440dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="155dp"
+        android:layout_marginTop="264dp"
+        android:layout_marginEnd="155dp"
+        android:layout_marginBottom="77dp"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="432dp"
+            android:layout_height="45dp"
+            android:hint="Password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="181dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="334dp"
+        android:layout_marginEnd="468dp"
+        android:layout_marginBottom="14dp"
+        android:backgroundTint="#EDD892"
+        android:drawablePadding="8dp"
+        android:padding="8dp"
+        android:text="Login"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonRegister"
+        android:layout_width="181dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="270dp"
+        android:layout_marginTop="334dp"
+        android:layout_marginEnd="260dp"
+        android:layout_marginBottom="14dp"
+        android:backgroundTint="#C6B89E"
+        android:drawablePadding="8dp"
+        android:padding="8dp"
+        android:text="Register"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="181dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="483dp"
+        android:layout_marginTop="334dp"
+        android:layout_marginEnd="51dp"
+        android:layout_marginBottom="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="440dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="155dp"
+        android:layout_marginTop="194dp"
+        android:layout_marginEnd="155dp"
+        android:layout_marginBottom="147dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextUsername"
+            android:layout_width="432dp"
+            android:layout_height="45dp"
+            android:hint="Email" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
