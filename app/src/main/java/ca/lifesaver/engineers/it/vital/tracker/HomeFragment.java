@@ -24,15 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDataChangedListener {
     private FirebaseAuth mAuth;
     private TextView userAccountName;
-    public void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp) {
-
-        TextView tvHeartRateHome = getView().findViewById(R.id.heartRate);
-        TextView tvOxygenLevel = getView().findViewById(R.id.oxygenRate);
-        TextView tvBodyTemp = getView().findViewById(R.id.temp);
-        tvHeartRateHome.setText(heartRate);
-        tvOxygenLevel.setText(oxygenLevel);
-        tvBodyTemp.setText(bodyTemp);
-    }
 
     @Nullable
     @Override
@@ -65,6 +56,15 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
                 .commit();
 
         return view;
+    }
+    public void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp) {
+
+        TextView tvHeartRateHome = getView().findViewById(R.id.heartRate);
+        TextView tvOxygenLevel = getView().findViewById(R.id.oxygenRate);
+        TextView tvBodyTemp = getView().findViewById(R.id.temp);
+        tvHeartRateHome.setText(heartRate);
+        tvOxygenLevel.setText(oxygenLevel);
+        tvBodyTemp.setText(bodyTemp);
     }
 
 }
