@@ -2,40 +2,44 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/ashGreen">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:background="@color/ashGreen"
         android:padding="16dp">
 
+        <!-- User's Username -->
         <TextView
             android:id="@+id/userAccountName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="100dp"
-            android:text="Default User"
-            android:textSize="40sp"
-            android:textStyle="bold" />
+            android:text="Username"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_marginBottom="24dp" />
 
         <!-- Vitals Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Vitals"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="16dp" />
+
+        <!-- This container will be populated with Vitals data -->
 
         <FrameLayout
             android:id="@+id/vitalsContainer"
-            android:layout_width="320dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="8dp"
-            android:background="#514B4B">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/container_background"
+            android:elevation="4dp"
+            android:padding="16dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -46,27 +50,22 @@
                     android:id="@+id/heartRate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Heart Rate"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="Heart Rate: --"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                 <TextView
                     android:id="@+id/oxygenRate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Oxygen Rate"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="Oxygen Level: --"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                 <TextView
                     android:id="@+id/temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Temperature"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="Body Temp: --"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
             </LinearLayout>
         </FrameLayout>
 
@@ -74,37 +73,40 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Location"
-            android:textSize="20sp"
+            android:text="GPS Location"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="16dp" />
 
+        <!-- This container will be replaced with the GPSFragment -->
         <FrameLayout
             android:id="@+id/gpsContainer"
-            android:layout_width="320dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rectangular_shape">
-            <!-- GPS container content -->
-        </FrameLayout>
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+        android:background="@drawable/container_background"
+        android:elevation="4dp"
+        android:padding="16dp">
+        <!-- Placeholder for GPS content -->
+    </FrameLayout>
 
         <!-- Device Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Device"
-            android:textSize="20sp"
+            android:text="Device Information"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="16dp" />
 
+        <!-- This container will be replaced with the DeviceFragment -->
         <FrameLayout
             android:id="@+id/deviceContainer"
-            android:layout_width="320dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="8dp"
-            android:background="#514B4B">
-            <!-- Device container content -->
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/container_background"
+            android:elevation="4dp"
+            android:padding="16dp">
+            <!-- Placeholder for GPS content -->
         </FrameLayout>
 
     </LinearLayout>
