@@ -51,20 +51,26 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
 
         // Load the Vitals Fragment (if you want to display it)
         VitalsFragment vitalsFragment = new VitalsFragment();
+        vitalsFragment.setOnVitalsDataChangedListener(this); // 'this' refers to HomeFragment which implements OnVitalsDataChangedListener
         getChildFragmentManager().beginTransaction()
                 .add(vitalsFragment, "vitalfragment")
                 .commit();
 
+
+
+
         return view;
     }
+    @Override
     public void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp) {
-
         TextView tvHeartRateHome = getView().findViewById(R.id.heartRate);
         TextView tvOxygenLevel = getView().findViewById(R.id.oxygenRate);
         TextView tvBodyTemp = getView().findViewById(R.id.temp);
+
         tvHeartRateHome.setText(heartRate);
         tvOxygenLevel.setText(oxygenLevel);
         tvBodyTemp.setText(bodyTemp);
     }
+
 
 }

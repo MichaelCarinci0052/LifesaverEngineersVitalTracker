@@ -83,9 +83,14 @@ public class VitalsFragment extends Fragment implements
         // Required empty public constructor
     }
 
+    public void setOnVitalsDataChangedListener(OnVitalsDataChangedListener listener) {
+        this.mListener = listener;
+    }
+
     public interface OnVitalsDataChangedListener {
         void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp);
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -214,11 +219,15 @@ public class VitalsFragment extends Fragment implements
                             "Heart Rate: " + heartRate + " BPM",
                             "Oxygen Level: " + oxygenLevel + "%",
                             String.format("Body Temperature: %.1f°F", bodyTemp)
+
                     );
+
                 }
+
                 // Schedule the next update
                 handler.postDelayed(this, 2000);  // Update every 2 seconds
             }
+
         };
 
         // Start the updates
