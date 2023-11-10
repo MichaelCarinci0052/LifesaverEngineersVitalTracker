@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -71,18 +73,12 @@ public class VitalsFragment extends Fragment implements
     private static final String ARG_PARAM2 = "param2";
     private SharedViewModal viewModel;
     private Boolean notifs;
-    private String mParam1;
-    private String mParam2;
+
     private OnVitalsDataChangedListener mListener;
 
     private Handler handler;
     private Runnable updateRunnable;
     private Random random;
-    private LineChart lineChart;
-    private LineData lineData;
-    private LineDataSet lineDataSet;
-    private ArrayList<Entry> values;
-    private SeekBar seekBarX, seekBarY;
     public VitalsFragment() {
         // Required empty public constructor
     }
@@ -111,10 +107,7 @@ public class VitalsFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
         handler = new Handler();
         random = new Random();
 
@@ -137,34 +130,14 @@ public class VitalsFragment extends Fragment implements
         String userId = currentUser.getUid();
         DocumentReference vitalsRef = db.collection(userId).document("vitals");
 
-        lineChart = view.findViewById(R.id.lineChart);
-        values = new ArrayList<>();
-        lineChart.setOnChartValueSelectedListener(this);
-        lineDataSet = new LineDataSet(values, "Real Time Data");
-        lineData = new LineData(lineDataSet);
-        lineChart.setData(lineData);
-        Legend l = lineChart.getLegend();
-        lineChart.setViewPortOffsets(0, 0, 0, 0);
-        lineChart.setBackgroundColor(Color.rgb(104, 241, 175));
-        lineChart.getDescription().setEnabled(false);
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(true);
-        lineChart.setDrawGridBackground(false);
-        lineChart.setMaxHighlightDistance(300);
-        // modify the legend ...
-        l.setForm(Legend.LegendForm.LINE);
-        l.setTextColor(Color.WHITE);
-        XAxis x = lineChart.getXAxis();
-        x.setEnabled(false);
+        Button btnShowGraphHistory = view.findViewById(R.id.btnShowGraphHistory);
+        btnShowGraphHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGraph();
+            }
+        });
 
-        YAxis y = lineChart.getAxisLeft();
-        y.setLabelCount(6, false);
-        y.setTextColor(Color.WHITE);
-        y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        y.setDrawGridLines(false);
-        y.setAxisLineColor(Color.WHITE);
-        lineChart.getAxisRight().setEnabled(false);
-        lineChart.animateXY(2000, 2000);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
         viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), isChecked  -> {
             if (isChecked ) {
@@ -218,51 +191,6 @@ public class VitalsFragment extends Fragment implements
                         }
                     });
                 }
-                LineData data = lineChart.getData();
-
-                if (data != null) {
-                    lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                    lineDataSet.setCubicIntensity(0.2f);
-                    lineDataSet.setDrawFilled(true);
-                    lineDataSet.setDrawCircles(false);
-                    lineDataSet.setLineWidth(1.8f);
-                    lineDataSet.setCircleRadius(4f);
-                    lineDataSet.setCircleColor(Color.WHITE);
-                    lineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
-                    lineDataSet.setColor(Color.WHITE);
-                    lineDataSet.setFillColor(Color.WHITE);
-                    lineDataSet.setFillAlpha(100);
-                    lineDataSet.setDrawHorizontalHighlightIndicator(false);
-
-                    lineDataSet.setFillFormatter(new IFillFormatter() {
-                        @Override
-                        public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
-                            return lineChart.getAxisLeft().getAxisMinimum();
-                        }
-                    });
-                    ILineDataSet set = data.getDataSetByIndex(0);
-
-
-                    if (set == null) {
-                        set = createSet();
-                        data.addDataSet(set);
-                    }
-
-                    data.addEntry(new Entry(set.getEntryCount(),(heartRate)), 0);
-                    data.notifyDataChanged();
-
-                    // let the chart know it's data has changed
-                    lineChart.notifyDataSetChanged();
-
-                    // limit the number of visible entries
-                    lineChart.setVisibleXRangeMaximum(10);
-                    // chart.setVisibleYRange(30, AxisDependency.LEFT);
-
-                    // move to the latest entry
-                    lineChart.moveViewToX(data.getEntryCount());
-
-                }
-
 
 
                 if (heartRate < 60 || heartRate > 100) {
@@ -296,27 +224,30 @@ public class VitalsFragment extends Fragment implements
         // Start the updates
         handler.post(updateRunnable);
     }
+    private void showGraph() {
+        LineGraphFragment graphFragment = LineGraphFragment.newInstance();
 
+        // Begin a transaction using the hosting Activity's FragmentManager
+        // Ensure you use 'requireActivity()' to get a FragmentManager that can operate on the Activity's view hierarchy.
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+
+        // Optional: Add a transition animation
+        transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+
+        // Replace the FrameLayout in the Activity with LineGraphFragment
+        // Use the ID of the FrameLayout defined in your activity_main.xml
+        transaction.replace(R.id.activity_main_frame_layout, graphFragment);
+
+        // Add the transaction to the back stack so the user can navigate back
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
     public void onDestroyView() {
         super.onDestroyView();
         // Stop the updates when the fragment is destroyed
         handler.removeCallbacks(updateRunnable);
-    }
-    private LineDataSet createSet() {
-
-        LineDataSet set = new LineDataSet(null, "Dynamic Data");
-        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(ColorTemplate.getHoloBlue());
-        set.setCircleColor(Color.WHITE);
-        set.setLineWidth(2f);
-        set.setCircleRadius(4f);
-        set.setFillAlpha(65);
-        set.setFillColor(ColorTemplate.getHoloBlue());
-        set.setHighLightColor(Color.rgb(244, 117, 117));
-        set.setValueTextColor(Color.WHITE);
-        set.setValueTextSize(9f);
-        set.setDrawValues(false);
-        return set;
     }
 
     @Override
