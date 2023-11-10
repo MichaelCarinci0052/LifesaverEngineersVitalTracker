@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -36,6 +37,7 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         userAccountName.setText(username);
 
 
+
         DeviceFragment deviceFragment = new DeviceFragment();
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.deviceContainer, deviceFragment)
@@ -59,8 +61,35 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
 
 
 
+        setupContainerClickListeners(view);
+
         return view;
     }
+
+
+    private void setupContainerClickListeners(View view) {
+        View vitalsContainer = view.findViewById(R.id.vitalsContainer);
+        vitalsContainer.setOnClickListener(v -> navigateToVitalsFragment());
+
+        View gpsContainer = view.findViewById(R.id.gpsContainer);
+        gpsContainer.setOnClickListener(v -> navigateToGPSFragment());
+
+        View deviceContainer = view.findViewById(R.id.deviceContainer);
+        deviceContainer.setOnClickListener(v -> navigateToDeviceFragment());
+    }
+
+    private void navigateToVitalsFragment() {
+
+    }
+
+    private void navigateToGPSFragment() {
+
+    }
+
+    private void navigateToDeviceFragment() {
+      
+    }
+
     @Override
     public void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp) {
         TextView tvHeartRateHome = getView().findViewById(R.id.heartRate);
