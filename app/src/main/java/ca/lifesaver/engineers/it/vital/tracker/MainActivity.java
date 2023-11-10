@@ -25,7 +25,7 @@ import com.google.android.material.snackbar.Snackbar;
  * Nicholas Rafuse n01440073 section: 0CB
  */
 @SuppressWarnings("deprecation")
-public class MainActivity extends Menu {
+public class MainActivity extends Menu implements HomeFragment.OnFragmentInteractionListener {
 
     private BottomNavigationView bottomNavigationView;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -86,33 +86,51 @@ public class MainActivity extends Menu {
         FragmentManager fragmentManager = getSupportFragmentManager();
         this.bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.activity_main_drawer_account:
-                    AccountFragment account = new AccountFragment();
-                    fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, account).commit();
-                    break;
-                case R.id.activity_main_drawer_home:
-                    HomeFragment home = new HomeFragment();
-                    fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, home).commit();
-                    break;
-                case R.id.activity_main_drawer_gps:
-                    GPSFragment gps = new GPSFragment();
-                    fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, gps).commit();
-                    break;
-                case R.id.activity_main_drawer_vitals:
-                    VitalsFragment vitals = new VitalsFragment();
-                    fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, vitals).commit();
-                    break;
-                case R.id.navigation_device:
-                    DeviceFragment device = new DeviceFragment();
-                    fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, device).commit();
-                    break;
-
-            }
-
-            return true;
+            return switchFragment(item.getItemId());
         });
     }
+
+    private boolean switchFragment(int itemId) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        switch (itemId) {
+            case R.id.activity_main_drawer_account:
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new AccountFragment()).commit();
+                break;
+            case R.id.activity_main_drawer_home:
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new HomeFragment()).commit();
+                break;
+            case R.id.activity_main_drawer_gps:
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new GPSFragment()).commit();
+                break;
+            case R.id.activity_main_drawer_vitals:
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new VitalsFragment()).commit();
+                break;
+            case R.id.navigation_device:
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new DeviceFragment()).commit();
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    // Implement the interface method
+    @Override
+    public void onSwitchToVitalsFragment() {
+        // Switch to the VitalsFragment tab
+        bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_vitals);
+    }
+    @Override
+    public void onSwitchToGPSFragment() {
+        bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_gps);
+    }
+
+    @Override
+    public void onSwitchToDeviceFragment() {
+        bottomNavigationView.setSelectedItemId(R.id.navigation_device);
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -130,4 +148,6 @@ public class MainActivity extends Menu {
             Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
         }
     }
+
+
 }

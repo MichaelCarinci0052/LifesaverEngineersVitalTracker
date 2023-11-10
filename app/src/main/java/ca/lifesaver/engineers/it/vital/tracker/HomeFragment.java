@@ -1,14 +1,17 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -36,58 +39,93 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         String username = mAuth.getCurrentUser().getDisplayName();
         userAccountName.setText(username);
 
-
-
         DeviceFragment deviceFragment = new DeviceFragment();
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.deviceContainer, deviceFragment)
                 .commit();
 
-
-         //Load the GPS Fragment
         GPSFragment gpsFragment = new GPSFragment();
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.gpsContainer, gpsFragment)
                 .addToBackStack(null)
                 .commit();
 
-        // Load the Vitals Fragment (if you want to display it)
         VitalsFragment vitalsFragment = new VitalsFragment();
         vitalsFragment.setOnVitalsDataChangedListener(this); // 'this' refers to HomeFragment which implements OnVitalsDataChangedListener
         getChildFragmentManager().beginTransaction()
                 .add(vitalsFragment, "vitalfragment")
                 .commit();
 
+        FrameLayout vitalsContainer = view.findViewById(R.id.vitalsContainer);
+        FrameLayout gpsContainer = view.findViewById(R.id.gpsContainer);
+        FrameLayout deviceContainer = view.findViewById(R.id.deviceContainer);
 
+        vitalsContainer.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onSwitchToVitalsFragment();
+            }
+        });
+        gpsContainer.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onSwitchToGPSFragment();
+            }
+        });
 
+        deviceContainer.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onSwitchToDeviceFragment();
+            }
+        });
 
-        setupContainerClickListeners(view);
 
         return view;
     }
 
-
-    private void setupContainerClickListeners(View view) {
-        View vitalsContainer = view.findViewById(R.id.vitalsContainer);
-        vitalsContainer.setOnClickListener(v -> navigateToVitalsFragment());
-
-        View gpsContainer = view.findViewById(R.id.gpsContainer);
-        gpsContainer.setOnClickListener(v -> navigateToGPSFragment());
-
-        View deviceContainer = view.findViewById(R.id.deviceContainer);
-        deviceContainer.setOnClickListener(v -> navigateToDeviceFragment());
+    public interface OnFragmentInteractionListener {
+        void onSwitchToVitalsFragment();
+        void onSwitchToGPSFragment();
+        void onSwitchToDeviceFragment();
     }
 
-    private void navigateToVitalsFragment() {
-
+    private OnFragmentInteractionListener mListener;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
-    private void navigateToGPSFragment() {
-
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
-    private void navigateToDeviceFragment() {
-      
+
+    private void navigateToGpsScreen() {
+        GPSFragment gpsFragment = new GPSFragment();
+        // Optionally add arguments to the fragment before adding it
+        // gpsFragment.setArguments(bundle);
+
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.gpsContainer, gpsFragment) // Replace 'container' with the ID of your fragment container
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void navigateToDeviceScreen() {
+        DeviceFragment deviceFragment = new DeviceFragment();
+        // Optionally add arguments to the fragment before adding it
+        // deviceFragment.setArguments(bundle);
+
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.deviceContainer, deviceFragment) // Replace 'container' with the ID of your fragment container
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -100,6 +138,4 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         tvOxygenLevel.setText(oxygenLevel);
         tvBodyTemp.setText(bodyTemp);
     }
-
-
 }
