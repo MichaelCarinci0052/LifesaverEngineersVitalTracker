@@ -15,6 +15,10 @@
             <item android:id="@+id/config"
                 android:title="@string/configurations"
                 app:showAsAction="ifRoom" />
+
+            <item android:id="@+id/feedback"
+                android:title="@string/feedback"
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
 </menu>
