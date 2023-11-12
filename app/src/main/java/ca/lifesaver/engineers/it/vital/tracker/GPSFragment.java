@@ -24,11 +24,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,12 +68,8 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it.
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
@@ -131,12 +124,11 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                 == PackageManager.PERMISSION_GRANTED) {
             LocationRequest locationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(5000); // Update location every 5 seconds
+                    .setInterval(60000);
 
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
             locationUpdatesStarted = true;
         } else {
-            // You can handle the case where permission is not granted, e.g., request permission again.
             ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
@@ -163,20 +155,17 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onPause() {
         super.onPause();
-        // Stop location updates when the fragment is not visible
         stopLocationUpdates();
     }
     @Override
     public void onResume() {
         super.onResume();
-        // Resume location updates when the fragment becomes visible
         if (locationUpdatesStarted) {
             startLocationUpdates();
         }
     }
 
     private void stopLocationUpdates() {
-        // Stop location updates
         fusedLocationClient.removeLocationUpdates(locationCallback);
         locationUpdatesStarted = false;
     }
