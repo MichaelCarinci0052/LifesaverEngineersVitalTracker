@@ -59,4 +59,5 @@
     <string name="comments">Comments</string>
     <string name="submit">Submit Feedback</string>
     <string name="review">Tell us how we did!</string>
+    <string name="gps_history">GPS History</string>
 </resources>
