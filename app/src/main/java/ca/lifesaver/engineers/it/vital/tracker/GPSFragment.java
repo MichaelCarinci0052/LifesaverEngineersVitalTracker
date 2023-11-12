@@ -28,6 +28,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -47,6 +48,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     private LocationCallback locationCallback;
     private boolean locationUpdatesStarted = false;
     private DocumentReference fbLocation;
+    private long lastLocationUpdateInterval = 0;
 
 
     @Override
@@ -61,7 +63,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = currentUser.getUid();
+        String userId = Objects.requireNonNull(currentUser).getUid();
         fbLocation = db.collection(userId).document("location");
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -86,6 +88,19 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         fbLocation.collection("location")
                 .document("current_location")
                 .set(locationMap);
+
+        long currentTimeMillis = System.currentTimeMillis();
+        //An hour
+        int locationHistoryInterval = 60 * 60 * 1000;
+        if(currentTimeMillis - lastLocationUpdateInterval >= locationHistoryInterval){
+            fbLocation.collection("location")
+                    .document("location_history")
+                    .collection(String.valueOf(currentTimeMillis))
+                    .document("coordinates")
+                    .set(locationMap);
+            lastLocationUpdateInterval = currentTimeMillis;
+
+        }
     }
 
     @Override
@@ -122,9 +137,11 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     private void startLocationUpdates() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+            //A minute
+            int currentLocationInterval = 60 * 1000;
             LocationRequest locationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(60000);
+                    .setInterval(currentLocationInterval);
 
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
             locationUpdatesStarted = true;
