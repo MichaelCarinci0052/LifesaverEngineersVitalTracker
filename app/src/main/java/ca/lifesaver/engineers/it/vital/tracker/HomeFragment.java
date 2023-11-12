@@ -1,6 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,11 +9,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -77,8 +80,30 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
             }
         });
 
+        Button btnSimulateFall = view.findViewById(R.id.btnSimulateFall);
+        btnSimulateFall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFallDetectionDialog();
+            }
+        });
 
         return view;
+    }
+
+
+    private void showFallDetectionDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Fall Detected")
+                .setMessage("We've detected a fall, would you like to alert authorities?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Code to alert authorities
+                    }
+                })
+                .setNegativeButton("No", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     public interface OnFragmentInteractionListener {

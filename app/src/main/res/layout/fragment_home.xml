@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="60dp"
     android:fillViewport="true"
     android:background="@color/ashGreen">
 
@@ -10,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp">
+        android:padding="32dp">
 
         <!-- User's Username -->
         <TextView
@@ -108,6 +109,15 @@
             android:padding="16dp">
             <!-- Placeholder for GPS content -->
         </FrameLayout>
+
+        <Button
+            android:id="@+id/btnSimulateFall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simulate Fall Detection"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="bottom"/>
+
 
     </LinearLayout>
 </ScrollView>
