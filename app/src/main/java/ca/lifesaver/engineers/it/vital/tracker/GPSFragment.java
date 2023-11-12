@@ -22,6 +22,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -40,6 +49,8 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private boolean locationUpdatesStarted = false;
+    private DocumentReference fbLocation;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +61,11 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_g_p_s, container, false);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = currentUser.getUid();
+        fbLocation = db.collection(userId).document("location");
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
@@ -67,6 +83,16 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         createLocationCallback();
 
         return view;
+    }
+
+    private void updateLocationToFirebase(double latitude, double longitude) {
+        Map<String, Object> locationMap = new HashMap<>();
+        locationMap.put("latitude", latitude);
+        locationMap.put("longitude", longitude);
+
+        fbLocation.collection("location")
+                .document("current_location")
+                .set(locationMap);
     }
 
     @Override
@@ -94,6 +120,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     mMap.clear();
                     mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.mylocation)));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    updateLocationToFirebase(location.getLatitude(), location.getLongitude());
                 }
             }
         };
@@ -153,5 +180,4 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         fusedLocationClient.removeLocationUpdates(locationCallback);
         locationUpdatesStarted = false;
     }
-    
 }
