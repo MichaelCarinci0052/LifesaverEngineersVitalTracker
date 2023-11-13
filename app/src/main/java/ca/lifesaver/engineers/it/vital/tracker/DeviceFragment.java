@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -25,7 +26,7 @@ public class DeviceFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device, container, false);
-
+        TextView battery = view.findViewById(R.id.batteryLifeTextView);
         // Find the existing toggle device button and set up the click listener
         Button toggleDeviceButton = view.findViewById(R.id.toggleDeviceButton);
         toggleDeviceButton.setOnClickListener(new View.OnClickListener() {
@@ -36,9 +37,11 @@ public class DeviceFragment extends Fragment {
                     toggleDeviceButton.setText("Turn Off");
                     // Logic to turn the device ON goes here
                     Toast.makeText(getActivity(), "Device turned ON", Toast.LENGTH_SHORT).show();
+                    battery.setText("Battery Life: OFF");
                 } else {
                     toggleDeviceButton.setText("Turn On");
                     // Logic to turn the device OFF goes here
+                    battery.setText("Battery Life: 100%");
                     Toast.makeText(getActivity(), "Device turned OFF", Toast.LENGTH_SHORT).show();
                 }
             }

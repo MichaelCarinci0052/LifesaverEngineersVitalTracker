@@ -18,11 +18,11 @@
             android:id="@+id/userAccountName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Username"
-            android:textSize="45sp"
+            android:layout_marginBottom="24dp"
             android:fontFamily="@font/roboto_black"
+            android:text="Username"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginBottom="24dp" />
+            android:textSize="40sp" />
 
         <!-- Vitals Section -->
         <TextView

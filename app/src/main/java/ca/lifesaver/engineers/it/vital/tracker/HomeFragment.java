@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         userAccountName = view.findViewById(R.id.userAccountName);
 
         String username = mAuth.getCurrentUser().getDisplayName();
-        userAccountName.setText(username);
+        userAccountName.setText(capitalizeFirstLetter(username));
 
         DeviceFragment deviceFragment = new DeviceFragment();
         getChildFragmentManager().beginTransaction()
@@ -129,7 +129,20 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         mListener = null;
     }
 
+    private String capitalizeFirstLetter(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        StringBuilder capitalizedString = new StringBuilder();
+        String[] words = input.split("\\s+");
 
+        for (String word : words) {
+            String capitalizedWord = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+            capitalizedString.append(capitalizedWord).append(" ");
+        }
+
+        return capitalizedString.toString().trim(); // Return the concatenated string
+    }
     private void navigateToGpsScreen() {
         GPSFragment gpsFragment = new GPSFragment();
         // Optionally add arguments to the fragment before adding it
