@@ -18,6 +18,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -35,10 +37,7 @@ public class FeedbackFragment extends Fragment {
     private EditText comments;
     private RatingBar ratingBar;
     private Button submit;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-    String userId = Objects.requireNonNull(currentUser).getUid();
-    DocumentReference feedbackRef = db.collection("userId").document(userId);
+
 
     public FeedbackFragment() {
         // Required empty public constructor
@@ -80,6 +79,7 @@ public class FeedbackFragment extends Fragment {
         String emailreceive = email.getText().toString().trim();
         String phoneNumber = phone.getText().toString().trim();
         float rating = ratingBar.getRating();
+        String ratingString = Float.toString(rating);
         String comment = comments.getText().toString().trim();
 
         if (first.isEmpty() || last.isEmpty() || emailreceive.isEmpty() || phoneNumber.isEmpty() || comment.isEmpty()) {
@@ -87,11 +87,20 @@ public class FeedbackFragment extends Fragment {
             return;
         }
 
-        FeedbackModel feedback = new FeedbackModel(first + " " + last, emailreceive, phoneNumber, rating, comment);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = Objects.requireNonNull(currentUser).getUid();
+        DocumentReference feedbackRef = db.collection("userId").document(userId);
 
-        // Use a new document with an auto-generated ID in the "feedback" collection
-        feedbackRef.collection("feedback")
-                .add(feedback)
+        Map<String, Object> feedbackMap = new HashMap<>();
+        feedbackMap.put("first_name", first);
+        feedbackMap.put("last_name", last);
+        feedbackMap.put("email", emailreceive);
+        feedbackMap.put("phone_number", phoneNumber);
+        feedbackMap.put("rating", ratingString);
+        feedbackMap.put("comment", comment);
+
+        feedbackRef.collection("feedback").document("data").set(feedbackMap)
                 .addOnSuccessListener(documentReference -> {
                     showToast("Feedback submitted!");
                     clearInputFields();
@@ -100,7 +109,6 @@ public class FeedbackFragment extends Fragment {
                     showToast("Error submitting feedback. Please try again.");
                 });
     }
-
 
     private void clearInputFields() {
         firstname.getText().clear();
@@ -113,45 +121,5 @@ public class FeedbackFragment extends Fragment {
 
     private void showToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-    }
-
-    public class FeedbackModel {
-
-        private String name;
-        private String email;
-        private String phoneNumber;
-        private float rating;
-        private String comments;
-
-        public FeedbackModel() {
-        }
-
-        public FeedbackModel(String name, String email, String phoneNumber, float rating, String comments) {
-            this.name = name;
-            this.email = email;
-            this.phoneNumber = phoneNumber;
-            this.rating = rating;
-            this.comments = comments;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getPhoneNumber() {
-            return phoneNumber;
-        }
-
-        public float getRating() {
-            return rating;
-        }
-
-        public String getComments() {
-            return comments;
-        }
     }
 }
