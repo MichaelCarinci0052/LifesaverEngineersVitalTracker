@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
                 .commit();
 
         VitalsFragment vitalsFragment = new VitalsFragment();
-        vitalsFragment.setOnVitalsDataChangedListener(this); // 'this' refers to HomeFragment which implements OnVitalsDataChangedListener
+        //vitalsFragment.setOnVitalsDataChangedListener(this); // 'this' refers to HomeFragment which implements OnVitalsDataChangedListener
         getChildFragmentManager().beginTransaction()
                 .add(vitalsFragment, "vitalfragment")
                 .commit();

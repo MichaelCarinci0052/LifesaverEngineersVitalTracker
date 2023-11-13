@@ -23,18 +23,88 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    />
+
+    <TextView
+        android:id="@+id/heartRateLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="57dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="46dp"
+        android:layout_marginBottom="11dp"
+        android:text="Heart Rate History:"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/HeartRateChart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/lineChart"
-        android:layout_width="352dp"
-        android:layout_height="338dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="196dp"
+        android:id="@+id/HeartRateChart"
+        android:layout_width="385dp"
+        android:layout_height="116dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/gray"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/OxygenLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/heartRateLabel" />
+
+    <TextView
+        android:id="@+id/OxygenLabel"
+        android:layout_width="339dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="252dp"
+        android:layout_marginEnd="31dp"
+        android:layout_marginBottom="4dp"
+        android:text="Oxygen Level History:"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/OxygenLevelChart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/OxygenLevelChart"
+        android:layout_width="0dp"
+        android:layout_height="116dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/gray"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/BodytempLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/OxygenLabel" />
+
+    <TextView
+        android:id="@+id/BodytempLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="452dp"
+        android:text="Body Temp History:"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="41dp" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/BodyTempChart"
+        android:layout_width="381dp"
+        android:layout_height="137dp"
+        android:layout_marginBottom="86dp"
         android:background="@color/gray"
         android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-
-        app:layout_constraintHorizontal_bias="0.481"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.466"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/BodytempLabel"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

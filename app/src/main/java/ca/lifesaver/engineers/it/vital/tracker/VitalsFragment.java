@@ -52,10 +52,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -74,7 +72,8 @@ public class VitalsFragment extends Fragment implements
     private static final String ARG_PARAM2 = "param2";
     private SharedViewModal viewModel;
     private Boolean notifs;
-
+    private String mParam1;
+    private String mParam2;
     private OnVitalsDataChangedListener mListener;
 
     private Handler handler;
@@ -90,14 +89,9 @@ public class VitalsFragment extends Fragment implements
         // Required empty public constructor
     }
 
-    public void setOnVitalsDataChangedListener(OnVitalsDataChangedListener listener) {
-        this.mListener = listener;
-    }
-
     public interface OnVitalsDataChangedListener {
         void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp);
     }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -119,7 +113,10 @@ public class VitalsFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
         handler = new Handler();
         random = new Random();
 
@@ -164,6 +161,7 @@ public class VitalsFragment extends Fragment implements
         l.setTextColor(Color.WHITE);
         XAxis x = lineChart.getXAxis();
         x.setEnabled(false);
+<<<<<<< Updated upstream
         Button btnShowGraphHistory = view.findViewById(R.id.btnGraph);
         btnShowGraphHistory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +169,17 @@ public class VitalsFragment extends Fragment implements
                 showGraph();
             }
         });
+=======
+>>>>>>> Stashed changes
 
+        YAxis y = lineChart.getAxisLeft();
+        y.setLabelCount(6, false);
+        y.setTextColor(Color.WHITE);
+        y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        y.setDrawGridLines(false);
+        y.setAxisLineColor(Color.WHITE);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.animateXY(2000, 2000);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
         viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), isChecked  -> {
             if (isChecked ) {
@@ -197,8 +205,6 @@ public class VitalsFragment extends Fragment implements
                 int heartRate = 60 + random.nextInt(40);  // Random value between 60 and 100
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
-                if (currentUser != null) {
-                    String userId = currentUser.getUid();
 
                 if (currentUser != null) {
                     String userId2 = currentUser.getUid();
@@ -235,33 +241,25 @@ public class VitalsFragment extends Fragment implements
                 }
 
                 LineData data = lineChart.getData();
-                    // Reference to the specific 'vitals' document inside the user's document
-                    DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document("data");
 
-                    Map<String, Object> vitalsDataMap = new HashMap<>();
-                    vitalsDataMap.put("heartRate", heartRate);
-                    vitalsDataMap.put("oxygenLevel", oxygenLevel);
-                    vitalsDataMap.put("bodyTemp", bodyTemp);
+                if (data != null) {
+                    lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    lineDataSet.setCubicIntensity(0.2f);
+                    lineDataSet.setDrawFilled(true);
+                    lineDataSet.setDrawCircles(false);
+                    lineDataSet.setLineWidth(1.8f);
+                    lineDataSet.setCircleRadius(4f);
+                    lineDataSet.setCircleColor(Color.WHITE);
+                    lineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+                    lineDataSet.setColor(Color.WHITE);
+                    lineDataSet.setFillColor(Color.WHITE);
+                    lineDataSet.setFillAlpha(100);
+                    lineDataSet.setDrawHorizontalHighlightIndicator(false);
 
-                    vitalsDocRef.get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                // Document exists, update it
-                                List<Map<String, Object>> currentData = (List<Map<String, Object>>) document.get("vitalsData");
-                                if (currentData == null) {
-                                    currentData = new ArrayList<>();
-                                }
-                                currentData.add(vitalsDataMap);
-                                vitalsDocRef.update("vitalsData", currentData);
-                            } else {
-                                // Document doesn't exist, create it
-                                List<Map<String, Object>> initialData = new ArrayList<>();
-                                initialData.add(vitalsDataMap);
-                                vitalsDocRef.set(Collections.singletonMap("vitalsData", initialData));
-                            }
-                        } else {
-                            Log.d("Data retrieval failed: ", task.getException().toString());
+                    lineDataSet.setFillFormatter(new IFillFormatter() {
+                        @Override
+                        public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+                            return lineChart.getAxisLeft().getAxisMinimum();
                         }
                     });
                     ILineDataSet set = data.getDataSetByIndex(0);
@@ -276,7 +274,7 @@ public class VitalsFragment extends Fragment implements
                     data.notifyDataChanged();
 
                     // let the chart know it's data has changed
-                        lineChart.notifyDataSetChanged();
+                    lineChart.notifyDataSetChanged();
 
                     // limit the number of visible entries
                     lineChart.setVisibleXRangeMaximum(10);
@@ -288,8 +286,9 @@ public class VitalsFragment extends Fragment implements
                 }
 
 
+
                 if (heartRate < 60 || heartRate > 100) {
-                   if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
+                    if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
                 }
                 if (oxygenLevel < 91) {
                     if (notifs)  {sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");};
@@ -309,44 +308,37 @@ public class VitalsFragment extends Fragment implements
                             "Heart Rate: " + heartRate + " BPM",
                             "Oxygen Level: " + oxygenLevel + "%",
                             String.format("Body Temperature: %.1f°F", bodyTemp)
-
                     );
-
                 }
-
                 // Schedule the next update
                 handler.postDelayed(this, 2000);  // Update every 2 seconds
             }
-
         };
 
         // Start the updates
         handler.post(updateRunnable);
     }
-    private void showGraph() {
-        LineGraphFragment graphFragment = LineGraphFragment.newInstance();
 
-        // Begin a transaction using the hosting Activity's FragmentManager
-        // Ensure you use 'requireActivity()' to get a FragmentManager that can operate on the Activity's view hierarchy.
-        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-
-        // Optional: Add a transition animation
-        transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-
-        // Replace the FrameLayout in the Activity with LineGraphFragment
-        // Use the ID of the FrameLayout defined in your activity_main.xml
-        transaction.replace(R.id.activity_main_frame_layout, graphFragment);
-
-        // Add the transaction to the back stack so the user can navigate back
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
-    }
     public void onDestroyView() {
         super.onDestroyView();
         // Stop the updates when the fragment is destroyed
         handler.removeCallbacks(updateRunnable);
+    }
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(ColorTemplate.getHoloBlue());
+        set.setCircleColor(Color.WHITE);
+        set.setLineWidth(2f);
+        set.setCircleRadius(4f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setValueTextColor(Color.WHITE);
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        return set;
     }
 
     @Override

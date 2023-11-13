@@ -2,10 +2,10 @@ package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
@@ -20,16 +20,25 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link GraphHistory#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class GraphHistory extends Fragment implements
-        OnChartValueSelectedListener {
+public class GraphHistory extends Fragment implements OnChartValueSelectedListener {
+    // Declare all three charts
+    private LineChart heartRateChart;
+    private LineChart oxygenLevelChart;
+    private LineChart bodyTempChart;
+
+    // Declare data sets for each chart
+    private LineDataSet heartRateDataSet;
+    private LineDataSet oxygenLevelDataSet;
+    private LineDataSet bodyTempDataSet;
+
     private LineChart lineChart;
     private LineData lineData;
     private LineDataSet lineDataSet;
@@ -53,62 +62,96 @@ public class GraphHistory extends Fragment implements
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupGraph();
-        Button backButton = view.findViewById(R.id.buttonBack);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle the back button click
-                if (getActivity() != null) {
-                    getActivity().getSupportFragmentManager().popBackStack();
-                }
-            }
-        });
+        // Setup each chart
+        heartRateChart = view.findViewById(R.id.HeartRateChart);
+        oxygenLevelChart = view.findViewById(R.id.OxygenLevelChart);
+        bodyTempChart = view.findViewById(R.id.BodyTempChart);
+
+        setupGraph(heartRateChart, "Heart Rate History");
+        setupGraph(oxygenLevelChart, "Oxygen Level History");
+        setupGraph(bodyTempChart, "Body Temperature History");
+
+        // Fetch and display data for each chart
+        fetchDataFromFirestore();
+        fetchDataFromFirestore();
     }
+    private void fetchDataFromFirestore() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        if (currentUser != null) {
+            String userId = currentUser.getUid(); // Replace with actual user ID
 
-    private void setupGraph() {
-        lineChart = getView().findViewById(R.id.lineChart);
+            db.collection("userId").document(userId)
+                    .collection("vitals").document("data")
+                    .get().addOnCompleteListener(task -> {if (task.isSuccessful() && task.getResult() != null) {
+                        // Assuming 'vitalsData' is an array of maps
+                        List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) task.getResult().get("vitalsData");
+                        if (vitalsDataList != null) {
+                            for (Map<String, Object> vitalsData : vitalsDataList) {
+                                // Extract the data
+                                Number heartRate = (Number) vitalsData.get("heartRate");
+                                Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
+                                Number bodyTemp = (Number) vitalsData.get("bodyTemp");
+
+                                // Update your charts here
+                                if (heartRate != null) {
+                                    updateGraph(heartRateChart, heartRate.intValue());
+                                }
+                                if (oxygenLevel != null) {
+                                    updateGraph(oxygenLevelChart, oxygenLevel.intValue());
+                                }
+                                if (bodyTemp != null) {
+                                    updateGraph(bodyTempChart, bodyTemp.intValue());
+                                }
+                            }
+                        }
+                    } else {
+                        Log.d("Firestore", "Error getting documents: ", task.getException());
+                    }
+                    });
+        }
+    }
+    private void setupGraph(LineChart chart, String label) {
         values = new ArrayList<>();
-        lineChart.setOnChartValueSelectedListener(this);
-        lineDataSet = new LineDataSet(values, "Real Time Data");
+        chart.setOnChartValueSelectedListener(this);
+        lineDataSet = new LineDataSet(values, label);
         lineData = new LineData(lineDataSet);
-        lineChart.setData(lineData);
+        chart.setData(lineData);
 
-        configureGraphAppearance();
+        configureGraphAppearance(chart);
     }
 
-    private void configureGraphAppearance() {
-        Legend l = lineChart.getLegend();
-        lineChart.setViewPortOffsets(0, 0, 0, 0);
-        lineChart.setBackgroundColor(Color.rgb(104, 241, 175));
-        lineChart.getDescription().setEnabled(false);
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(true);
-        lineChart.setDrawGridBackground(false);
-        lineChart.setMaxHighlightDistance(300);
+    private void configureGraphAppearance(LineChart chart) {
+        Legend l = chart.getLegend();
+        chart.setViewPortOffsets(0, 0, 0, 0);
+        chart.setBackgroundColor(Color.rgb(104, 241, 175));
+        chart.getDescription().setEnabled(false);
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(true);
+        chart.setDrawGridBackground(false);
+        chart.setMaxHighlightDistance(300);
 
         l.setForm(Legend.LegendForm.LINE);
         l.setTextColor(Color.WHITE);
 
-        XAxis x = lineChart.getXAxis();
+        XAxis x = chart.getXAxis();
         x.setEnabled(false);
 
-        YAxis y = lineChart.getAxisLeft();
+        YAxis y = chart.getAxisLeft();
         y.setLabelCount(6, false);
         y.setTextColor(Color.WHITE);
         y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         y.setDrawGridLines(false);
         y.setAxisLineColor(Color.WHITE);
 
-        lineChart.getAxisRight().setEnabled(false);
-        lineChart.animateXY(2000, 2000);
+        chart.getAxisRight().setEnabled(false);
+        chart.animateXY(2000, 2000);
     }
 
-    private void updateGraph(int heartRate) {
-        LineData data = lineChart.getData();
+    private void updateGraph(LineChart chart, int value) {
+        LineData data = chart.getData();
         if (data != null) {
-            updateGraphAppearance();
             ILineDataSet set = data.getDataSetByIndex(0);
 
             if (set == null) {
@@ -116,17 +159,17 @@ public class GraphHistory extends Fragment implements
                 data.addDataSet(set);
             }
 
-            data.addEntry(new Entry(set.getEntryCount(), heartRate), 0);
+            data.addEntry(new Entry(set.getEntryCount(), value), 0);
             data.notifyDataChanged();
 
-            lineChart.notifyDataSetChanged();
-            lineChart.setVisibleXRangeMaximum(10);
-            lineChart.moveViewToX(data.getEntryCount());
+            chart.notifyDataSetChanged();
+            chart.setVisibleXRangeMaximum(10);
+            chart.moveViewToX(data.getEntryCount());
         }
     }
 
     private void updateGraphAppearance() {
-        // Your existing update appearance code...
+        // Your existing code for updating the graph's appearance
     }
 
     private LineDataSet createSet() {
