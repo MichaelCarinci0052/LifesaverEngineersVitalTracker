@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -65,8 +66,7 @@ import java.util.ArrayList;
  * Nicholas Rafuse n01440073 section: 0CB
  */
 
-public class VitalsFragment extends Fragment implements
-        OnChartValueSelectedListener {
+public class VitalsFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -79,12 +79,8 @@ public class VitalsFragment extends Fragment implements
     private Handler handler;
     private Runnable updateRunnable;
     private Random random;
-    private LineChart lineChart;
-    private LineData lineData;
-    private LineDataSet lineDataSet;
-    private ArrayList<Entry> values;
 
-    private SeekBar seekBarX, seekBarY;
+
     public VitalsFragment() {
         // Required empty public constructor
     }
@@ -140,45 +136,6 @@ public class VitalsFragment extends Fragment implements
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
         DocumentReference vitalsRef = db.collection(userId).document("vitals");
-
-
-        lineChart = view.findViewById(R.id.lineChart);
-        values = new ArrayList<>();
-        lineChart.setOnChartValueSelectedListener(this);
-        lineDataSet = new LineDataSet(values, "Real Time Data");
-        lineData = new LineData(lineDataSet);
-        lineChart.setData(lineData);
-        Legend l = lineChart.getLegend();
-        lineChart.setViewPortOffsets(0, 0, 0, 0);
-        lineChart.setBackgroundColor(Color.rgb(104, 241, 175));
-        lineChart.getDescription().setEnabled(false);
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(true);
-        lineChart.setDrawGridBackground(false);
-        lineChart.setMaxHighlightDistance(300);
-        // modify the legend ...
-        l.setForm(Legend.LegendForm.LINE);
-        l.setTextColor(Color.WHITE);
-        XAxis x = lineChart.getXAxis();
-        x.setEnabled(false);
-
-        Button btnShowGraphHistory = view.findViewById(R.id.btnGraph);
-        btnShowGraphHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGraph();
-            }
-        });
-
-
-        YAxis y = lineChart.getAxisLeft();
-        y.setLabelCount(6, false);
-        y.setTextColor(Color.WHITE);
-        y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        y.setDrawGridLines(false);
-        y.setAxisLineColor(Color.WHITE);
-        lineChart.getAxisRight().setEnabled(false);
-        lineChart.animateXY(2000, 2000);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModal.class);
         viewModel.getSwitchStatus().observe(getViewLifecycleOwner(), isChecked  -> {
             if (isChecked ) {
@@ -239,52 +196,6 @@ public class VitalsFragment extends Fragment implements
                     });
                 }
 
-                LineData data = lineChart.getData();
-
-                if (data != null) {
-                    lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                    lineDataSet.setCubicIntensity(0.2f);
-                    lineDataSet.setDrawFilled(true);
-                    lineDataSet.setDrawCircles(false);
-                    lineDataSet.setLineWidth(1.8f);
-                    lineDataSet.setCircleRadius(4f);
-                    lineDataSet.setCircleColor(Color.WHITE);
-                    lineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
-                    lineDataSet.setColor(Color.WHITE);
-                    lineDataSet.setFillColor(Color.WHITE);
-                    lineDataSet.setFillAlpha(100);
-                    lineDataSet.setDrawHorizontalHighlightIndicator(false);
-
-                    lineDataSet.setFillFormatter(new IFillFormatter() {
-                        @Override
-                        public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
-                            return lineChart.getAxisLeft().getAxisMinimum();
-                        }
-                    });
-                    ILineDataSet set = data.getDataSetByIndex(0);
-                    // set.addEntry(...); // can be called as well
-
-                    if (set == null) {
-                        //set = createSet();
-                        data.addDataSet(set);
-                    }
-
-                    data.addEntry(new Entry(set.getEntryCount(),(heartRate)), 0);
-                    data.notifyDataChanged();
-
-                    // let the chart know it's data has changed
-                    lineChart.notifyDataSetChanged();
-
-                    // limit the number of visible entries
-                    lineChart.setVisibleXRangeMaximum(10);
-                    // chart.setVisibleYRange(30, AxisDependency.LEFT);
-
-                    // move to the latest entry
-                    lineChart.moveViewToX(data.getEntryCount());
-
-                }
-
-
 
                 if (heartRate < 60 || heartRate > 100) {
                     if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
@@ -323,32 +234,8 @@ public class VitalsFragment extends Fragment implements
         // Stop the updates when the fragment is destroyed
         handler.removeCallbacks(updateRunnable);
     }
-    private LineDataSet createSet() {
 
-        LineDataSet set = new LineDataSet(null, "Dynamic Data");
-        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(ColorTemplate.getHoloBlue());
-        set.setCircleColor(Color.WHITE);
-        set.setLineWidth(2f);
-        set.setCircleRadius(4f);
-        set.setFillAlpha(65);
-        set.setFillColor(ColorTemplate.getHoloBlue());
-        set.setHighLightColor(Color.rgb(244, 117, 117));
-        set.setValueTextColor(Color.WHITE);
-        set.setValueTextSize(9f);
-        set.setDrawValues(false);
-        return set;
-    }
 
-    @Override
-    public void onValueSelected(Entry e, Highlight h) {
-        Log.i("Entry selected", e.toString());
-    }
-
-    @Override
-    public void onNothingSelected() {
-        Log.i("Nothing selected", "Nothing selected.");
-    }
     private void sendNotification(String title, String message) {
 
 

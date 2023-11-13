@@ -6,11 +6,7 @@
     android:layout_height="match_parent"
     android:background="#AABA9E"
     android:padding="16dp"
-    ><![CDATA[
-
-    />
-
-    ]]>
+    >
 
     <Button
         android:id="@+id/buttonBack"
@@ -51,7 +47,6 @@
         android:layout_marginTop="11dp"
         android:layout_marginBottom="20dp"
         android:background="@color/gray"
-        android:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/OxygenLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +75,6 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="20dp"
         android:background="@color/gray"
-        android:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/BodytempLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -103,11 +97,28 @@
         android:layout_height="137dp"
         android:layout_marginBottom="86dp"
         android:background="@color/gray"
-        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/BodytempLabel"
         app:layout_constraintVertical_bias="0.0" />
+
+
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/fawn"
+        app:indicatorSize="30dp"
+        app:layout_constraintBottom_toBottomOf="@id/HeartRateChart"
+        app:layout_constraintEnd_toEndOf="@id/HeartRateChart"
+        app:layout_constraintStart_toStartOf="@id/HeartRateChart"
+        app:layout_constraintTop_toTopOf="@id/HeartRateChart"
+        app:trackThickness="15dp"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

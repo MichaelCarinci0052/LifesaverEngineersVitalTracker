@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.fragment.app.Fragment;
 
@@ -37,11 +38,8 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     private LineChart bodyTempChart;
 
     // Declare data sets for each chart
-    private LineDataSet heartRateDataSet;
-    private LineDataSet oxygenLevelDataSet;
-    private LineDataSet bodyTempDataSet;
+    private ProgressBar progressBar;
 
-    private LineChart lineChart;
     private LineData lineData;
     private LineDataSet lineDataSet;
     private ArrayList<Entry> values;
@@ -73,20 +71,21 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         setupGraph(oxygenLevelChart, "Oxygen Level History");
         setupGraph(bodyTempChart, "Body Temperature History");
 
-        // Fetch and display data for each chart
-        fetchDataFromFirestore();
+        progressBar = view.findViewById(R.id.progressBar);
+        progressBar.bringToFront();
         fetchDataFromFirestore();
     }
     private void fetchDataFromFirestore() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+        progressBar.setVisibility(View.VISIBLE);
         if (currentUser != null) {
             String userId = currentUser.getUid(); // Replace with actual user ID
 
             db.collection("userId").document(userId)
                     .collection("vitals").document("data")
                     .get().addOnCompleteListener(task -> {if (task.isSuccessful() && task.getResult() != null) {
+                        progressBar.setVisibility(View.GONE);
                         // Assuming 'vitalsData' is an array of maps
                         List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) task.getResult().get("vitalsData");
                         if (vitalsDataList != null) {
