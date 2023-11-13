@@ -16,7 +16,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -115,7 +117,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     private void setupGraph(LineChart chart, String label) {
         values = new ArrayList<>();
         chart.setOnChartValueSelectedListener(this);
-        lineDataSet = new LineDataSet(values, label);
+        lineDataSet = createSet();
         lineData = new LineData(lineDataSet);
         chart.setData(lineData);
 
@@ -129,9 +131,8 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setScaleEnabled(true);
-        chart.setDrawGridBackground(false);
         chart.setMaxHighlightDistance(300);
-
+        chart.setDrawGridBackground(false);
         l.setForm(Legend.LegendForm.LINE);
         l.setTextColor(Color.WHITE);
 
@@ -174,17 +175,22 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
 
     private LineDataSet createSet() {
         LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(ColorTemplate.getHoloBlue());
+        set.setColor(Color.WHITE);
         set.setCircleColor(Color.WHITE);
         set.setLineWidth(2f);
         set.setCircleRadius(4f);
         set.setFillAlpha(65);
-        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setFillColor(Color.WHITE);
         set.setHighLightColor(Color.rgb(244, 117, 117));
         set.setValueTextColor(Color.WHITE);
         set.setValueTextSize(9f);
         set.setDrawValues(false);
+        set.setCubicIntensity(0.2f);
+        set.setDrawFilled(true);
+        set.setDrawCircles(false);
+        set.setDrawHorizontalHighlightIndicator(false);
         return set;
     }
 
