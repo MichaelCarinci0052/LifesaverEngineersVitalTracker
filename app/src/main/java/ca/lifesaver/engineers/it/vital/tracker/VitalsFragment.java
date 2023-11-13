@@ -161,16 +161,15 @@ public class VitalsFragment extends Fragment implements
         l.setTextColor(Color.WHITE);
         XAxis x = lineChart.getXAxis();
         x.setEnabled(false);
-<<<<<<< Updated upstream
+
         Button btnShowGraphHistory = view.findViewById(R.id.btnGraph);
         btnShowGraphHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showGraph();
+                openGraph();
             }
         });
-=======
->>>>>>> Stashed changes
+
 
         YAxis y = lineChart.getAxisLeft();
         y.setLabelCount(6, false);
