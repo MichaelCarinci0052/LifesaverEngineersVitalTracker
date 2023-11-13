@@ -12,7 +12,8 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -29,6 +30,8 @@ public class FeedbackFragment extends Fragment {
     private EditText comments;
     private RatingBar ratingBar;
     private Button submit;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    CollectionReference feedbackRef = db.collection("feedback");
 
     public FeedbackFragment() {
         // Required empty public constructor
@@ -77,8 +80,19 @@ public class FeedbackFragment extends Fragment {
             return;
         }
 
-        showToast("Feedback submitted!");
+        FeedbackModel feedback = new FeedbackModel(first + " " + last, emailreceive, phoneNumber, rating, comment);
 
+        feedbackRef.add(feedback)
+                .addOnSuccessListener(documentReference -> {
+                    showToast("Feedback submitted!");
+                    clearInputFields();
+                })
+                .addOnFailureListener(e -> {
+                    showToast("Error submitting feedback. Please try again.");
+                });
+    }
+
+    private void clearInputFields() {
         firstname.getText().clear();
         lastname.getText().clear();
         email.getText().clear();
@@ -89,5 +103,45 @@ public class FeedbackFragment extends Fragment {
 
     private void showToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public class FeedbackModel {
+
+        private String name;
+        private String email;
+        private String phoneNumber;
+        private float rating;
+        private String comments;
+
+        public FeedbackModel() {
+        }
+
+        public FeedbackModel(String name, String email, String phoneNumber, float rating, String comments) {
+            this.name = name;
+            this.email = email;
+            this.phoneNumber = phoneNumber;
+            this.rating = rating;
+            this.comments = comments;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
+
+        public float getRating() {
+            return rating;
+        }
+
+        public String getComments() {
+            return comments;
+        }
     }
 }

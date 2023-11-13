@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FeedbackFragment">
+    tools:context=".FeedbackFragment"
+    android:background="@color/ashGreen">
 
         <TextView
             android:id="@+id/textView7"
@@ -16,7 +17,8 @@
             android:layout_marginBottom="650dp"
             android:text="@string/feedback"
             android:textSize="30sp"
-            android:textStyle="bold"
+            android:fontFamily="@font/roboto_black"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,6 +46,8 @@
             android:layout_marginEnd="156dp"
             android:layout_marginBottom="615dp"
             android:text="@string/rating"
+            android:fontFamily="@font/roboto_black"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -141,7 +145,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/howwedid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="176dp"
@@ -149,6 +153,8 @@
             android:layout_marginEnd="177dp"
             android:layout_marginBottom="512dp"
             android:text="@string/review"
+            android:fontFamily="@font/roboto_black"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
