@@ -22,6 +22,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -40,6 +47,9 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private boolean locationUpdatesStarted = false;
+    private DocumentReference fbLocation;
+    private long lastLocationUpdateInterval = 0;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,22 +61,46 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_g_p_s, container, false);
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = Objects.requireNonNull(currentUser).getUid();
+        fbLocation = db.collection(userId).document("location");
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it.
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         createLocationCallback();
 
         return view;
+    }
+
+    private void updateLocationToFirebase(double latitude, double longitude) {
+        Map<String, Object> locationMap = new HashMap<>();
+        locationMap.put("latitude", latitude);
+        locationMap.put("longitude", longitude);
+
+        fbLocation.collection("location")
+                .document("current_location")
+                .set(locationMap);
+
+        long currentTimeMillis = System.currentTimeMillis();
+        //An hour
+        int locationHistoryInterval = 60 * 60 * 1000;
+        if(currentTimeMillis - lastLocationUpdateInterval >= locationHistoryInterval){
+            fbLocation.collection("location")
+                    .document("location_history")
+                    .collection(String.valueOf(currentTimeMillis))
+                    .document("coordinates")
+                    .set(locationMap);
+            lastLocationUpdateInterval = currentTimeMillis;
+
+        }
     }
 
     @Override
@@ -94,6 +128,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     mMap.clear();
                     mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.mylocation)));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    updateLocationToFirebase(location.getLatitude(), location.getLongitude());
                 }
             }
         };
@@ -102,14 +137,15 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     private void startLocationUpdates() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+            //A minute
+            int currentLocationInterval = 60 * 1000;
             LocationRequest locationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(5000); // Update location every 5 seconds
+                    .setInterval(currentLocationInterval);
 
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
             locationUpdatesStarted = true;
         } else {
-            // You can handle the case where permission is not granted, e.g., request permission again.
             ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
@@ -136,22 +172,18 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onPause() {
         super.onPause();
-        // Stop location updates when the fragment is not visible
         stopLocationUpdates();
     }
     @Override
     public void onResume() {
         super.onResume();
-        // Resume location updates when the fragment becomes visible
         if (locationUpdatesStarted) {
             startLocationUpdates();
         }
     }
 
     private void stopLocationUpdates() {
-        // Stop location updates
         fusedLocationClient.removeLocationUpdates(locationCallback);
         locationUpdatesStarted = false;
     }
-    
 }

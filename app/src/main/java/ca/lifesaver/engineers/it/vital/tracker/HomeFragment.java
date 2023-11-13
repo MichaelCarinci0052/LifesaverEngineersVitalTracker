@@ -1,16 +1,23 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -24,15 +31,6 @@ import com.google.firebase.auth.FirebaseAuth;
 public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDataChangedListener {
     private FirebaseAuth mAuth;
     private TextView userAccountName;
-    public void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp) {
-
-        TextView tvHeartRateHome = getView().findViewById(R.id.heartRate);
-        TextView tvOxygenLevel = getView().findViewById(R.id.oxygenRate);
-        TextView tvBodyTemp = getView().findViewById(R.id.temp);
-        tvHeartRateHome.setText(heartRate);
-        tvOxygenLevel.setText(oxygenLevel);
-        tvBodyTemp.setText(bodyTemp);
-    }
 
     @Nullable
     @Override
@@ -44,27 +42,125 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         String username = mAuth.getCurrentUser().getDisplayName();
         userAccountName.setText(username);
 
-
         DeviceFragment deviceFragment = new DeviceFragment();
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.deviceContainer, deviceFragment)
                 .commit();
 
-
-         //Load the GPS Fragment
         GPSFragment gpsFragment = new GPSFragment();
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.gpsContainer, gpsFragment)
                 .addToBackStack(null)
                 .commit();
 
-        // Load the Vitals Fragment (if you want to display it)
         VitalsFragment vitalsFragment = new VitalsFragment();
+        vitalsFragment.setOnVitalsDataChangedListener(this); // 'this' refers to HomeFragment which implements OnVitalsDataChangedListener
         getChildFragmentManager().beginTransaction()
                 .add(vitalsFragment, "vitalfragment")
                 .commit();
 
+        FrameLayout vitalsContainer = view.findViewById(R.id.vitalsContainer);
+        FrameLayout gpsContainer = view.findViewById(R.id.gpsContainer);
+        FrameLayout deviceContainer = view.findViewById(R.id.deviceContainer);
+
+        vitalsContainer.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onSwitchToVitalsFragment();
+            }
+        });
+        gpsContainer.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onSwitchToGPSFragment();
+            }
+        });
+
+        deviceContainer.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onSwitchToDeviceFragment();
+            }
+        });
+
+        Button btnSimulateFall = view.findViewById(R.id.btnSimulateFall);
+        btnSimulateFall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFallDetectionDialog();
+            }
+        });
+
         return view;
     }
 
+
+    private void showFallDetectionDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Fall Detected")
+                .setMessage("We've detected a fall, would you like to alert authorities?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Code to alert authorities
+                    }
+                })
+                .setNegativeButton("No", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onSwitchToVitalsFragment();
+        void onSwitchToGPSFragment();
+        void onSwitchToDeviceFragment();
+    }
+
+    private OnFragmentInteractionListener mListener;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
+    private void navigateToGpsScreen() {
+        GPSFragment gpsFragment = new GPSFragment();
+        // Optionally add arguments to the fragment before adding it
+        // gpsFragment.setArguments(bundle);
+
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.gpsContainer, gpsFragment) // Replace 'container' with the ID of your fragment container
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void navigateToDeviceScreen() {
+        DeviceFragment deviceFragment = new DeviceFragment();
+        // Optionally add arguments to the fragment before adding it
+        // deviceFragment.setArguments(bundle);
+
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.deviceContainer, deviceFragment) // Replace 'container' with the ID of your fragment container
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onDataChanged(String heartRate, String oxygenLevel, String bodyTemp) {
+        TextView tvHeartRateHome = getView().findViewById(R.id.heartRate);
+        TextView tvOxygenLevel = getView().findViewById(R.id.oxygenRate);
+        TextView tvBodyTemp = getView().findViewById(R.id.temp);
+
+        tvHeartRateHome.setText(heartRate);
+        tvOxygenLevel.setText(oxygenLevel);
+        tvBodyTemp.setText(bodyTemp);
+    }
 }

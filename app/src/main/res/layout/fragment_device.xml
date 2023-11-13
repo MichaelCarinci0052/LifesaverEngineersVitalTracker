@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DeviceFragment">
+    tools:context=".DeviceFragment"
+    android:background="@color/ashGreen">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Battery Life: 100%"
+            android:textColor="@color/white"
             android:layout_marginTop="8dp"
             android:textStyle="bold" />
 

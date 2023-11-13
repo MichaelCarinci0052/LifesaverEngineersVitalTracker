@@ -28,6 +28,10 @@ public class Menu extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch(item.getItemId()){
+            case R.id.locationHistoryLayout:
+                GPSHistoryFragment gpsHistory = new GPSHistoryFragment();
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, gpsHistory).addToBackStack(null).commit();
+                return true;
             case R.id.settings:
                 SettingsFragment settings = new SettingsFragment();
                 fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, settings).addToBackStack(null).commit();
@@ -35,6 +39,10 @@ public class Menu extends AppCompatActivity {
             case R.id.config:
                 ConfigurationFragment config = new ConfigurationFragment();
                 fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, config).commit();
+                return true;
+            case R.id.feedback:
+                FeedbackFragment feedback = new FeedbackFragment();
+                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, feedback).commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

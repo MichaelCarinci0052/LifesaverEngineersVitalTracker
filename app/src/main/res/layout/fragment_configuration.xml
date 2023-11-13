@@ -1,113 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:layout_height="match_parent"
+    android:background="@color/ashGreen"
+    tools:context=".FeedbackFragment">
 
-    <!-- Title Row -->
-    <TableRow>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:text="@string/configurations"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-    </TableRow>
+        <!-- Title Row -->
+        <TableRow>
 
-    <!-- Header Row -->
-    <TableRow>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/feature"
-            android:textStyle="bold" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:text="@string/description"
-            android:textStyle="bold" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/value"
-            android:textStyle="bold" />
-    </TableRow>
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:text="@string/configurations"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </TableRow>
 
-    <!-- Row 1: Home Location -->
-    <TableRow>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/location" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:text="@string/set_home_location" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/user_input" />
-    </TableRow>
+        <!-- Header Row -->
+        <TableRow>
 
-    <!-- Row 2: Lock Orientation -->
-    <TableRow>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/lock_orientation" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:text="@string/prevent_screen_rotation" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/on_off" />
-    </TableRow>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/feature"
+                android:textStyle="bold" />
 
-    <!-- Row 3: Notification Toggle -->
-    <TableRow>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/notification_toggle" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:text="@string/handle_notifications" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/on_off" />
-    </TableRow>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/description"
+                android:textStyle="bold" />
 
-    <!-- Row 4: Restore Default -->
-    <TableRow>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/restore" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:text="@string/reset" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="@string/button_input" />
-    </TableRow>
-    <TableRow>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="Email Verification Status" />
-        <TextView
-            android:id="@+id/emailStatusTextView"
-            android:layout_width="0dp"
-            android:layout_weight="2"
-             />
-    </TableRow>
-</TableLayout>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/value"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <!-- Row 1: Home Location -->
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/location" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/set_home_location" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/user_input" />
+        </TableRow>
+
+        <!-- Row 2: Lock Orientation -->
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/lock_orientation" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/prevent_screen_rotation" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/on_off" />
+        </TableRow>
+
+        <!-- Row 3: Notification Toggle -->
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/notification_toggle" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/handle_notifications" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/on_off" />
+        </TableRow>
+
+        <!-- Row 4: Restore Default -->
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/restore" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/reset" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/button_input" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="Email Verification Status" />
+
+            <TextView
+                android:id="@+id/emailStatusTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2" />
+        </TableRow>
+    </TableLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

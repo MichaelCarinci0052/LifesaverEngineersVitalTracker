@@ -15,6 +15,14 @@
             <item android:id="@+id/config"
                 android:title="@string/configurations"
                 app:showAsAction="ifRoom" />
+
+            <item android:id="@+id/feedback"
+                android:title="@string/feedback"
+                app:showAsAction="ifRoom" />
+
+            <item android:id="@+id/locationHistoryLayout"
+                android:title="@string/gps_history"
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
 </menu>
