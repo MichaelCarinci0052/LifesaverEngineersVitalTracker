@@ -1,5 +1,6 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -24,7 +26,7 @@ public class DeviceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device, container, false);
 
-        // Find the button and set up the click listener
+        // Find the existing toggle device button and set up the click listener
         Button toggleDeviceButton = view.findViewById(R.id.toggleDeviceButton);
         toggleDeviceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,19 +35,38 @@ public class DeviceFragment extends Fragment {
                 if ("Turn On".equals(currentText)) {
                     toggleDeviceButton.setText("Turn Off");
                     // Logic to turn the device ON goes here
-
-                    // Toast message for feedback
                     Toast.makeText(getActivity(), "Device turned ON", Toast.LENGTH_SHORT).show();
                 } else {
                     toggleDeviceButton.setText("Turn On");
                     // Logic to turn the device OFF goes here
-
-                    // Toast message for feedback
                     Toast.makeText(getActivity(), "Device turned OFF", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+        // Add a new button for sensors and set up the click listener
+        Button sensorsButton = view.findViewById(R.id.buttonSensors);
+        sensorsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSensorsList();
+            }
+        });
+
         return view;
+    }
+
+    private void showSensorsList() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("List of Sensors");
+        String[] sensors = {"Heartbeat and Oxygen Sensor", "Accelerometer", "GPS", "Temperature Sensor"};
+        builder.setItems(sensors, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle the sensor selection
+                Toast.makeText(getActivity(), sensors[which] + " selected", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
     }
 }
