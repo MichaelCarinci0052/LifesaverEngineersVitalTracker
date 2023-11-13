@@ -20,9 +20,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.os.Handler;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -163,11 +166,9 @@ public class VitalsFragment extends Fragment {
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
                 if (currentUser != null) {
-                    String userId2 = currentUser.getUid();
 
-                    // Reference to the specific 'vitals' document inside the user's document
-                    DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document("data");
-
+                    String formattedDate = getCurrentFormattedDate();
+                    DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document(formattedDate);
                     Map<String, Object> vitalsDataMap = new HashMap<>();
                     vitalsDataMap.put("heartRate", heartRate);
                     vitalsDataMap.put("oxygenLevel", oxygenLevel);
@@ -265,5 +266,10 @@ public class VitalsFragment extends Fragment {
         transaction.replace(R.id.activity_main_frame_layout, GraphHistory);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private String getCurrentFormattedDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }

@@ -1,5 +1,6 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -26,9 +29,12 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +43,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     private LineChart heartRateChart;
     private LineChart oxygenLevelChart;
     private LineChart bodyTempChart;
-
-    // Declare data sets for each chart
+    private Button btnSelectDate;
     private ProgressBar progressBar;
 
     private LineData lineData;
@@ -73,6 +78,13 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 }
             }
         });
+        btnSelectDate = view.findViewById(R.id.btnSelectDate);
+        btnSelectDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog();
+            }
+        });
         // Setup each chart
         heartRateChart = view.findViewById(R.id.HeartRateChart);
         oxygenLevelChart = view.findViewById(R.id.OxygenLevelChart);
@@ -93,34 +105,35 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         if (currentUser != null) {
             String userId = currentUser.getUid(); // Replace with actual user ID
 
-            db.collection("userId").document(userId)
-                    .collection("vitals").document("data")
-                    .get().addOnCompleteListener(task -> {if (task.isSuccessful() && task.getResult() != null) {
-                        progressBar.setVisibility(View.GONE);
-                        // Assuming 'vitalsData' is an array of maps
-                        List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) task.getResult().get("vitalsData");
-                        if (vitalsDataList != null) {
-                            for (Map<String, Object> vitalsData : vitalsDataList) {
-                                // Extract the data
-                                Number heartRate = (Number) vitalsData.get("heartRate");
-                                Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
-                                Number bodyTemp = (Number) vitalsData.get("bodyTemp");
+            db.collection("userId").document(userId).collection("vitals")
+                    .get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            progressBar.setVisibility(View.GONE);
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // Retrieve the vitalsData list from the document
+                                List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) document.get("vitalsData");
+                                if (vitalsDataList != null) {
+                                    for (Map<String, Object> vitalsData : vitalsDataList) {
+                                        Number heartRate = (Number) vitalsData.get("heartRate");
+                                        Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
+                                        Number bodyTemp = (Number) vitalsData.get("bodyTemp");
 
-                                // Update your charts here
-                                if (heartRate != null) {
-                                    updateGraph(heartRateChart, heartRate.intValue());
-                                }
-                                if (oxygenLevel != null) {
-                                    updateGraph(oxygenLevelChart, oxygenLevel.intValue());
-                                }
-                                if (bodyTemp != null) {
-                                    updateGraph(bodyTempChart, bodyTemp.intValue());
+                                        // Update your charts here
+                                        if (heartRate != null) {
+                                            updateGraph(heartRateChart, heartRate.intValue());
+                                        }
+                                        if (oxygenLevel != null) {
+                                            updateGraph(oxygenLevelChart, oxygenLevel.intValue());
+                                        }
+                                        if (bodyTemp != null) {
+                                            updateGraph(bodyTempChart, bodyTemp.intValue());
+                                        }
+                                    }
                                 }
                             }
+                        } else {
+                            Log.d("Firestore", "Error getting documents: ", task.getException());
                         }
-                    } else {
-                        Log.d("Firestore", "Error getting documents: ", task.getException());
-                    }
                     });
         }
     }
@@ -155,7 +168,6 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         y.setDrawGridLines(false);
         y.setAxisLineColor(Color.WHITE);
-
         chart.getAxisRight().setEnabled(false);
         chart.animateXY(2000, 2000);
     }
@@ -176,6 +188,9 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
             chart.notifyDataSetChanged();
             chart.setVisibleXRangeMaximum(10);
             chart.moveViewToX(data.getEntryCount());
+            if (data.getEntryCount() == 1) {
+                chart.invalidate(); // Refresh the chart
+            }
         }
     }
 
@@ -196,10 +211,10 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         set.setHighLightColor(Color.rgb(244, 117, 117));
         set.setValueTextColor(Color.WHITE);
         set.setValueTextSize(9f);
-        set.setDrawValues(false);
+        set.setDrawValues(true);
         set.setCubicIntensity(0.2f);
         set.setDrawFilled(true);
-        set.setDrawCircles(false);
+        set.setDrawCircles(true);
         set.setDrawHorizontalHighlightIndicator(false);
         return set;
     }
@@ -213,4 +228,89 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     public void onNothingSelected() {
         // Handle no selection
     }
+    private void showDatePickerDialog() {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                R.style.CustomDatePickerDialog,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String selectedDate = String.format("%04d%02d%02d", year, month + 1, dayOfMonth);
+                        fetchDataForSelectedDate(selectedDate);
+                    }
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+    private void fetchDataForSelectedDate(String selectedDate) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        progressBar.setVisibility(View.VISIBLE);
+
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+
+            DocumentReference dateDocRef = db.collection("userId").document(userId)
+                    .collection("vitals").document(selectedDate);
+
+            dateDocRef.get().addOnCompleteListener(task -> {
+                progressBar.setVisibility(View.GONE);
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // Assuming 'vitalsData' is a list of maps
+                        List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) document.get("vitalsData");
+                        if (vitalsDataList != null) {
+                            clearGraphData(); // Clear existing data on the graphs
+                            for (Map<String, Object> vitalsData : vitalsDataList) {
+                                Number heartRate = (Number) vitalsData.get("heartRate");
+                                Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
+                                Number bodyTemp = (Number) vitalsData.get("bodyTemp");
+
+                                // Update your charts here
+                                if (heartRate != null) {
+                                    updateGraph(heartRateChart, heartRate.intValue());
+                                }
+                                if (oxygenLevel != null) {
+                                    updateGraph(oxygenLevelChart, oxygenLevel.intValue());
+                                }
+                                if (bodyTemp != null) {
+                                    updateGraph(bodyTempChart, bodyTemp.intValue());
+                                }
+                            }
+                        }
+                    } else {
+                        // Handle the case where there's no data for the selected date
+                        clearGraphData();
+                        Toast.makeText(getContext(), "No data available for this date", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.d("Firestore", "Error getting documents: ", task.getException());
+                }
+            });
+        }
+    }
+
+    private void clearGraphData() {
+        if (heartRateChart.getData() != null) {
+            heartRateChart.getData().clearValues();
+            heartRateChart.notifyDataSetChanged();
+            heartRateChart.invalidate();
+        }
+        if (oxygenLevelChart.getData() != null) {
+            oxygenLevelChart.getData().clearValues();
+            oxygenLevelChart.notifyDataSetChanged();
+            oxygenLevelChart.invalidate();
+        }
+        if (bodyTempChart.getData() != null) {
+            bodyTempChart.getData().clearValues();
+            bodyTempChart.notifyDataSetChanged();
+            bodyTempChart.invalidate();
+        }
+    }
+
 }
