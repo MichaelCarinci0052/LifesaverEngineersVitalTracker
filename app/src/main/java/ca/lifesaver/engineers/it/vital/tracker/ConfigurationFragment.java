@@ -19,37 +19,16 @@ import com.google.firebase.auth.FirebaseUser;
  * Nicholas Rafuse n01440073 section: 0CB
  */
 public class ConfigurationFragment extends Fragment {
-
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private TextView emailStatus;
-
-    private String mParam1;
-    private String mParam2;
 
     public ConfigurationFragment() {
         // Required empty public constructor
     }
 
-    public static ConfigurationFragment newInstance(String param1, String param2) {
-        ConfigurationFragment fragment = new ConfigurationFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
     }
 
     @Override

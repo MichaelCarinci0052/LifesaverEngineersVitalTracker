@@ -28,7 +28,6 @@ import java.util.Objects;
 public class GPSHistoryFragment extends Fragment {
     private LinearLayout locationHistoryLayout;
 
-
     public GPSHistoryFragment() {
         // Required empty public constructor
     }
@@ -59,22 +58,18 @@ public class GPSHistoryFragment extends Fragment {
 
         CollectionReference locationHistoryRef = db.collection(userId).document("location").collection("location_history");
 
-        // Query to get the last 50 entries ordered by timestamp
         Query query = locationHistoryRef.orderBy("timestamp", Query.Direction.DESCENDING).limit(50);
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                // Clear existing views
                 locationHistoryLayout.removeAllViews();
 
                 for (DocumentSnapshot document : task.getResult()) {
-                    // Extract coordinates from the document
                     Map<String, Object> coordinates = (Map<String, Object>) document.get("coordinates");
                     if (coordinates != null) {
                         double latitude = (double) coordinates.get("latitude");
                         double longitude = (double) coordinates.get("longitude");
 
-                        // Create a TextView for each entry and add it to the layout
                         TextView entryTextView = new TextView(requireContext());
                         entryTextView.setText("Latitude: " + latitude + "\nLongitude: " + longitude);
                         locationHistoryLayout.addView(entryTextView);

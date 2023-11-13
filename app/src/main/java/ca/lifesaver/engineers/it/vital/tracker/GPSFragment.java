@@ -64,7 +64,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = Objects.requireNonNull(currentUser).getUid();
-        fbLocation = db.collection(userId).document("location");
+        fbLocation = db.collection("userId").document(userId);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
@@ -85,15 +85,16 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         locationMap.put("latitude", latitude);
         locationMap.put("longitude", longitude);
 
-        fbLocation.collection("location")
+        fbLocation.collection("location_data")
                 .document("current_location")
                 .set(locationMap);
 
         long currentTimeMillis = System.currentTimeMillis();
         //An hour
         int locationHistoryInterval = 60 * 60 * 1000;
+
         if(currentTimeMillis - lastLocationUpdateInterval >= locationHistoryInterval){
-            fbLocation.collection("location")
+            fbLocation.collection("location_data")
                     .document("location_history")
                     .collection(String.valueOf(currentTimeMillis))
                     .document("coordinates")
