@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Map;
@@ -50,28 +53,31 @@ public class GPSHistoryFragment extends Fragment {
 
         return view;
     }
-    @SuppressLint("SetTextI18n")
     private void fetchAndDisplayLocationHistory() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = Objects.requireNonNull(currentUser).getUid();
 
-        CollectionReference locationHistoryRef = db.collection(userId).document("location").collection("location_history");
+        CollectionReference locationHistoryRef = db.collection("userId").document(userId)
+                .collection("location_data").document("location_history").collection("timestamps");
 
-        Query query = locationHistoryRef.orderBy("timestamp", Query.Direction.DESCENDING).limit(50);
-
-        query.get().addOnCompleteListener(task -> {
+        locationHistoryRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 locationHistoryLayout.removeAllViews();
 
-                for (DocumentSnapshot document : task.getResult()) {
-                    Map<String, Object> coordinates = (Map<String, Object>) document.get("coordinates");
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    String timestamp = document.getId();
+                    Map<String, Object> coordinates = document.getData();
+
                     if (coordinates != null) {
                         double latitude = (double) coordinates.get("latitude");
                         double longitude = (double) coordinates.get("longitude");
 
                         TextView entryTextView = new TextView(requireContext());
-                        entryTextView.setText("Latitude: " + latitude + "\nLongitude: " + longitude);
+                        entryTextView.setText("Timestamp: " + timestamp +
+                                "\nLatitude: " + latitude +
+                                "\nLongitude: " + longitude + "\n");
+
                         locationHistoryLayout.addView(entryTextView);
                     }
                 }

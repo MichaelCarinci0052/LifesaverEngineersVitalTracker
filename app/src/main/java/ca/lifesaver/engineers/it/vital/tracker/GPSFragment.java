@@ -26,7 +26,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -93,14 +97,16 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         //An hour
         int locationHistoryInterval = 60 * 60 * 1000;
 
-        if(currentTimeMillis - lastLocationUpdateInterval >= locationHistoryInterval){
+        if (currentTimeMillis - lastLocationUpdateInterval >= locationHistoryInterval) {
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+
             fbLocation.collection("location_data")
                     .document("location_history")
-                    .collection(String.valueOf(currentTimeMillis))
+                    .collection(timestamp)
                     .document("coordinates")
                     .set(locationMap);
-            lastLocationUpdateInterval = currentTimeMillis;
 
+            lastLocationUpdateInterval = currentTimeMillis;
         }
     }
 
