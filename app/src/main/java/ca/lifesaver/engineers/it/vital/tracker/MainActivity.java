@@ -16,6 +16,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -55,6 +63,19 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
                 notificationManager.createNotificationChannel(channel);
             }
         }
+        String deviceName = Build.MODEL;
+        Map<String,Object> modelMap = new HashMap<>();
+        modelMap.put("phone_model", deviceName);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = Objects.requireNonNull(currentUser).getUid();
+        DocumentReference phoneModel = db.collection("userId").document(userId);
+
+        phoneModel.collection("phone_data")
+                  .document("model")
+                  .set(modelMap);
+
     }
 
     @Override

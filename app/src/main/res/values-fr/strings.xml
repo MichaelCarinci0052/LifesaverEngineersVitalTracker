@@ -60,4 +60,5 @@
     <string name="submit">Soumettre des commentaires</string>
     <string name="review">Racontez-nous comment nous avons fait !</string>
     <string name="gps_history">Historique GPS</string>
+    <string name="device">Appareil</string>
 </resources>

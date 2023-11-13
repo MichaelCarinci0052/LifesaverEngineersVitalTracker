@@ -2,17 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/activity_main_drawer_account"
-        android:icon="@drawable/ic_account"
-        android:title="@string/account"
-        />
-
-    <item
-        android:id="@+id/activity_main_drawer_home"
-        android:icon="@mipmap/app_logo_foreground"
-        android:title="@string/home" />
-
-    <item
         android:id="@+id/activity_main_drawer_gps"
         android:icon="@drawable/ic_gps"
         android:title="@string/gps" />
@@ -23,9 +12,19 @@
         android:title="@string/vitals" />
 
     <item
+        android:id="@+id/activity_main_drawer_home"
+        android:icon="@mipmap/app_logo_foreground"
+        android:title="@string/home" />
+
+    <item
         android:id="@+id/navigation_device"
         android:icon="@drawable/ic_baseline_devices_24"
-        android:title="Device" />
+        android:title="@string/device" />
 
+    <item
+        android:id="@+id/activity_main_drawer_account"
+        android:icon="@drawable/ic_account"
+        android:title="@string/account"
+        />
 
 </menu>
