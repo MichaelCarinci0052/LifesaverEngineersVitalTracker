@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import androidx.fragment.app.Fragment;
@@ -55,6 +56,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_graph_history, container, false);
     }
@@ -62,6 +64,15 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Button buttonBack = view.findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager().popBackStack();
+                }
+            }
+        });
         // Setup each chart
         heartRateChart = view.findViewById(R.id.HeartRateChart);
         oxygenLevelChart = view.findViewById(R.id.OxygenLevelChart);
