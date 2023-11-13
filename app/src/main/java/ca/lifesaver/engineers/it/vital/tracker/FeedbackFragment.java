@@ -12,8 +12,13 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -31,7 +36,9 @@ public class FeedbackFragment extends Fragment {
     private RatingBar ratingBar;
     private Button submit;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference feedbackRef = db.collection("feedback");
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    String userId = Objects.requireNonNull(currentUser).getUid();
+    DocumentReference feedbackRef = db.collection("userId").document(userId);
 
     public FeedbackFragment() {
         // Required empty public constructor
@@ -48,7 +55,7 @@ public class FeedbackFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_feedback, container, false);
-
+        
         firstname = view.findViewById(R.id.firstname);
         lastname = view.findViewById(R.id.lastname);
         email = view.findViewById(R.id.Email);
@@ -82,7 +89,9 @@ public class FeedbackFragment extends Fragment {
 
         FeedbackModel feedback = new FeedbackModel(first + " " + last, emailreceive, phoneNumber, rating, comment);
 
-        feedbackRef.add(feedback)
+        // Use a new document with an auto-generated ID in the "feedback" collection
+        feedbackRef.collection("feedback")
+                .add(feedback)
                 .addOnSuccessListener(documentReference -> {
                     showToast("Feedback submitted!");
                     clearInputFields();
@@ -91,6 +100,7 @@ public class FeedbackFragment extends Fragment {
                     showToast("Error submitting feedback. Please try again.");
                 });
     }
+
 
     private void clearInputFields() {
         firstname.getText().clear();

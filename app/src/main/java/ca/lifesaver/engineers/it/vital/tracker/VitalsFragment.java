@@ -164,7 +164,7 @@ public class VitalsFragment extends Fragment implements
         l.setTextColor(Color.WHITE);
         XAxis x = lineChart.getXAxis();
         x.setEnabled(false);
-        Button btnShowGraphHistory = view.findViewById(R.id.btnShowGraphHistory);
+        Button btnShowGraphHistory = view.findViewById(R.id.btnGraph);
         btnShowGraphHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,7 +201,7 @@ public class VitalsFragment extends Fragment implements
                     String userId = currentUser.getUid();
 
                 if (currentUser != null) {
-                    String userId = currentUser.getUid();
+                    String userId2 = currentUser.getUid();
 
                     // Reference to the specific 'vitals' document inside the user's document
                     DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document("data");
@@ -268,7 +268,7 @@ public class VitalsFragment extends Fragment implements
                     // set.addEntry(...); // can be called as well
 
                     if (set == null) {
-                        set = createSet();
+                        //set = createSet();
                         data.addDataSet(set);
                     }
 
