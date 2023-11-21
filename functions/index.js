@@ -9,11 +9,11 @@
 
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
+const myFunctions = require('./functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
+const bucket = admin.storage().bucket();
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+// Export each function
+exports.getLatestImage = myFunctions.getLatestImage;
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });

@@ -32,7 +32,7 @@
         android:layout_marginEnd="38dp"
         android:layout_marginBottom="12dp"
         android:backgroundTint="#EDD892"
-        android:text="Select Date"
+        android:text="@string/select_date"
         app:layout_constraintBottom_toTopOf="@+id/heartRateLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

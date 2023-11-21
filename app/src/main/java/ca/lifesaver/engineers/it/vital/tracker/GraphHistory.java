@@ -1,6 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -245,6 +247,8 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                     }
                 }, year, month, day);
         datePickerDialog.show();
+        Button positiveButton = datePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        positiveButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
     }
     private void fetchDataForSelectedDate(String selectedDate) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

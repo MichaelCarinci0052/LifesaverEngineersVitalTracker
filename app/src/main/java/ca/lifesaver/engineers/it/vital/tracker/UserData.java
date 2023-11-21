@@ -1,4 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
+
+import android.graphics.Bitmap;
+
 /**
  * Jason Macdonald N01246828 section: 0CB
  * Michael Carinci n01480052 section: 0CB
@@ -52,4 +55,5 @@ public class UserData {
     public void setNotifications(boolean notifications) {
         this.notifications = notifications;
     }
+
 }

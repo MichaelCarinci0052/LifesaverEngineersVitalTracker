@@ -1,8 +1,10 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -21,7 +23,7 @@ public class SharedViewModal extends ViewModel {
     private final MutableLiveData<Boolean> switchStatus = new MutableLiveData<>(false);
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-
+    private MutableLiveData<Bitmap> profileImage = new MutableLiveData<>();
     public SharedViewModal() {
         Log.d("SharedViewModal", "ViewModel Constructor Called");
         fetchSwitchStatusFromFirestore();
@@ -68,6 +70,14 @@ public class SharedViewModal extends ViewModel {
             notification.put("notifications", isChecked);
             db.collection("userId").document(uid).update(notification);
         }
+    }
+
+    public LiveData<Bitmap> getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(Bitmap bitmap) {
+        profileImage.setValue(bitmap);
     }
 
 }

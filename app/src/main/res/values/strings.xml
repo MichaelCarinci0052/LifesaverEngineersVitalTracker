@@ -61,4 +61,5 @@
     <string name="review">Tell us how we did!</string>
     <string name="gps_history">GPS History</string>
     <string name="device">Device</string>
+    <string name="select_date">Select Date</string>
 </resources>

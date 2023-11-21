@@ -37,6 +37,7 @@
     </style>
     <style name="CustomDatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog">
         <item name="colorAccent">@color/ashGreen</item>
+        <item name="android:textColor">@color/black</item>
         <!-- other styling items like text color, background color, etc. -->
     </style>
 
