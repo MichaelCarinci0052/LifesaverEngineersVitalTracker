@@ -1,5 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,7 +21,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.functions.FirebaseFunctions;
+
+import java.util.HashMap;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -31,14 +38,12 @@ import com.google.firebase.auth.FirebaseAuth;
 public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDataChangedListener {
     private FirebaseAuth mAuth;
     private TextView userAccountName;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mAuth = FirebaseAuth.getInstance();
         userAccountName = view.findViewById(R.id.userAccountName);
-
         String username = mAuth.getCurrentUser().getDisplayName();
         userAccountName.setText(capitalizeFirstLetter(username));
 
@@ -175,4 +180,5 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         tvOxygenLevel.setText(oxygenLevel);
         tvBodyTemp.setText(bodyTemp);
     }
+
 }

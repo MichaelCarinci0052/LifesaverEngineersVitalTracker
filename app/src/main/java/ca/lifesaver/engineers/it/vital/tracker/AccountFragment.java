@@ -33,6 +33,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Registry;
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.load.Options;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.ModelLoader;
 import com.bumptech.glide.module.AppGlideModule;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
@@ -52,6 +53,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -112,16 +114,7 @@ public class AccountFragment extends Fragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 8;
-        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                return bitmap.getByteCount() / 1024;
-            }
-        };
 
-        loadProfilePicture();
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -148,9 +141,7 @@ public class AccountFragment extends Fragment  {
         changePasswordButton = view.findViewById(R.id.changepassword);
         buttonLogout = view.findViewById(R.id.buttonLogout);
         fullname = view.findViewById(R.id.fullname);
-
-        //SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        //String user = sharedPreferences.getString("username", "username3");
+        loadProfilePicture();
 
         FirebaseUser user = mAuth.getCurrentUser();
         String email = user.getEmail();
@@ -208,54 +199,32 @@ public class AccountFragment extends Fragment  {
     }
 
     private void updateProfilePicture(Uri downloadUri) {
-        Glide.with(this).load(downloadUri).into(profileImageView);
+        Glide.with(this).load(downloadUri).diskCacheStrategy(DiskCacheStrategy.ALL).circleCrop().into(profileImageView);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("ProfileImageUrl", downloadUri.toString());
+        editor.apply();
     }
     private void loadProfilePicture() {
-        Bitmap cachedBitmap = getBitmapFromMemCache("profileImage");
-        if (cachedBitmap != null) {
-            profileImageView.setImageBitmap(cachedBitmap);
-        }else {
-            FirebaseFunctions.getInstance()
-                    .getHttpsCallable("getLatestImage")
-                    .call()
-                    .continueWith(task -> {
-                        Map<String, String> result = (Map<String, String>) task.getResult().getData();
-                        return result.get("ref");
-                    })
-                    .addOnSuccessListener(ref -> {
-                        if (ref != null) {
-                            //Use Firebase Storage SDK to download the file using the reference
-                            StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(ref);
-                            long ONE_MEGABYTE = 1024 * 1024 * 10; // Define the size for the download (10MB)
-                            storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                profileImageView.setImageBitmap(bitmap);
-                                addBitmapToMemoryCache("profileImage", bitmap);
-                            }).addOnFailureListener(exception -> {
-                                // Handle any errors
-                                Log.e("ProfilePicture", "Failed to download image", exception);
-                            });
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        if (sharedPreferences != null) {
+            String imageUrl = sharedPreferences.getString("ProfileImageUrl", null);
+            if (imageUrl != null) {
+                Glide.with(requireActivity().getApplicationContext())
+                        .load(imageUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .circleCrop()
+                        .into(profileImageView);
+            } else {
+                Log.e("ProfileFragment", "Image URL is null");
+            }
+        } else {
 
-                        } else {
-                            Log.e("ProfilePicture", "Reference is null");
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("ProfilePicture", "Failed to load image", e);
-                    });
         }
     }
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
-    private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if (getBitmapFromMemCache(key) == null) {
-            memoryCache.put(key, bitmap);
-        }
-    }
 
-    private Bitmap getBitmapFromMemCache(String key) {
-        return memoryCache.get(key);
-    }
 }

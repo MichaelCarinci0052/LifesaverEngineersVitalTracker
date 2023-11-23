@@ -12,8 +12,6 @@ const logger = require("firebase-functions/logger");
 const myFunctions = require('./functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
-const bucket = admin.storage().bucket();
 
 // Export each function
 exports.getLatestImage = myFunctions.getLatestImage;
-

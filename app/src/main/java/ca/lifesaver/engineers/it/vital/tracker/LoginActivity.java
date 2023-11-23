@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -44,8 +45,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.auth.User;
+import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
 
 /**
  * Jason Macdonald N01246828 section: 0CB
@@ -131,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     // Sign in success
+                                    getProfilePictureFromFirebase();
                                     Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                                     intent.putExtra("START_MAIN_ACTIVITY", true);
                                     startActivity(intent);
@@ -232,6 +237,7 @@ public class LoginActivity extends AppCompatActivity {
                         FirebaseUser user = mAuth.getCurrentUser();
 
                         if (user != null) {
+                            getProfilePictureFromFirebase();
                             DocumentReference userDocRef = db.collection("userId").document(user.getUid());
                             userDocRef.get().addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
@@ -245,7 +251,6 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.w("Firestore", "Error getting document.", task1.getException());
                                 }
                         });
-
                         Log.d("firebase authentication-google","Success");
                         Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                         intent.putExtra("START_MAIN_ACTIVITY", true);
@@ -263,6 +268,34 @@ public class LoginActivity extends AppCompatActivity {
                 }
     });
     }
-
-
+    private void getProfilePictureFromFirebase(){
+        FirebaseFunctions.getInstance()
+                .getHttpsCallable("getLatestImage")
+                .call()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Task completed successfully
+                        HashMap result = (HashMap) task.getResult().getData();
+                        String imageUrl = (String) result.get("url");
+                        Log.d("USER UID FOR PROFILE",mAuth.getUid());
+                        if (imageUrl != null) {
+                            //Use Glide to load the image
+                            Glide.with(getApplicationContext())
+                                    .load(imageUrl)
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .preload();
+                            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("ProfileImageUrl", imageUrl);
+                            editor.apply();
+                        } else {
+                            Log.d("MAIN APPLICATION", "No image found for the user.");
+                        }
+                    } else {
+                        // Task failed with an exception
+                        Exception e = task.getException();
+                        Log.d("MainActivity", "Error: " + e.getMessage(), e);
+                    }
+                });
+    }
 }
