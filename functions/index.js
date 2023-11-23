@@ -15,3 +15,5 @@ admin.initializeApp();
 
 // Export each function
 exports.getLatestImage = myFunctions.getLatestImage;
+exports.submitFeedback = myFunctions.submitFeedback;
+exports.checkLastSubmission = myFunctions.checkLastSubmission;

@@ -2,13 +2,17 @@ package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
@@ -17,6 +21,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.FirebaseFunctionsException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +43,7 @@ public class FeedbackFragment extends Fragment {
     private EditText comments;
     private RatingBar ratingBar;
     private Button submit;
-
+    private ProgressBar progressBar;
 
     public FeedbackFragment() {
         // Required empty public constructor
@@ -54,7 +60,7 @@ public class FeedbackFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_feedback, container, false);
-        
+        progressBar = view.findViewById(R.id.progressBar);
         firstname = view.findViewById(R.id.firstname);
         lastname = view.findViewById(R.id.lastname);
         email = view.findViewById(R.id.Email);
@@ -62,7 +68,7 @@ public class FeedbackFragment extends Fragment {
         comments = view.findViewById(R.id.comments);
         ratingBar = view.findViewById(R.id.ratingBar);
         submit = view.findViewById(R.id.submitBtn);
-
+        checkLastSubmission();
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,28 +92,52 @@ public class FeedbackFragment extends Fragment {
             showToast("Please fill in all fields");
             return;
         }
+        progressBar.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> feedbackMap = new HashMap<>();
+                feedbackMap.put("first", first);
+                feedbackMap.put("last", last);
+                feedbackMap.put("email", emailreceive);
+                feedbackMap.put("phone", phoneNumber);
+                feedbackMap.put("rating", ratingString);
+                feedbackMap.put("comment", comment);
+                FirebaseFunctions.getInstance()
+                        .getHttpsCallable("submitFeedback")
+                        .call(feedbackMap)
+                        .addOnSuccessListener(result -> {
+                            showToast("Feedback submitted!");
+                            clearInputFields();
+                            progressBar.setVisibility(View.GONE);
+                            new AlertDialog.Builder(getActivity())
+                                    .setTitle("Confirmation")
+                                    .setMessage("Your feedback has been submitted successfully.")
+                                    .setPositiveButton("OK", (dialog, which) -> {
+                                        // Handle the OK button click
+                                        dialog.dismiss();
+                                    })
+                                    .show();
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = Objects.requireNonNull(currentUser).getUid();
-        DocumentReference feedbackRef = db.collection("userId").document(userId);
-
-        Map<String, Object> feedbackMap = new HashMap<>();
-        feedbackMap.put("first_name", first);
-        feedbackMap.put("last_name", last);
-        feedbackMap.put("email", emailreceive);
-        feedbackMap.put("phone_number", phoneNumber);
-        feedbackMap.put("rating", ratingString);
-        feedbackMap.put("comment", comment);
-
-        feedbackRef.collection("feedback").document("data").set(feedbackMap)
-                .addOnSuccessListener(documentReference -> {
-                    showToast("Feedback submitted!");
-                    clearInputFields();
-                })
-                .addOnFailureListener(e -> {
-                    showToast("Error submitting feedback. Please try again.");
-                });
+                        })
+                        .addOnFailureListener(e -> {
+                            if (e instanceof FirebaseFunctionsException) {
+                                FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                                FirebaseFunctionsException.Code code = ffe.getCode();
+                                String message = ffe.getMessage();
+                                Log.e("FeedbackError", "Error code: " + code + " Message: " + message);
+                                if (code == FirebaseFunctionsException.Code.FAILED_PRECONDITION) {
+                                    showToast("You can only submit feedback once every 24 hours.");
+                                } else {
+                                    showToast("Error submitting feedback: " + message);
+                                }
+                            } else {
+                                showToast("Error submitting feedback. Please try again.");
+                                Log.e("FeedbackError", "Non-Firebase error", e);
+                            }
+                        });
+            }
+        }, 4000);
     }
 
     private void clearInputFields() {
@@ -122,4 +152,23 @@ public class FeedbackFragment extends Fragment {
     private void showToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
+
+    private void checkLastSubmission(){
+        FirebaseFunctions.getInstance()
+                .getHttpsCallable("checkLastSubmission")
+                .call()
+                .addOnSuccessListener(result -> {
+                    // Extract data as a Map
+                    Map<String, Object> resultMap = (Map<String, Object>) result.getData();
+                    // Extract the "canSubmit" value from the Map
+                    Boolean canSubmit = (Boolean) resultMap.get("canSubmit");
+                    // Now use canSubmit to set the enabled state of the submit button
+                    submit.setEnabled(canSubmit != null && canSubmit);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("Submission", "Error checking last submission", e);
+                    // Consider disabling the submit button or informing the user of the error
+                });
+    }
+
 }
