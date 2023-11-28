@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
@@ -35,12 +36,36 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class GraphHistory extends Fragment implements OnChartValueSelectedListener {
+    public class IndexToTimeFormatter extends ValueFormatter {
+        private final List<String> timeLabels;
+
+        public IndexToTimeFormatter(List<String> timeLabels) {
+            this.timeLabels = timeLabels;
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            int index = (int) value;
+            if (index >= 0 && index < timeLabels.size()) {
+                return timeLabels.get(index);
+            }
+            return "";
+        }
+    }
+    List<String> timeLabels = new ArrayList<>();
+    private int nextIndex = 0;
     // Declare all three charts
     private LineChart heartRateChart;
     private LineChart oxygenLevelChart;
@@ -100,10 +125,12 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         progressBar.bringToFront();
         fetchDataFromFirestore();
     }
+
     private void fetchDataFromFirestore() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         progressBar.setVisibility(View.VISIBLE);
+
         if (currentUser != null) {
             String userId = currentUser.getUid(); // Replace with actual user ID
 
@@ -119,16 +146,15 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                                         Number heartRate = (Number) vitalsData.get("heartRate");
                                         Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
                                         Number bodyTemp = (Number) vitalsData.get("bodyTemp");
-
-                                        // Update your charts here
+                                        String timestampString = (String) vitalsData.get("timestamp");
                                         if (heartRate != null) {
-                                            updateGraph(heartRateChart, heartRate.intValue());
+                                            updateGraph(heartRateChart, timestampString, heartRate.intValue());
                                         }
                                         if (oxygenLevel != null) {
-                                            updateGraph(oxygenLevelChart, oxygenLevel.intValue());
+                                            updateGraph(oxygenLevelChart, timestampString, oxygenLevel.intValue());
                                         }
                                         if (bodyTemp != null) {
-                                            updateGraph(bodyTempChart, bodyTemp.intValue());
+                                            updateGraph(bodyTempChart, timestampString, bodyTemp.intValue());
                                         }
                                     }
                                 }
@@ -139,6 +165,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                     });
         }
     }
+
     private void setupGraph(LineChart chart, String label) {
         values = new ArrayList<>();
         chart.setOnChartValueSelectedListener(this);
@@ -161,8 +188,16 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         l.setForm(Legend.LegendForm.LINE);
         l.setTextColor(Color.WHITE);
 
-        XAxis x = chart.getXAxis();
-        x.setEnabled(false);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setEnabled(true);
+        xAxis.setValueFormatter(new IndexToTimeFormatter(timeLabels));
+        xAxis.setGranularity(1f); // Show label for each entry
+        xAxis.setGranularityEnabled(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setTextSize(12f);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(false);
 
         YAxis y = chart.getAxisLeft();
         y.setLabelCount(6, false);
@@ -173,8 +208,8 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         chart.getAxisRight().setEnabled(false);
         chart.animateXY(2000, 2000);
     }
-
-    private void updateGraph(LineChart chart, int value) {
+    private void updateGraph(LineChart chart,String timestampString, int value) {
+        long timeInMillis = parseTimestamp(timestampString);
         LineData data = chart.getData();
         if (data != null) {
             ILineDataSet set = data.getDataSetByIndex(0);
@@ -183,25 +218,26 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 set = createSet();
                 data.addDataSet(set);
             }
+            Log.d("GraphHistory", "Adding entry - Time: " + timeInMillis + ", Value: " + value);
 
-            data.addEntry(new Entry(set.getEntryCount(), value), 0);
+            data.addEntry(new Entry(nextIndex, value), 0);
+            timeLabels.add(convertTimestampToLabel(timestampString));
+            nextIndex++;
+
             data.notifyDataChanged();
 
             chart.notifyDataSetChanged();
             chart.setVisibleXRangeMaximum(10);
-            chart.moveViewToX(data.getEntryCount());
-            if (data.getEntryCount() == 1) {
-                chart.invalidate(); // Refresh the chart
-            }
+            chart.moveViewToX(nextIndex);
+            chart.invalidate();
+//
         }
     }
 
-    private void updateGraphAppearance() {
-        // Your existing code for updating the graph's appearance
-    }
+
 
     private LineDataSet createSet() {
-        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        LineDataSet set = new LineDataSet(null, "");
         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(Color.WHITE);
@@ -274,17 +310,17 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                                 Number heartRate = (Number) vitalsData.get("heartRate");
                                 Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
                                 Number bodyTemp = (Number) vitalsData.get("bodyTemp");
-
-                                // Update your charts here
-                                if (heartRate != null) {
-                                    updateGraph(heartRateChart, heartRate.intValue());
-                                }
-                                if (oxygenLevel != null) {
-                                    updateGraph(oxygenLevelChart, oxygenLevel.intValue());
-                                }
-                                if (bodyTemp != null) {
-                                    updateGraph(bodyTempChart, bodyTemp.intValue());
-                                }
+                                String timestampString = (String) vitalsData.get("timestamp");
+                                    // Update your charts here, now with timestamp
+                                    if (heartRate != null) {
+                                        updateGraph(heartRateChart, timestampString, heartRate.intValue());
+                                    }
+                                    if (oxygenLevel != null) {
+                                        updateGraph(oxygenLevelChart, timestampString, oxygenLevel.intValue());
+                                    }
+                                    if (bodyTemp != null) {
+                                        updateGraph(bodyTempChart, timestampString, bodyTemp.intValue());
+                                    }
                             }
                         }
                     } else {
@@ -314,6 +350,30 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
             bodyTempChart.getData().clearValues();
             bodyTempChart.notifyDataSetChanged();
             bodyTempChart.invalidate();
+        }
+        nextIndex = 0;
+        timeLabels.clear();
+    }
+    private String convertTimestampToLabel(String timestampString) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+        try {
+            Date date = inputFormat.parse(timestampString);
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            Log.e("GraphHistory", "Error converting timestamp", e);
+            return "";
+        }
+    }
+    private long parseTimestamp(String timestampString) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        format.setTimeZone(TimeZone.getTimeZone("UTC")); // Set timezone if needed
+        try {
+            Date date = format.parse(timestampString);
+            return date.getTime();
+        } catch (ParseException e) {
+            Log.e("GraphHistory", "Error parsing timestamp", e);
+            return -1; // Consider throwing an exception or handling this case properly
         }
     }
 

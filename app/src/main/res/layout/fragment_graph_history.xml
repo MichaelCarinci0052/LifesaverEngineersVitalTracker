@@ -59,7 +59,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/HeartRateChart"
         android:layout_width="385dp"
-        android:layout_height="116dp"
+        android:layout_height="135dp"
         android:layout_marginTop="11dp"
         android:layout_marginBottom="20dp"
         android:background="@color/gray"
@@ -87,7 +87,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/OxygenLevelChart"
         android:layout_width="0dp"
-        android:layout_height="116dp"
+        android:layout_height="135dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="20dp"
         android:background="@color/gray"
@@ -110,7 +110,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/BodyTempChart"
         android:layout_width="381dp"
-        android:layout_height="137dp"
+        android:layout_height="135dp"
         android:layout_marginBottom="86dp"
         android:background="@color/gray"
         app:layout_constraintBottom_toBottomOf="parent"
