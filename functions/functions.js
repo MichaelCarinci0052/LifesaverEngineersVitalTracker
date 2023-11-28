@@ -66,6 +66,7 @@ exports.submitFeedback = functions.https.onCall(async (data, context) => {
         phone_number: data.phone,
         rating: data.rating,
         comment: data.comment,
+        phone_Model: data.deviceModel,
         submittedAt: admin.firestore.FieldValue.serverTimestamp() // Record the submission time
     };
 

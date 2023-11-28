@@ -1,5 +1,6 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -87,7 +88,7 @@ public class FeedbackFragment extends Fragment {
         float rating = ratingBar.getRating();
         String ratingString = Float.toString(rating);
         String comment = comments.getText().toString().trim();
-
+        String deviceModel = Build.MODEL;
         if (first.isEmpty() || last.isEmpty() || emailreceive.isEmpty() || phoneNumber.isEmpty() || comment.isEmpty()) {
             showToast("Please fill in all fields");
             return;
@@ -103,6 +104,7 @@ public class FeedbackFragment extends Fragment {
                 feedbackMap.put("phone", phoneNumber);
                 feedbackMap.put("rating", ratingString);
                 feedbackMap.put("comment", comment);
+                feedbackMap.put("deviceModel", deviceModel);
                 FirebaseFunctions.getInstance()
                         .getHttpsCallable("submitFeedback")
                         .call(feedbackMap)

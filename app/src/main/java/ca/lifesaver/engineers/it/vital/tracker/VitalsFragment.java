@@ -130,7 +130,10 @@ public class VitalsFragment extends Fragment {
 
         return inflater.inflate(R.layout.fragment_vitals, container, false);
     }
-
+    private String getCurrentFormattedDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
+    }
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -166,13 +169,14 @@ public class VitalsFragment extends Fragment {
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
                 if (currentUser != null) {
-
+                    String formattedDateTime = getCurrentFormattedDateTime();
                     String formattedDate = getCurrentFormattedDate();
                     DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document(formattedDate);
                     Map<String, Object> vitalsDataMap = new HashMap<>();
                     vitalsDataMap.put("heartRate", heartRate);
                     vitalsDataMap.put("oxygenLevel", oxygenLevel);
                     vitalsDataMap.put("bodyTemp", bodyTemp);
+                    vitalsDataMap.put("timestamp", formattedDateTime);
 
                     vitalsDocRef.get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
