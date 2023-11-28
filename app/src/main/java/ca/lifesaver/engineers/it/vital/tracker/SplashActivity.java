@@ -38,20 +38,19 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
+                SharedPreferences preferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                boolean isRemembered = preferences.getBoolean("RememberMe", false);
                 if (getIntent().getBooleanExtra("START_MAIN_ACTIVITY", false)) {
                     Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                     startActivity(mainIntent);
                     finish();
                 } else {
                     FirebaseUser user = mAuth.getCurrentUser();
-                    if (user != null) {
+                    if (user != null && isRemembered) {
                         user.reload()
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         // User exists
-//                                        getProfilePictureFromFirebase();
-//                                        nextIntent = new Intent(SplashActivity.this, MainActivity.class);
                                         getProfilePictureFromFirebase(() -> {
                                             Intent nextIntent = new Intent(SplashActivity.this, MainActivity.class);
                                             startActivity(nextIntent);

@@ -3,6 +3,7 @@ package ca.lifesaver.engineers.it.vital.tracker;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Layout;
@@ -13,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -54,12 +56,12 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputLayout emailLayout, firstNameLayout, lastNameLayout, phoneNumberLayout, passwordLayout, conPasswordLayout;
     String email;
     FirebaseFirestore db;
-
+    private CheckBox checkBoxRememberMe;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_register);
-
+        checkBoxRememberMe = findViewById(R.id.checkBoxRememberMe);
 
         viewModel = new ViewModelProvider(this).get(SharedViewModal.class);
         mAuth = FirebaseAuth.getInstance();
@@ -220,6 +222,7 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
     private void registerUser(String email, String password, String phoneNumber, String displayName) {
+        SharedPreferences preferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         if(validateInputs() && isValidPassword()){
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
@@ -252,6 +255,9 @@ public class RegisterActivity extends AppCompatActivity {
                                         Log.w("Firestore", "Error getting document.", task1.getException());
                                     }
                                 });
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putBoolean("RememberMe", checkBoxRememberMe.isChecked());
+                            editor.apply();
                             Intent intent = new Intent(RegisterActivity.this, SplashActivity.class);
                             intent.putExtra("START_MAIN_ACTIVITY", true);
                             startActivity(intent);

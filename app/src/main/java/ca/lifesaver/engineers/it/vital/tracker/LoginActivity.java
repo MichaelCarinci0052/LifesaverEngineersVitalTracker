@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -70,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 9001;
-
+    private CheckBox checkBoxRememberMe;
     private SharedViewModal viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +83,9 @@ public class LoginActivity extends AppCompatActivity {
         passwordLayout = findViewById(R.id.passwordLayout);
         emailLayout = findViewById(R.id.emailLayout);
         mAuth = FirebaseAuth.getInstance();
+        checkBoxRememberMe = findViewById(R.id.checkBoxRememberMe);
 
-
-
+        SharedPreferences preferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
 
         //google Sign in button
         SignInButton signInButton = findViewById(R.id.sign_in_button);
@@ -138,6 +140,9 @@ public class LoginActivity extends AppCompatActivity {
                                     getProfilePictureFromFirebase();
                                     Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                                     intent.putExtra("START_MAIN_ACTIVITY", true);
+                                    SharedPreferences.Editor editor = preferences.edit();
+                                    editor.putBoolean("RememberMe", checkBoxRememberMe.isChecked());
+                                    editor.apply();
                                     startActivity(intent);
                                     finish();
                                 } else {
@@ -231,6 +236,7 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        SharedPreferences preferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -251,7 +257,9 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.w("Firestore", "Error getting document.", task1.getException());
                                 }
                         });
-                        Log.d("firebase authentication-google","Success");
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putBoolean("RememberMe", checkBoxRememberMe.isChecked());
+                            editor.apply();
                         Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                         intent.putExtra("START_MAIN_ACTIVITY", true);
                         startActivity(intent);

@@ -42,12 +42,12 @@
         android:id="@+id/passwordLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="66dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:endIconMode="password_toggle"
         app:errorEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
+        app:layout_constraintBottom_toTopOf="@+id/checkBoxRememberMe"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailLayout">
@@ -78,7 +78,7 @@
             android:id="@+id/editTextUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
+            android:hint="@string/email"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="252dp" />
 
@@ -91,12 +91,25 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="7dp"
         android:backgroundTint="#EDD892"
         android:drawablePadding="8dp"
         android:padding="8dp"
-        android:text="Login"
+        android:text="@string/login"
         app:layout_constraintBottom_toTopOf="@+id/buttonRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxRememberMe" />
+
+    <CheckBox
+        android:id="@+id/checkBoxRememberMe"
+        style="@style/CustomCheckBox"
+        android:layout_width="343dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/remember_me"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
@@ -107,13 +120,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="240dp"
+        android:layout_marginBottom="3dp"
         android:backgroundTint="#C6B89E"
-        android:text="Register"
         android:drawablePadding="8dp"
         android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/register"
+        app:layout_constraintBottom_toTopOf="@+id/sign_in_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonLogin" />
 
@@ -122,16 +136,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="13dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="13dp"
-        android:layout_marginBottom="240dp"
+        android:layout_marginBottom="136dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.612"
+        app:layout_constraintHorizontal_bias="0.387"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonRegister"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonRegister">
 
+    </com.google.android.gms.common.SignInButton>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
