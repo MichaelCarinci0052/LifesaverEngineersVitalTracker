@@ -8,35 +8,20 @@
     android:padding="16dp"
     >
 
-    <Button
-        android:id="@+id/buttonBack"
-        android:layout_width="159dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="308dp"
-        android:layout_marginBottom="660dp"
-        android:backgroundTint="#EDD892"
-        android:text="@string/back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
 
     <Button
         android:id="@+id/btnSelectDate"
         android:layout_width="159dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="59dp"
-        android:layout_marginEnd="1dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="112dp"
         android:layout_marginBottom="12dp"
         android:backgroundTint="#EDD892"
         android:text="@string/select_date"
         app:layout_constraintBottom_toTopOf="@+id/heartRateLabel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonBack"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 

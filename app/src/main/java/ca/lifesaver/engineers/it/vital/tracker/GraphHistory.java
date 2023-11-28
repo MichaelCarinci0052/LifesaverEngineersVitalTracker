@@ -17,6 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -104,15 +106,17 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button buttonBack = view.findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getParentFragmentManager() != null) {
-                    getParentFragmentManager().popBackStack();
-                }
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setDisplayShowHomeEnabled(true);
             }
-        });
+        }
+
+
         btnSelectDate = view.findViewById(R.id.btnSelectDate);
         btnSelectDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,21 +144,40 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         progressBar.setVisibility(View.VISIBLE);
 
         if (currentUser != null) {
-            String userId = currentUser.getUid(); // Replace with actual user ID
+            String userId = currentUser.getUid();
 
-            db.collection("userId").document(userId).collection("vitals")
-                    .get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            progressBar.setVisibility(View.GONE);
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // Retrieve the vitalsData list from the document
-                                List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) document.get("vitalsData");
-                                if (vitalsDataList != null) {
-                                    for (Map<String, Object> vitalsData : vitalsDataList) {
+            // Get current date and hour
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            String currentDate = dateFormat.format(new Date());
+            String currentHour = hourFormat.format(new Date());
+
+            DocumentReference dateDocRef = db.collection("userId").document(userId)
+                    .collection("vitals").document(currentDate);
+
+            dateDocRef.get().addOnCompleteListener(task -> {
+                progressBar.setVisibility(View.GONE);
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) document.get("vitalsData");
+                        boolean dataExistsForCurrentHour = false;
+                        if (vitalsDataList != null) {
+                            for (Map<String, Object> vitalsData : vitalsDataList) {
+                                String timestampString = (String) vitalsData.get("timestamp");
+                                if (isTimestampInSelectedHour(timestampString, selectedDate, currentHour)) {
+                                    dataExistsForCurrentHour = true;
+                                    break;
+                                }
+                            }
+                            if (dataExistsForCurrentHour) {
+                                clearGraphData(); // Clear existing data on the graphs
+                                for (Map<String, Object> vitalsData : vitalsDataList) {
+                                    String timestampString = (String) vitalsData.get("timestamp");
+                                    if (isTimestampInSelectedHour(timestampString, selectedDate, currentHour)) {
                                         Number heartRate = (Number) vitalsData.get("heartRate");
                                         Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
                                         Number bodyTemp = (Number) vitalsData.get("bodyTemp");
-                                        String timestampString = (String) vitalsData.get("timestamp");
                                         if (heartRate != null) {
                                             updateGraph(heartRateChart, timestampString, heartRate.intValue());
                                         }
@@ -166,11 +189,20 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                                         }
                                     }
                                 }
+                                heartRateChart.zoomOut();
+                                oxygenLevelChart.zoomOut();
+                                bodyTempChart.zoomOut();
+                            } else {
+                                Toast.makeText(getContext(), "No data available for this time", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Log.d("Firestore", "Error getting documents: ", task.getException());
                         }
-                    });
+                    } else {
+                        Toast.makeText(getContext(), "No data available for this date", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.d("Firestore", "Error getting documents: ", task.getException());
+                }
+            });
         }
     }
 
@@ -285,7 +317,6 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         selectedDate = String.format("%04d%02d%02d", year, month + 1, dayOfMonth);
-                        //fetchDataForSelectedDate(selectedDate);
                         showTimePickerDialog(selectedDate);
                     }
                 }, year, month, day);
@@ -302,6 +333,16 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
 
         picker.addOnPositiveButtonClickListener(dialog -> {
             String selectedTime = String.format(Locale.getDefault(), "%02d:00", picker.getHour());
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+            Date dateObj = null;
+            try {
+                dateObj = inputFormat.parse(selectedDate);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+            String formattedDate = outputFormat.format(dateObj);
+            btnSelectDate.setText(formattedDate+" "+selectedTime);
             fetchDataForSelectedDateTime(selectedDate, selectedTime);
         });
 
@@ -408,12 +449,30 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     private String convertTimestampToLabel(String timestampString) {
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-        try {
-            Date date = inputFormat.parse(timestampString);
-            return outputFormat.format(date);
-        } catch (ParseException e) {
-            Log.e("GraphHistory", "Error converting timestamp", e);
-            return "";
+        if (timestampString != null && !timestampString.isEmpty()) { // Check if the string is not null and not empty
+            try {
+                Date date = inputFormat.parse(timestampString);
+                return outputFormat.format(date);
+            } catch (ParseException e) {
+                Log.e("GraphHistory", "Error converting timestamp", e);
+            }
+        } else {
+            Log.e("GraphHistory", "Timestamp string is null or empty");
+        }
+        return "";
+    }
+
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Disable the Up button in ActionBar
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                actionBar.setDisplayShowHomeEnabled(false);
+            }
         }
     }
 }

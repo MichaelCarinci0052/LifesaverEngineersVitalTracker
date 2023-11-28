@@ -1,6 +1,7 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.annotation.SuppressLint;
@@ -22,31 +23,39 @@ public class Menu extends AppCompatActivity {
         inflater.inflate(R.menu.topmenu,menu);
         return true;
     }
+    private void switchTopMenuFragment(Fragment fragment, String tag) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        // Check if the fragment is already in the back stack, if so, pop back stack to it
+        if (fragmentManager.findFragmentByTag(tag) != null) {
+            fragmentManager.popBackStack(tag, 0);
+        } else {
+            // Add the transaction to the back stack with a unique tag
+            fragmentManager.beginTransaction()
+                    .replace(R.id.activity_main_frame_layout, fragment, tag)
+                    .addToBackStack(tag)
+                    .commit();
+        }
+    }
 
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        FragmentManager fragmentManager = getSupportFragmentManager();
         switch(item.getItemId()){
             case R.id.locationHistoryLayout:
-                GPSHistoryFragment gpsHistory = new GPSHistoryFragment();
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, gpsHistory).addToBackStack(null).commit();
+                switchTopMenuFragment(new GPSHistoryFragment(), "GPSHistoryFragment");
                 return true;
             case R.id.settings:
-                SettingsFragment settings = new SettingsFragment();
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, settings).addToBackStack(null).commit();
+                switchTopMenuFragment(new SettingsFragment(), "SettingsFragment");
                 return true;
             case R.id.config:
-                ConfigurationFragment config = new ConfigurationFragment();
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, config).commit();
+                switchTopMenuFragment(new ConfigurationFragment(), "ConfigurationFragment");
                 return true;
             case R.id.feedback:
-                FeedbackFragment feedback = new FeedbackFragment();
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, feedback).commit();
+                switchTopMenuFragment(new FeedbackFragment(), "FeedbackFragment");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 

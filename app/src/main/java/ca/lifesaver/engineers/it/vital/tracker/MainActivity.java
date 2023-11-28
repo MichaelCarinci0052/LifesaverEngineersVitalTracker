@@ -8,10 +8,13 @@ import android.app.NotificationManager;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -40,6 +43,8 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private View rootView;
     private SharedViewModal viewModel;
+    private int currentFragmentId = R.id.activity_main_drawer_home; // default to home fragment
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +59,7 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
                     .commit();
             bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_home); // Assuming this is the ID of the home item
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             NotificationChannel existingChannel = notificationManager.getNotificationChannel("VITALS_CHANNEL_ID");
@@ -77,12 +83,39 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
                   .document("model")
                   .set(modelMap);
 
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            Fragment currentFragment = getCurrentFragment();
+
+            if (currentFragment instanceof HomeFragment && bottomNavigationView.getSelectedItemId() != R.id.activity_main_drawer_home) {
+                bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_home);
+            } else if (currentFragment instanceof VitalsFragment && bottomNavigationView.getSelectedItemId() != R.id.activity_main_drawer_vitals) {
+                bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_vitals);
+            } else if (currentFragment instanceof AccountFragment && bottomNavigationView.getSelectedItemId() != R.id.activity_main_drawer_account) {
+                bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_account);
+            } else if (currentFragment instanceof GPSFragment && bottomNavigationView.getSelectedItemId() != R.id.activity_main_drawer_gps) {
+                bottomNavigationView.setSelectedItemId(R.id.activity_main_drawer_gps);
+            } else if (currentFragment instanceof DeviceFragment && bottomNavigationView.getSelectedItemId() != R.id.navigation_device) {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_device);
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        showExitConfirmationDialog();
+        if (currentFragmentId == R.id.activity_main_drawer_home && getSupportFragmentManager().getBackStackEntryCount() <= 1) {
+            // On home screen and no other fragments in the back stack
+            showExitConfirmationDialog();
+        } else {
+            // Not on home screen or other fragments are in the back stack
+            super.onBackPressed();
+            // Update the currentFragmentId based on the new top fragment in the stack
+            Fragment currentFragment = getCurrentFragment();
+            if (currentFragment instanceof HomeFragment) {
+                currentFragmentId = R.id.activity_main_drawer_home;
+            } else if (currentFragment instanceof VitalsFragment) {
+                currentFragmentId = R.id.activity_main_drawer_vitals;
+            }
+        }
     }
 
     private void showExitConfirmationDialog() {
@@ -113,27 +146,58 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
     }
 
     private boolean switchFragment(int itemId) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        switch (itemId) {
-            case R.id.activity_main_drawer_account:
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new AccountFragment()).commit();
-                break;
-            case R.id.activity_main_drawer_home:
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new HomeFragment()).commit();
-                break;
-            case R.id.activity_main_drawer_gps:
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new GPSFragment()).commit();
-                break;
-            case R.id.activity_main_drawer_vitals:
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new VitalsFragment()).commit();
-                break;
-            case R.id.navigation_device:
-                fragmentManager.beginTransaction().replace(R.id.activity_main_frame_layout, new DeviceFragment()).commit();
-                break;
-            default:
-                return false;
+        if (itemId == currentFragmentId) {
+            return true; // Do nothing if the fragment is already displayed
         }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment newFragment = fragmentManager.findFragmentByTag(String.valueOf(itemId));
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        if (newFragment == null) {
+            // Create new fragment instance based on itemId
+            switch (itemId) {
+                case R.id.activity_main_drawer_account:
+                    newFragment = new AccountFragment();
+                    break;
+                case R.id.activity_main_drawer_home:
+                    newFragment = new HomeFragment();
+                    break;
+                case R.id.activity_main_drawer_gps:
+                    newFragment = new GPSFragment();
+                    break;
+                case R.id.activity_main_drawer_vitals:
+                    newFragment = new VitalsFragment();
+                    break;
+                case R.id.navigation_device:
+                    newFragment = new DeviceFragment();
+                    break;
+                default:
+                    return false;
+            }
+        } else {
+            // Clear the existing instance from the back stack
+            fragmentManager.popBackStack(String.valueOf(itemId), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+        // Hide the current fragment
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.activity_main_frame_layout);
+        if (currentFragment != null) {
+            transaction.hide(currentFragment);
+        }
+
+        // Show the new fragment
+        if (!newFragment.isAdded()) {
+            transaction.add(R.id.activity_main_frame_layout, newFragment, String.valueOf(itemId));
+        } else {
+            transaction.show(newFragment);
+        }
+
+        transaction.addToBackStack(String.valueOf(itemId));
+        transaction.commit();
+        currentFragmentId = itemId;
         return true;
+
     }
 
     // Implement the interface method
@@ -170,6 +234,17 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
             Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
         }
     }
-
-
+    private Fragment getCurrentFragment() {
+        return getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_layout);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            // ... handle other menu items ...
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

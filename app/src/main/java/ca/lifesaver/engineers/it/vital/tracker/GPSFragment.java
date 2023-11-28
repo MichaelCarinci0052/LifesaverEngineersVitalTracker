@@ -129,13 +129,15 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                for (Location location : locationResult.getLocations()) {
-                    // Update the user's current location on the map
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.clear();
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.mylocation)));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                    updateLocationToFirebase(location.getLatitude(), location.getLongitude());
+                if (isAdded()) {
+                    for (Location location : locationResult.getLocations()) {
+                        // Update the user's current location on the map
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.clear();
+                        mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.mylocation)));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                        updateLocationToFirebase(location.getLatitude(), location.getLongitude());
+                    }
                 }
             }
         };

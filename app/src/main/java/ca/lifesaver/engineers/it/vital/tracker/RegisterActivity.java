@@ -78,13 +78,6 @@ public class RegisterActivity extends AppCompatActivity {
         passwordLayout = findViewById(R.id.passwordLayout);
         conPasswordLayout = findViewById(R.id.conPasswordLayout);
         db = FirebaseFirestore.getInstance();
-        Button buttonBack = findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         Button buttonRegister = findViewById(R.id.buttonRegister);
         buttonRegister.setOnClickListener(v -> {
