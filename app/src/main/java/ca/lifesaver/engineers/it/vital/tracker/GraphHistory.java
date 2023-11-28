@@ -297,7 +297,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
 
         MaterialTimePicker.Builder builder = new MaterialTimePicker.Builder();
         builder.setTimeFormat(TimeFormat.CLOCK_12H);
-        builder.setTitleText("Select Hour");
+        builder.setTitleText("Select Hour (Minutes will be automatically set to 0)");
         final MaterialTimePicker picker = builder.build();
 
         picker.addOnPositiveButtonClickListener(dialog -> {
@@ -326,30 +326,40 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) document.get("vitalsData");
+                        boolean dataExistsForSelectedTime = false;
                         if (vitalsDataList != null) {
-                            clearGraphData(); // Clear existing data on the graphs
                             for (Map<String, Object> vitalsData : vitalsDataList) {
                                 String timestampString = (String) vitalsData.get("timestamp");
                                 if (isTimestampInSelectedHour(timestampString, selectedDate, selectedHour)) {
-                                    Log.d("",timestampString+" "+selectedHour+" "+ selectedDate);
-                                    Number heartRate = (Number) vitalsData.get("heartRate");
-                                    Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
-                                    Number bodyTemp = (Number) vitalsData.get("bodyTemp");
-                                    // Update your charts here
-                                    if (heartRate != null) {
-                                        updateGraph(heartRateChart, timestampString, heartRate.intValue());
-                                    }
-                                    if (oxygenLevel != null) {
-                                        updateGraph(oxygenLevelChart, timestampString, oxygenLevel.intValue());
-                                    }
-                                    if (bodyTemp != null) {
-                                        updateGraph(bodyTempChart, timestampString, bodyTemp.intValue());
-                                    }
-                                    heartRateChart.zoomOut();
-                                    oxygenLevelChart.zoomOut();
-                                    bodyTempChart.zoomOut();
-
+                                    dataExistsForSelectedTime = true;
+                                    break;
                                 }
+                            }
+                            if (dataExistsForSelectedTime) {
+                                clearGraphData(); // Clear existing data on the graphs
+                                for (Map<String, Object> vitalsData : vitalsDataList) {
+                                    String timestampString = (String) vitalsData.get("timestamp");
+                                    if (isTimestampInSelectedHour(timestampString, selectedDate, selectedHour)) {
+                                        Number heartRate = (Number) vitalsData.get("heartRate");
+                                        Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
+                                        Number bodyTemp = (Number) vitalsData.get("bodyTemp");
+                                        // Update your charts here
+                                        if (heartRate != null) {
+                                            updateGraph(heartRateChart, timestampString, heartRate.intValue());
+                                        }
+                                        if (oxygenLevel != null) {
+                                            updateGraph(oxygenLevelChart, timestampString, oxygenLevel.intValue());
+                                        }
+                                        if (bodyTemp != null) {
+                                            updateGraph(bodyTempChart, timestampString, bodyTemp.intValue());
+                                        }
+                                    }
+                                }
+                                heartRateChart.zoomOut();
+                                oxygenLevelChart.zoomOut();
+                                bodyTempChart.zoomOut();
+                            } else {
+                                Toast.makeText(getContext(), "No data available for this time", Toast.LENGTH_SHORT).show();
                             }
                         }
                     } else {
