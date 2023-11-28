@@ -16,7 +16,7 @@
         android:layout_marginEnd="308dp"
         android:layout_marginBottom="660dp"
         android:backgroundTint="#EDD892"
-        android:text="Back"
+        android:text="@string/back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -24,9 +24,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+
     <Button
         android:id="@+id/btnSelectDate"
-        android:layout_width="169dp"
+        android:layout_width="159dp"
         android:layout_height="40dp"
         android:layout_marginStart="84dp"
         android:layout_marginEnd="38dp"
@@ -39,7 +40,6 @@
         app:layout_constraintStart_toEndOf="@+id/buttonBack"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
-
     <TextView
         android:id="@+id/heartRateLabel"
         android:layout_width="wrap_content"

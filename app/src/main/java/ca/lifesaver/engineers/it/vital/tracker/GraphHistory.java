@@ -1,7 +1,9 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -30,6 +34,8 @@ import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -37,6 +43,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,6 +78,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     private LineChart oxygenLevelChart;
     private LineChart bodyTempChart;
     private Button btnSelectDate;
+    private String selectedDate;
     private ProgressBar progressBar;
 
     private LineData lineData;
@@ -209,7 +217,6 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         chart.animateXY(2000, 2000);
     }
     private void updateGraph(LineChart chart,String timestampString, int value) {
-        long timeInMillis = parseTimestamp(timestampString);
         LineData data = chart.getData();
         if (data != null) {
             ILineDataSet set = data.getDataSetByIndex(0);
@@ -218,7 +225,6 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 set = createSet();
                 data.addDataSet(set);
             }
-            Log.d("GraphHistory", "Adding entry - Time: " + timeInMillis + ", Value: " + value);
 
             data.addEntry(new Entry(nextIndex, value), 0);
             timeLabels.add(convertTimestampToLabel(timestampString));
@@ -278,15 +284,32 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String selectedDate = String.format("%04d%02d%02d", year, month + 1, dayOfMonth);
-                        fetchDataForSelectedDate(selectedDate);
+                        selectedDate = String.format("%04d%02d%02d", year, month + 1, dayOfMonth);
+                        //fetchDataForSelectedDate(selectedDate);
+                        showTimePickerDialog(selectedDate);
                     }
                 }, year, month, day);
         datePickerDialog.show();
         Button positiveButton = datePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         positiveButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
     }
-    private void fetchDataForSelectedDate(String selectedDate) {
+    private void showTimePickerDialog(String selectedDate) {
+
+        MaterialTimePicker.Builder builder = new MaterialTimePicker.Builder();
+        builder.setTimeFormat(TimeFormat.CLOCK_12H);
+        builder.setTitleText("Select Hour");
+        final MaterialTimePicker picker = builder.build();
+
+        picker.addOnPositiveButtonClickListener(dialog -> {
+            String selectedTime = String.format(Locale.getDefault(), "%02d:00", picker.getHour());
+            fetchDataForSelectedDateTime(selectedDate, selectedTime);
+        });
+
+        picker.show(getParentFragmentManager(), "TAG");
+    }
+
+
+    private void fetchDataForSelectedDateTime(String selectedDate, String selectedHour) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         progressBar.setVisibility(View.VISIBLE);
@@ -302,16 +325,17 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        // Assuming 'vitalsData' is a list of maps
                         List<Map<String, Object>> vitalsDataList = (List<Map<String, Object>>) document.get("vitalsData");
                         if (vitalsDataList != null) {
                             clearGraphData(); // Clear existing data on the graphs
                             for (Map<String, Object> vitalsData : vitalsDataList) {
-                                Number heartRate = (Number) vitalsData.get("heartRate");
-                                Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
-                                Number bodyTemp = (Number) vitalsData.get("bodyTemp");
                                 String timestampString = (String) vitalsData.get("timestamp");
-                                    // Update your charts here, now with timestamp
+                                if (isTimestampInSelectedHour(timestampString, selectedDate, selectedHour)) {
+                                    Log.d("",timestampString+" "+selectedHour+" "+ selectedDate);
+                                    Number heartRate = (Number) vitalsData.get("heartRate");
+                                    Number oxygenLevel = (Number) vitalsData.get("oxygenLevel");
+                                    Number bodyTemp = (Number) vitalsData.get("bodyTemp");
+                                    // Update your charts here
                                     if (heartRate != null) {
                                         updateGraph(heartRateChart, timestampString, heartRate.intValue());
                                     }
@@ -321,11 +345,14 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                                     if (bodyTemp != null) {
                                         updateGraph(bodyTempChart, timestampString, bodyTemp.intValue());
                                     }
+                                    heartRateChart.zoomOut();
+                                    oxygenLevelChart.zoomOut();
+                                    bodyTempChart.zoomOut();
+
+                                }
                             }
                         }
                     } else {
-                        // Handle the case where there's no data for the selected date
-                        clearGraphData();
                         Toast.makeText(getContext(), "No data available for this date", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -335,6 +362,20 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         }
     }
 
+    private boolean isTimestampInSelectedHour(String timestampString, String selectedDate, String selectedHour) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        try {
+            Date timestampDate = format.parse(timestampString);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+            String hour = hourFormat.format(timestampDate);
+            String selectedHourPart = selectedHour.split(":")[0];
+            return hour.startsWith(selectedHourPart);
+        } catch (ParseException e) {
+            Log.e("GraphHistory", "Error parsing timestamp", e);
+            return false;
+        }
+    }
     private void clearGraphData() {
         if (heartRateChart.getData() != null) {
             heartRateChart.getData().clearValues();
@@ -365,16 +406,4 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
             return "";
         }
     }
-    private long parseTimestamp(String timestampString) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-        format.setTimeZone(TimeZone.getTimeZone("UTC")); // Set timezone if needed
-        try {
-            Date date = format.parse(timestampString);
-            return date.getTime();
-        } catch (ParseException e) {
-            Log.e("GraphHistory", "Error parsing timestamp", e);
-            return -1; // Consider throwing an exception or handling this case properly
-        }
-    }
-
 }
