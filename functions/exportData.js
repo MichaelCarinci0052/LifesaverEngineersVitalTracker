@@ -40,7 +40,7 @@ exports.sendVitalsDataEmail = functions.https.onCall(async (data, context) => {
 
         // Prepare CSV data
         const csvData = vitalsDataArray.map((entry, index) => ({
-            time: index, // If you have a timestamp, replace 'index' with the actual timestamp field
+            time: entry.timestamp, // If you have a timestamp, replace 'index' with the actual timestamp field
             bodyTemp: entry.bodyTemp,
             heartRate: entry.heartRate,
             oxygenLevel: entry.oxygenLevel
@@ -71,13 +71,29 @@ exports.sendVitalsDataEmail = functions.https.onCall(async (data, context) => {
         });
 
         const mailOptions = {
-            from: zohoUsername,
+            from: `"Life Saver Engineer Tracker" <${zohoUsername}>`, // Display name and email
             to: email,
-            subject: 'Your Vitals Data',
-            text: 'Attached is your requested vitals data.',
+            subject: `Vitals Data Report for ${selectedDate}`, // Personalize the subject line with the date
+            // Plain text body
+            text: `Hello,
+        
+        Attached is the vitals data report you requested for the date: ${selectedDate}.
+        
+        If you have any questions or did not request this data, please contact us immediately at lifesaverengineertrackers@gmail.com.
+        
+        Best regards,
+        Your Company Name
+        `,
+            // HTML body
+            html: `<p>Hello,</p>
+        <p>Attached is the vitals data report you requested for the date: <strong>${selectedDate}</strong>.</p>
+        <p>If you have any questions or did not request this data, please contact us immediately at <a href="mailto:support@yourcompany.com">support@yourcompany.com</a>.</p>
+        <p>Best regards,<br>
+        Your Company Name</p>
+        `,
             attachments: [
                 {
-                    filename: 'vitals-data.csv',
+                    filename: `vitals-data-${selectedDate}.csv`, // Make the filename descriptive
                     path: '/tmp/vitals-data.csv'
                 }
             ]

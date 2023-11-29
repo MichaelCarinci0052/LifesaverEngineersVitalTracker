@@ -118,7 +118,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 actionBar.setDisplayShowHomeEnabled(true);
             }
         }
-
+        selectedDate = null;
         btnExport = view.findViewById(R.id.btnExport);
         btnSelectDate = view.findViewById(R.id.btnSelectDate);
         btnSelectDate.setOnClickListener(new View.OnClickListener() {
@@ -149,7 +149,10 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     }
 
     private void sendCsv(String selectedDate) {
-        Log.d("in send csv function",selectedDate);
+        if (selectedDate == null) {
+            Toast.makeText(getContext(), "Please pick a date and time", Toast.LENGTH_SHORT).show();
+            return; // Exit the method early if no date is selected
+        }
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFunctions.getInstance()
                 .getHttpsCallable("sendVitalsDataEmail")
@@ -162,11 +165,13 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                         // Task completed successfully
                         Object result = task.getResult().getData();
                         // Handle the result
+                        Toast.makeText(getContext(), "Email sent successfully.", Toast.LENGTH_LONG).show();
                         Log.d("CloudFunction", "Function result: " + result);
                     } else {
                         // Task failed with an exception
                         Exception e = task.getException();
                         // Handle the exception
+                        Toast.makeText(getContext(), "Failed to send email", Toast.LENGTH_LONG).show();
                         Log.e("CloudFunction", "Function error: ", e);
                     }
                 });

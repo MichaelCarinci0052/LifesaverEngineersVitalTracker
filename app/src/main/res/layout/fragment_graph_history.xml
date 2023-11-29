@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#AABA9E"
@@ -56,9 +60,9 @@
     <TextView
         android:id="@+id/OxygenLabel"
         android:layout_width="339dp"
-        android:layout_height="60dp"
+        android:layout_height="55dp"
         android:layout_marginStart="26dp"
-        android:layout_marginTop="252dp"
+        android:layout_marginTop="240dp"
         android:layout_marginEnd="31dp"
         android:layout_marginBottom="4dp"
         android:text="Oxygen Level History:"
@@ -74,9 +78,7 @@
         android:layout_width="0dp"
         android:layout_height="135dp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="20dp"
         android:background="@color/gray"
-        app:layout_constraintBottom_toTopOf="@+id/BodytempLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/OxygenLabel" />
@@ -85,22 +87,23 @@
         android:id="@+id/BodytempLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="460dp"
         android:layout_marginBottom="4dp"
         android:text="Body Temp History:"
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/BodyTempChart"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/BodyTempChart"
         android:layout_width="381dp"
         android:layout_height="135dp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="86dp"
+        android:layout_marginBottom="90dp"
         android:background="@color/gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,8 +111,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/BodytempLabel"
         app:layout_constraintVertical_bias="0.0" />
-
-
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progressBar"
@@ -139,7 +140,8 @@
         app:icon="@android:drawable/stat_sys_download"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.806"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BodyTempChart" />
+        app:layout_constraintTop_toBottomOf="@+id/BodyTempChart"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
