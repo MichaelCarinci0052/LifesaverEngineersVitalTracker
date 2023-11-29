@@ -87,7 +87,7 @@ exports.sendVitalsDataEmail = functions.https.onCall(async (data, context) => {
             // HTML body
             html: `<p>Hello,</p>
         <p>Attached is the vitals data report you requested for the date: <strong>${selectedDate}</strong>.</p>
-        <p>If you have any questions or did not request this data, please contact us immediately at <a href="mailto:support@yourcompany.com">support@yourcompany.com</a>.</p>
+        <p>If you have any questions or did not request this data, please contact us immediately at <a href="mailto:lifesaverengineertrackers@gmail.com">support@yourcompany.com</a>.</p>
         <p>Best regards,<br>
         Your Company Name</p>
         `,
