@@ -29,6 +29,7 @@ public class DeviceFragment extends Fragment {
         TextView battery = view.findViewById(R.id.batteryLifeTextView);
         // Find the existing toggle device button and set up the click listener
         Button toggleDeviceButton = view.findViewById(R.id.toggleDeviceButton);
+        TextView deviceSelectedTextView = view.findViewById(R.id.deviceselected); // Add this line
         toggleDeviceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -37,11 +38,11 @@ public class DeviceFragment extends Fragment {
                     toggleDeviceButton.setText("Turn Off");
                     // Logic to turn the device ON goes here
                     Toast.makeText(getActivity(), "Device turned ON", Toast.LENGTH_SHORT).show();
-                    battery.setText("Battery Life: OFF");
+                    battery.setText("100%");
                 } else {
                     toggleDeviceButton.setText("Turn On");
                     // Logic to turn the device OFF goes here
-                    battery.setText("Battery Life: 100%");
+                    battery.setText("OFF");
                     Toast.makeText(getActivity(), "Device turned OFF", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -52,14 +53,16 @@ public class DeviceFragment extends Fragment {
         sensorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showSensorsList();
+                showSensorsList(deviceSelectedTextView);
             }
         });
+
+
 
         return view;
     }
 
-    private void showSensorsList() {
+    private void showSensorsList(TextView deviceSelectedTextView) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("List of Sensors");
         String[] sensors = {"Heartbeat and Oxygen Sensor", "Accelerometer", "GPS", "Temperature Sensor"};
@@ -67,7 +70,9 @@ public class DeviceFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Handle the sensor selection
+                String selectedSensor = sensors[which];
                 Toast.makeText(getActivity(), sensors[which] + " selected", Toast.LENGTH_SHORT).show();
+                deviceSelectedTextView.setText("Selected Sensor: " + selectedSensor);
             }
         });
         builder.show();

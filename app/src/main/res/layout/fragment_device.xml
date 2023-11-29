@@ -9,33 +9,141 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal|top"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingTop="16dp">
 
         <TextView
-            android:id="@+id/batteryLifeTextView"
+            android:id="@+id/userAccountName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Battery Life: 100%"
-            android:textColor="@color/white"
-            android:layout_marginTop="8dp"
-            android:textStyle="bold" />
+            android:layout_marginBottom="24dp"
+            android:fontFamily="@font/roboto_black"
+            android:text="Device Manager"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="40sp" />
 
-        <Button
-            android:id="@+id/toggleDeviceButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Turn On"
-            android:layout_marginTop="8dp" />
+        <FrameLayout
+            android:id="@+id/batterycontainer"
+            android:layout_width="331dp"
+            android:layout_height="243dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="-50dp"
+            android:background="@drawable/container_background"
+            android:elevation="4dp"
+            android:padding="16dp">
 
-        <Button
-            android:id="@+id/buttonSensors"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sensors" />
+            <TextView
+                android:id="@+id/devices"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginBottom="24dp"
+                android:fontFamily="@font/roboto_black"
+                android:gravity="center_horizontal"
+                android:text="Device Battery"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <FrameLayout
+                android:id="@+id/batterycontainer2"
+                android:layout_width="266dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/container_background"
+                android:elevation="4dp"
+                android:gravity="center_horizontal"
+                android:padding="25dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/batteryLifeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OFF"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/toggleDeviceButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="30dp"
+                android:gravity="center_horizontal"
+                android:text="Turn On" />
+
+            <TextView
+                android:id="@+id/devicename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_horizontal"
+                android:text="Device Name: Test Device"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/white" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/sensorcontainer"
+            android:layout_width="331dp"
+            android:layout_height="228dp"
+            android:layout_marginTop="100dp"
+            android:background="@drawable/container_background"
+            android:elevation="4dp"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/sensorlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:fontFamily="@font/roboto_black"
+                android:gravity="center_horizontal"
+                android:text="Sensor List"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/buttonSensors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginTop="30dp"
+                android:gravity="center_horizontal"
+                android:text="Sensors" />
+
+            <TextView
+                android:id="@+id/deviceselected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginTop="80dp"
+                android:gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:text="Device Selected:" />
+
+
+        </FrameLayout>
+
     </LinearLayout>
 
 </FrameLayout>
