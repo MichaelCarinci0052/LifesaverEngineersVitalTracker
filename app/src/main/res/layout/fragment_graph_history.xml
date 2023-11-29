@@ -120,10 +120,26 @@
         android:visibility="gone"
         app:indicatorColor="@color/fawn"
         app:indicatorSize="30dp"
+
         app:layout_constraintBottom_toBottomOf="@id/HeartRateChart"
         app:layout_constraintEnd_toEndOf="@id/HeartRateChart"
         app:layout_constraintStart_toStartOf="@id/HeartRateChart"
         app:layout_constraintTop_toTopOf="@id/HeartRateChart"
         app:trackThickness="15dp"
         tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btnExport"
+        android:layout_width="159dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginEnd="112dp"
+        android:backgroundTint="#EDD892"
+        android:text="Export Data"
+        app:icon="@android:drawable/stat_sys_download"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.806"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/BodyTempChart" />
 </androidx.constraintlayout.widget.ConstraintLayout>

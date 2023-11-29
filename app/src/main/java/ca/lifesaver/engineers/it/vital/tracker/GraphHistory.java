@@ -44,6 +44,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -51,6 +52,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -80,6 +82,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     private LineChart oxygenLevelChart;
     private LineChart bodyTempChart;
     private Button btnSelectDate;
+    private Button btnExport;
     private String selectedDate;
     private ProgressBar progressBar;
 
@@ -116,7 +119,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
             }
         }
 
-
+        btnExport = view.findViewById(R.id.btnExport);
         btnSelectDate = view.findViewById(R.id.btnSelectDate);
         btnSelectDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +127,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 showDatePickerDialog();
             }
         });
+
         // Setup each chart
         heartRateChart = view.findViewById(R.id.HeartRateChart);
         oxygenLevelChart = view.findViewById(R.id.OxygenLevelChart);
@@ -136,6 +140,36 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.bringToFront();
         fetchDataFromFirestore();
+        btnExport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendCsv(selectedDate);
+            }
+        });
+    }
+
+    private void sendCsv(String selectedDate) {
+        Log.d("in send csv function",selectedDate);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFunctions.getInstance()
+                .getHttpsCallable("sendVitalsDataEmail")
+                .call(new HashMap<String, Object>() {{
+                    put("selectedDate", selectedDate); // replace with actual date
+                    put("email", currentUser.getEmail()); // replace with actual user email
+                }})
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Task completed successfully
+                        Object result = task.getResult().getData();
+                        // Handle the result
+                        Log.d("CloudFunction", "Function result: " + result);
+                    } else {
+                        // Task failed with an exception
+                        Exception e = task.getException();
+                        // Handle the exception
+                        Log.e("CloudFunction", "Function error: ", e);
+                    }
+                });
     }
 
     private void fetchDataFromFirestore() {
