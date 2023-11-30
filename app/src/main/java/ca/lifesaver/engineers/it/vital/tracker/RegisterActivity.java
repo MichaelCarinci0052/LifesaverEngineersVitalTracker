@@ -151,8 +151,8 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean isValidPassword() {
         String password = editTextPassword.getText().toString().trim();
 
-        if (password.length() < 8) {
-            passwordLayout.setError("Password must be at least 8 characters long");
+        if (password.length() < 6) {
+            passwordLayout.setError("Password must be at least 6 characters long");
             return false;
         }
 

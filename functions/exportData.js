@@ -16,6 +16,7 @@ exports.sendVitalsDataEmail = functions.https.onCall(async (data, context) => {
 
     const uid = context.auth.uid;
     const selectedDate = data.selectedDate; // Date in yyyyMMdd format
+    const displayDate = data.displayDate; // date in yyyy/MM/dd
     const email = data.email; // User's email address
 
 
@@ -73,11 +74,11 @@ exports.sendVitalsDataEmail = functions.https.onCall(async (data, context) => {
         const mailOptions = {
             from: `"Life Saver Engineer Tracker" <${zohoUsername}>`, // Display name and email
             to: email,
-            subject: `Vitals Data Report for ${selectedDate}`, // Personalize the subject line with the date
+            subject: `Vitals Data Report for ${displayDate}`, // Personalize the subject line with the date
             // Plain text body
             text: `Hello,
         
-        Attached is the vitals data report you requested for the date: ${selectedDate}.
+        Attached is the vitals data report you requested for the date: ${displayDate}.
         
         If you have any questions or did not request this data, please contact us immediately at lifesaverengineertrackers@gmail.com.
         
@@ -86,14 +87,14 @@ exports.sendVitalsDataEmail = functions.https.onCall(async (data, context) => {
         `,
             // HTML body
             html: `<p>Hello,</p>
-        <p>Attached is the vitals data report you requested for the date: <strong>${selectedDate}</strong>.</p>
-        <p>If you have any questions or did not request this data, please contact us immediately at <a href="mailto:lifesaverengineertrackers@gmail.com">support@yourcompany.com</a>.</p>
+        <p>Attached is the vitals data report you requested for the date: <strong>${displayDate}</strong>.</p>
+        <p>If you have any questions or did not request this data, please contact us immediately at <a href="mailto:lifesaverengineertrackers@gmail.com">lifesaverengineertrackers@gmail.com</a>.</p>
         <p>Best regards,<br>
         Your Company Name</p>
         `,
             attachments: [
                 {
-                    filename: `vitals-data-${selectedDate}.csv`, // Make the filename descriptive
+                    filename: `vitals-data-${displayDate}.csv`, // Make the filename descriptive
                     path: '/tmp/vitals-data.csv'
                 }
             ]

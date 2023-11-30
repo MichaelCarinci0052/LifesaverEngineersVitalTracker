@@ -1,5 +1,6 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -109,7 +110,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             ActionBar actionBar = activity.getSupportActionBar();
@@ -118,7 +119,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 actionBar.setDisplayShowHomeEnabled(true);
             }
         }
-        selectedDate = null;
+
         btnExport = view.findViewById(R.id.btnExport);
         btnSelectDate = view.findViewById(R.id.btnSelectDate);
         btnSelectDate.setOnClickListener(new View.OnClickListener() {
@@ -143,12 +144,14 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         btnExport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendCsv(selectedDate);
+                if(currentUser.getEmail()!= null) {
+                    showEmailConfirmationDialog(selectedDate,currentUser.getEmail());
+                }
             }
         });
     }
 
-    private void sendCsv(String selectedDate) {
+    private void sendCsv(String selectedDate, String displayDate) {
         if (selectedDate == null) {
             Toast.makeText(getContext(), "Please pick a date and time", Toast.LENGTH_SHORT).show();
             return; // Exit the method early if no date is selected
@@ -159,6 +162,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                 .call(new HashMap<String, Object>() {{
                     put("selectedDate", selectedDate); // replace with actual date
                     put("email", currentUser.getEmail()); // replace with actual user email
+                    put("displayDate",displayDate );
                 }})
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -187,10 +191,12 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
 
             // Get current date and hour
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat displayDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+            SimpleDateFormat hourFormat = new SimpleDateFormat("HH", Locale.getDefault());
+            String displayDate = displayDateFormat.format(new Date());
             String currentDate = dateFormat.format(new Date());
             String currentHour = hourFormat.format(new Date());
-
+            selectedDate = dateFormat.format(new Date());
             DocumentReference dateDocRef = db.collection("userId").document(userId)
                     .collection("vitals").document(currentDate);
 
@@ -211,6 +217,7 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
                             }
                             if (dataExistsForCurrentHour) {
                                 clearGraphData(); // Clear existing data on the graphs
+                                btnSelectDate.setText(displayDate + "\n " +currentHour+":00");
                                 for (Map<String, Object> vitalsData : vitalsDataList) {
                                     String timestampString = (String) vitalsData.get("timestamp");
                                     if (isTimestampInSelectedHour(timestampString, selectedDate, currentHour)) {
@@ -500,7 +507,34 @@ public class GraphHistory extends Fragment implements OnChartValueSelectedListen
         }
         return "";
     }
+    private void showEmailConfirmationDialog(String date, String email) {
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy/MM/dd");
+        Date newDate = null;
+        try {
+            newDate = originalFormat.parse(date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        String displayDate;
+        if (newDate != null) {
+            displayDate = newFormat.format(newDate);
+        } else {
+            displayDate = null;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setIcon(R.mipmap.app_logo);
+        builder.setTitle("Confirm Email Sending");
+        builder.setMessage("Are you sure you want to send your data to " + email + "?\n" +
+                "The data will include information this day: " + displayDate);
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            sendCsv(date, displayDate);
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
+        builder.create().show();
+    }
     public void onDestroyView() {
         super.onDestroyView();
 
