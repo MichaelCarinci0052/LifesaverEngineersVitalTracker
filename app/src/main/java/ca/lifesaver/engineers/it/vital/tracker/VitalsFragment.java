@@ -70,7 +70,7 @@ import java.util.ArrayList;
  */
 
 public class VitalsFragment extends Fragment {
-
+    private static final int BATCH_SIZE = 10;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private SharedViewModal viewModel;
@@ -82,7 +82,8 @@ public class VitalsFragment extends Fragment {
     private Handler handler;
     private Runnable updateRunnable;
     private Random random;
-
+    private List<Map<String, Object>> vitalsDataBatch = new ArrayList<>();
+    private List<Map<String, Object>> writeVitalsDataBatch = new ArrayList<>();
 
     public VitalsFragment() {
         // Required empty public constructor
@@ -168,37 +169,19 @@ public class VitalsFragment extends Fragment {
                 int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
                 float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
-                if (currentUser != null) {
                     String formattedDateTime = getCurrentFormattedDateTime();
                     String formattedDate = getCurrentFormattedDate();
                     DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document(formattedDate);
+
                     Map<String, Object> vitalsDataMap = new HashMap<>();
                     vitalsDataMap.put("heartRate", heartRate);
                     vitalsDataMap.put("oxygenLevel", oxygenLevel);
                     vitalsDataMap.put("bodyTemp", bodyTemp);
                     vitalsDataMap.put("timestamp", formattedDateTime);
-
-                    vitalsDocRef.get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                // Document exists, update it
-                                List<Map<String, Object>> currentData = (List<Map<String, Object>>) document.get("vitalsData");
-                                if (currentData == null) {
-                                    currentData = new ArrayList<>();
-                                }
-                                currentData.add(vitalsDataMap);
-                                vitalsDocRef.update("vitalsData", currentData);
-                            } else {
-                                // Document doesn't exist, create it
-                                List<Map<String, Object>> initialData = new ArrayList<>();
-                                initialData.add(vitalsDataMap);
-                                vitalsDocRef.set(Collections.singletonMap("vitalsData", initialData));
-                            }
-                        } else {
-                            Log.d("Data retrieval failed: ", task.getException().toString());
-                        }
-                    });
+                    vitalsDataBatch.add(vitalsDataMap);
+                    if (vitalsDataBatch.size() >= BATCH_SIZE) {
+                        writeBatchToFirestore();
+                        vitalsDataBatch.clear();
                 }
 
 
@@ -275,5 +258,45 @@ public class VitalsFragment extends Fragment {
     private String getCurrentFormattedDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         return sdf.format(new Date());
+    }
+
+    private void writeBatchToFirestore() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String formattedDate = getCurrentFormattedDate();
+        writeVitalsDataBatch.addAll(vitalsDataBatch);
+        DocumentReference vitalsDocRef = FirebaseFirestore.getInstance()
+                .collection("userId")
+                .document(userId)
+                .collection("vitals")
+                .document(formattedDate);
+
+
+        vitalsDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // Update existing document
+                    List<Map<String, Object>> currentData = (List<Map<String, Object>>) document.get("vitalsData");
+                    if (currentData == null) {
+                        currentData = new ArrayList<>();
+                    }
+                    Log.d("VitalsFragment", "vitals batch here: "+writeVitalsDataBatch);
+                    currentData.addAll(writeVitalsDataBatch);
+                    vitalsDocRef.update("vitalsData", currentData)
+                            .addOnSuccessListener(aVoid -> Log.d("VitalsFragment", "Batch data successfully updated"))
+                            .addOnFailureListener(e -> Log.e("VitalsFragment", "Error updating batch data", e));
+                } else {
+                    // Create a new document
+                    Map<String, Object> batchData = new HashMap<>();
+                    batchData.put("vitalsData", vitalsDataBatch);
+                    vitalsDocRef.set(batchData)
+                            .addOnSuccessListener(aVoid -> Log.d("VitalsFragment", "Batch data successfully written"))
+                            .addOnFailureListener(e -> Log.e("VitalsFragment", "Error writing batch data", e));
+                }
+                writeVitalsDataBatch.clear();
+            } else {
+                Log.d("Data retrieval failed: ", task.getException().toString());
+            }
+        });
     }
 }
