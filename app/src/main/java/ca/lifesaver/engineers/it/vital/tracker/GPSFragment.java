@@ -95,7 +95,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
 
         long currentTimeMillis = System.currentTimeMillis();
         //An hour
-        int locationHistoryInterval = 60 * 60 * 1000;
+        int locationHistoryInterval = 3600;
 
         if (currentTimeMillis - lastLocationUpdateInterval >= locationHistoryInterval) {
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
