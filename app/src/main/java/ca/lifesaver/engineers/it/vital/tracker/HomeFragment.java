@@ -39,6 +39,7 @@ import java.util.HashMap;
 public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDataChangedListener {
     private FirebaseAuth mAuth;
     private TextView userAccountName;
+    private TextView battery;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -93,25 +94,9 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
             }
         });
 
-        Button turnon = view.findViewById(R.id.turnon);
-        TextView battery = view.findViewById(R.id.devicebattery);
-        turnon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String currentText = turnon.getText().toString();
-                if ("Turn On".equals(currentText)) {
-                    turnon.setText("Turn Off");
-                    // Logic to turn the device ON goes here
-                    Toast.makeText(getActivity(), "Device turned ON", Toast.LENGTH_SHORT).show();
-                    battery.setText("Battery Level: 100%");
-                } else {
-                    turnon.setText("Turn On");
-                    // Logic to turn the device OFF goes here
-                    battery.setText("Battery Level: OFF");
-                    Toast.makeText(getActivity(), "Device turned OFF", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        battery = view.findViewById(R.id.devicebattery);
+
+
 
         return view;
     }
@@ -200,6 +185,17 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         tvHeartRateHome.setText(heartRate);
         tvOxygenLevel.setText(oxygenLevel);
         tvBodyTemp.setText(bodyTemp);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateDeviceStateText();
+    }
+
+    private void updateDeviceStateText() {
+        boolean isTurnedOn = AppPreferencesManager.isDeviceTurnedOn(requireContext());
+        battery.setText(isTurnedOn ? "100%" : "OFF");
     }
 
 }
