@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,10 +48,10 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         String username = mAuth.getCurrentUser().getDisplayName();
         userAccountName.setText(capitalizeFirstLetter(username));
 
-        DeviceFragment deviceFragment = new DeviceFragment();
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.deviceContainer, deviceFragment)
-                .commit();
+        //DeviceFragment deviceFragment = new DeviceFragment();
+        //getChildFragmentManager().beginTransaction()
+                //.replace(R.id.deviceContainer, deviceFragment)
+                //.commit();
 
         GPSFragment gpsFragment = new GPSFragment();
         getChildFragmentManager().beginTransaction()
@@ -89,6 +90,26 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
             @Override
             public void onClick(View v) {
                 showFallDetectionDialog();
+            }
+        });
+
+        Button turnon = view.findViewById(R.id.turnon);
+        TextView battery = view.findViewById(R.id.devicebattery);
+        turnon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String currentText = turnon.getText().toString();
+                if ("Turn On".equals(currentText)) {
+                    turnon.setText("Turn Off");
+                    // Logic to turn the device ON goes here
+                    Toast.makeText(getActivity(), "Device turned ON", Toast.LENGTH_SHORT).show();
+                    battery.setText("Battery Level: 100%");
+                } else {
+                    turnon.setText("Turn On");
+                    // Logic to turn the device OFF goes here
+                    battery.setText("Battery Level: OFF");
+                    Toast.makeText(getActivity(), "Device turned OFF", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -120,6 +120,50 @@
             android:elevation="4dp"
             android:padding="16dp">
             <!-- Placeholder for GPS content -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/devicename2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Device Name:"
+                    android:textSize="24sp"
+                    android:textColor="@color/white"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                <TextView
+                    android:id="@+id/devicename3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Test Device"
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                <TextView
+                    android:id="@+id/devicebattery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Battery Level: 100%"
+                    android:layout_marginTop="16dp"
+                    android:textSize="24sp"
+                    android:textColor="@color/white"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                <Button
+                    android:id="@+id/turnon"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="Turn On Device"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="bottom|center_horizontal"/>
+
+            </LinearLayout>
         </FrameLayout>
 
         <Button
