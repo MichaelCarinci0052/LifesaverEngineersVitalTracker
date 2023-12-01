@@ -1,31 +1,25 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
-import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,9 +53,9 @@ public class SettingsFragment extends Fragment {
     Switch notifswitch;
     String SWITCH_STATE_KEY = "switch_state";
     private static final String SHARED_PREFERENCES_KEY = "NotificationFragmentPrefs";
-    private static final String SWITCH_STATE = "notificationSwitchState";
+    public static final String SWITCH_STATE = "notificationSwitchState";
 
-    private SharedViewModal viewModel;
+    SharedViewModal viewModel;
 
 
 
@@ -185,7 +179,7 @@ public class SettingsFragment extends Fragment {
     }
 
 
-    private void saveInputToSharedPreferences(String input) {
+    void saveInputToSharedPreferences(String input) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("userText", input);
         editor.apply();
@@ -194,11 +188,11 @@ public class SettingsFragment extends Fragment {
         current.setText(currenthome2);
     }
 
-    private void updateSwitchText(Switch whichSwitch, boolean isSwitchOn) {
+    void updateSwitchText(Switch whichSwitch, boolean isSwitchOn) {
         whichSwitch.setText(isSwitchOn ? "On" : "Off");
     }
 
-    private void toggleNotifications() {
+    void toggleNotifications() {
         NotificationManager notificationManager = requireActivity().getSystemService(NotificationManager.class);
         if (notificationManager.getNotificationChannel("VITALS_CHANNEL_ID").getImportance() != NotificationManager.IMPORTANCE_NONE) {
             notificationManager.getNotificationChannel("VITALS_CHANNEL_ID").setImportance(NotificationManager.IMPORTANCE_NONE);
@@ -208,17 +202,18 @@ public class SettingsFragment extends Fragment {
     }
 
 
-    private void saveSwitchState(boolean isChecked) {
+    void saveSwitchState(boolean isChecked) {
         SharedPreferences preferences = requireActivity().getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(SWITCH_STATE, isChecked);
         editor.apply();
     }
 
-    private void restoreSwitchState() {
+    boolean restoreSwitchState() {
         SharedPreferences preferences = requireActivity().getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
         boolean switchState = preferences.getBoolean(SWITCH_STATE, true);
         notifswitch.setChecked(switchState);
+        return switchState;
     }
 
 
