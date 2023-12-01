@@ -169,7 +169,7 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
 
         return capitalizedString.toString().trim(); // Return the concatenated string
     }
-    private void navigateToGpsScreen() {
+    void navigateToGpsScreen() {
         GPSFragment gpsFragment = new GPSFragment();
         // Optionally add arguments to the fragment before adding it
         // gpsFragment.setArguments(bundle);

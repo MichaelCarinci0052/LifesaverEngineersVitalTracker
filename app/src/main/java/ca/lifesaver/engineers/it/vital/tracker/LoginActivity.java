@@ -2,24 +2,17 @@ package ca.lifesaver.engineers.it.vital.tracker;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -35,21 +28,14 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.OAuthProvider;
-import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 
@@ -110,9 +96,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
-                };
+            };
 
-            });
+        });
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isValidEmail()&&isValidPassword()){
+                if(isValidEmail("valid.email@example.com")&&isValidPassword("123456")){
                     String username = editTextUsername.getText().toString().trim();
                     String password = editTextPassword.getText().toString().trim();
 
@@ -172,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                isValidEmail();
+                isValidEmail("valid.email@example.com");
             }
         });
 
@@ -189,13 +175,13 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                isValidPassword();
+                isValidPassword("123456");
             }
         });
 
 
     }
-    private boolean isValidEmail() {
+    public boolean isValidEmail(String s) {
         if (editTextUsername.length() == 0) {
             emailLayout.setError("This field is required");
             return false;
@@ -204,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean isValidPassword() {
+    public boolean isValidPassword(String s) {
         if (editTextPassword.length() == 0) {
             passwordLayout.setError("Password is required");
             return false;
@@ -256,25 +242,25 @@ public class LoginActivity extends AppCompatActivity {
                                 } else {
                                     Log.w("Firestore", "Error getting document.", task1.getException());
                                 }
-                        });
+                            });
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putBoolean("RememberMe", checkBoxRememberMe.isChecked());
                             editor.apply();
-                        Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
-                        intent.putExtra("START_MAIN_ACTIVITY", true);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        // Sign in failed
-                        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Authentication Failed!", Snackbar.LENGTH_SHORT);
-                        View snackbarView = snackbar.getView();
-                        FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)snackbarView.getLayoutParams();
-                        params.gravity = Gravity.TOP;
-                        snackbarView.setLayoutParams(params);
-                        snackbar.show();
+                            Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
+                            intent.putExtra("START_MAIN_ACTIVITY", true);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Sign in failed
+                            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Authentication Failed!", Snackbar.LENGTH_SHORT);
+                            View snackbarView = snackbar.getView();
+                            FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)snackbarView.getLayoutParams();
+                            params.gravity = Gravity.TOP;
+                            snackbarView.setLayoutParams(params);
+                            snackbar.show();
+                        }
                     }
-                }
-    });
+                });
     }
     private void getProfilePictureFromFirebase(){
         FirebaseFunctions.getInstance()
