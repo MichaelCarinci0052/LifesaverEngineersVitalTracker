@@ -89,8 +89,8 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         locationMap.put("latitude", latitude);
         locationMap.put("longitude", longitude);
 
-        fbLocation.collection("location_data")
-                .document("current_location")
+        fbLocation.collection("current_location")
+                .document("location")
                 .set(locationMap);
 
         long currentTimeMillis = System.currentTimeMillis();
@@ -100,10 +100,8 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         if (currentTimeMillis - lastLocationUpdateInterval >= locationHistoryInterval) {
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
 
-            fbLocation.collection("location_data")
-                    .document("location_history")
-                    .collection(timestamp)
-                    .document("coordinates")
+            fbLocation.collection("location_history")
+                    .document(timestamp)
                     .set(locationMap);
 
             lastLocationUpdateInterval = currentTimeMillis;
