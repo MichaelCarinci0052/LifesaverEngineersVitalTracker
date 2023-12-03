@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,18 +112,33 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
 
 
     private void showFallDetectionDialog() {
-        new AlertDialog.Builder(getContext())
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle("Fall Detected")
-                .setMessage("We've detected a fall, would you like to alert authorities?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setMessage("We've detected a fall, calling emergency services in: 60")
+                .setPositiveButton("Call Now", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // Code to alert authorities
+                        // Code to immediately call emergency services
                     }
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("Don't Call", null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+                .create();
+
+        // Timer to update the dialog message every second
+        new CountDownTimer(60000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                dialog.setMessage("We've detected a fall, calling emergency services in: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                dialog.setMessage("Calling emergency services now...");
+                // Code to call emergency services after the countdown
+            }
+        }.start();
+
+        dialog.show();
     }
+
 
     public interface OnFragmentInteractionListener {
         void onSwitchToVitalsFragment();
