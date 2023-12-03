@@ -140,9 +140,7 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
     private void configureBottomNavigationView(){
         FragmentManager fragmentManager = getSupportFragmentManager();
         this.bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            return switchFragment(item.getItemId());
-        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
     }
 
     private boolean switchFragment(int itemId) {

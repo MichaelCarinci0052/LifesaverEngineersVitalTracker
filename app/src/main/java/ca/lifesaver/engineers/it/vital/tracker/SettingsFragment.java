@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -175,6 +176,14 @@ public class SettingsFragment extends Fragment {
         });
 
         restoreSwitchState();
+
+        Button restoreButton = view.findViewById(R.id.button);
+        restoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                restoreDefaultSettings();
+            }
+        });
         return view;
     }
 
@@ -214,6 +223,27 @@ public class SettingsFragment extends Fragment {
         boolean switchState = preferences.getBoolean(SWITCH_STATE, true);
         notifswitch.setChecked(switchState);
         return switchState;
+    }
+
+    private void restoreDefaultSettings() {
+        // Reset location text
+        editText.setText("");
+
+        // Reset other settings to their defaults if needed
+        lockswitch.setChecked(false); //
+        notifswitch.setChecked(true); //
+
+        // Save the default values to SharedPreferences
+        saveInputToSharedPreferences("");
+        sharedPreferences.edit().putBoolean(SWITCH_STATE_KEY, false).apply();
+        saveSwitchState(true);
+
+        // Update UI as needed
+        updateSwitchText(lockswitch, false);
+        updateSwitchText(notifswitch, true);
+
+        // Show a message or perform any other actions after restoring defaults
+        Toast.makeText(requireContext(), "Settings restored to default", Toast.LENGTH_SHORT).show();
     }
 
 
