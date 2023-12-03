@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,14 +87,20 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
                 mListener.onSwitchToDeviceFragment();
             }
         });
-
         Button btnSimulateFall = view.findViewById(R.id.btnSimulateFall);
-        btnSimulateFall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFallDetectionDialog();
+        btnSimulateFall.setOnClickListener(v -> {
+            showFallDetectionDialog();
+        });
+
+        // Initialize the ToggleButton for fall detection
+        ToggleButton toggleFallDetection = view.findViewById(R.id.toggleFallDetection);
+        toggleFallDetection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                btnSimulateFall.setEnabled(isChecked);
             }
         });
+
+
 
         battery = view.findViewById(R.id.devicebattery);
 

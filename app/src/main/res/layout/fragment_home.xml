@@ -166,13 +166,35 @@
             </LinearLayout>
         </FrameLayout>
 
+        <!-- Fall Detection Label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fall Detection"
+            android:fontFamily="@font/roboto_black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Toggle Button for Fall Detection -->
+        <ToggleButton
+            android:id="@+id/toggleFallDetection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOff="Off"
+            android:textOn="On"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Simulate Fall Detection Button -->
         <Button
             android:id="@+id/btnSimulateFall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Simulate Fall Detection"
             android:layout_marginTop="16dp"
+            android:enabled="false"
             android:layout_gravity="bottom"/>
+
 
 
     </LinearLayout>
