@@ -145,34 +145,56 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                 <TextView
-                    android:id="@+id/devicebattery"
+                    android:id="@+id/devicestate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Battery Level: 100%"
+                    android:text="Device State:"
                     android:layout_marginTop="16dp"
                     android:textSize="24sp"
                     android:textColor="@color/white"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-                <Button
-                    android:id="@+id/turnon"
-                    android:layout_width="250dp"
+                <TextView
+                    android:id="@+id/devicebattery"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="Turn On Device"
-                    android:layout_marginTop="5dp"
-                    android:layout_gravity="bottom|center_horizontal"/>
+                    android:text="OFF"
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
             </LinearLayout>
         </FrameLayout>
 
+        <!-- Fall Detection Label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fall Detection"
+            android:fontFamily="@font/roboto_black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Toggle Button for Fall Detection -->
+        <ToggleButton
+            android:id="@+id/toggleFallDetection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOff="Off"
+            android:textOn="On"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Simulate Fall Detection Button -->
         <Button
             android:id="@+id/btnSimulateFall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Simulate Fall Detection"
             android:layout_marginTop="16dp"
+            android:enabled="false"
             android:layout_gravity="bottom"/>
+
 
 
     </LinearLayout>

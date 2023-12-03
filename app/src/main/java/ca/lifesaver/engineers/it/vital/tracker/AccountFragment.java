@@ -39,9 +39,13 @@ import com.bumptech.glide.module.AppGlideModule;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.common.api.Response;
 import com.google.android.gms.common.util.IOUtils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.annotations.NotNull;
@@ -164,10 +168,55 @@ public class AccountFragment extends Fragment  {
                 requireActivity().finish();
             }
         });
+
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // no function for now
+                // Validate the input fields
+                String newPassword = passwordEditText.getText().toString().trim();  // Get the new password from the EditText
+
+                if (newPassword.isEmpty()) {
+                    // Handle empty input fields
+                    Toast.makeText(requireContext(), "Please enter a new password", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Get the currently logged-in user
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    // Re-authenticate the user with their current credentials
+                    AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), "userCurrentPassword");
+
+                    user.reauthenticate(credential)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Re-authentication successful, now change the password
+                                    user.updatePassword(newPassword)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    // Password updated successfully
+                                                    Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Handle failure to update password
+                                                    Toast.makeText(requireContext(), "Failed to change password: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle failure to re-authenticate
+                                    Toast.makeText(requireContext(), "Re-authentication failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
             }
         });
 

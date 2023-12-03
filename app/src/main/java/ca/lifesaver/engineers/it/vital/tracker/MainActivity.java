@@ -140,9 +140,7 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
     private void configureBottomNavigationView(){
         FragmentManager fragmentManager = getSupportFragmentManager();
         this.bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            return switchFragment(item.getItemId());
-        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
     }
 
     private boolean switchFragment(int itemId) {
@@ -221,6 +219,8 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Handling location permission
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 showPermissionSnackbar(getString(R.string.granted));
@@ -228,7 +228,16 @@ public class MainActivity extends Menu implements HomeFragment.OnFragmentInterac
                 showPermissionSnackbar(getString(R.string.denied));
             }
         }
+
+        // Handling phone call permission for HomeFragment
+        if (requestCode == HomeFragment.REQUEST_PHONE_CALL) {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_layout);
+            if (fragment instanceof HomeFragment) {
+                fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        }
     }
+
     private void showPermissionSnackbar(String message) {
         if (rootView != null) {
             Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();

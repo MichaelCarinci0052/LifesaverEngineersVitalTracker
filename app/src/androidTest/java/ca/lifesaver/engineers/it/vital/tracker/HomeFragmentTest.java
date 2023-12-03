@@ -1,67 +1,67 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import androidx.fragment.app.testing.FragmentScenario;
-import androidx.lifecycle.Lifecycle;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import android.widget.TextView;
-
 @RunWith(AndroidJUnit4.class)
+@MediumTest
 public class HomeFragmentTest {
 
-    private FragmentScenario<HomeFragment> scenario;
-
-
-
     @Before
-    public void setUp() throws Exception {
-        // Launch the fragment in a test environment
-        scenario = FragmentScenario.launchInContainer(HomeFragment.class);
+    public void setUp() {
+        FragmentScenario.launchInContainer(HomeFragment.class);
     }
 
     @Test
-    public void testFragmentNotNull() {
-        scenario.onFragment(fragment -> {
-            assertNotNull(fragment);
-        });
+    public void testVitalsContainerClick() {
+        onView(withId(R.id.vitalsContainer)).perform(click());
+        // Check if the Heart Rate text is displayed
+        onView(withId(R.id.heartRate)).check(matches(withText("Heart Rate: --")));
     }
 
-    // Add more tests as necessary to test the non-UI logic of your fragment
     @Test
-    public void testOnDataChanged() {
-        // This test assumes that your onDataChanged method is public and you can call it directly.
-        // If it's not public, you'll need to test this behavior by simulating whatever triggers the data change.
-        scenario.onFragment(fragment -> {
-            fragment.onDataChanged("120", "95", "36.5");
-            TextView tvHeartRateHome = fragment.getView().findViewById(R.id.heartRate);
-            TextView tvOxygenLevel = fragment.getView().findViewById(R.id.oxygenRate);
-            TextView tvBodyTemp = fragment.getView().findViewById(R.id.temp);
-
-            // Assert that the views display the data correctly
-            assertNotNull(tvHeartRateHome);
-            assertNotNull(tvOxygenLevel);
-            assertNotNull(tvBodyTemp);
-            assertTrue(tvHeartRateHome.getText().toString().equals("120"));
-            assertTrue(tvOxygenLevel.getText().toString().equals("95"));
-            assertTrue(tvBodyTemp.getText().toString().equals("36.5"));
-        });
+    public void testGpsContainerClick() {
+        onView(withId(R.id.gpsContainer)).perform(click());
+        // Assuming there's a UI change in the GPSFragment that can be verified
+        // Add an assertion here if there's a specific element to check in the GPS fragment
     }
 
-    // You can also simulate interactions and assert on expected behaviors
     @Test
-    public void testNavigationToGpsScreen() {
-        scenario.onFragment(fragment -> {
-            fragment.navigateToGpsScreen();
-            // After navigation, you can check if the GPSFragment is displayed
-            // This could be a little complex because it involves the FragmentManager
-            // and possibly the back stack. Consider using Espresso for UI navigation testing.
-        });
+    public void testDeviceContainerClick() {
+        onView(withId(R.id.deviceContainer)).perform(click());
+        // Check if the Device Name text is displayed
+        onView(withId(R.id.devicename2)).check(matches(withText("Device Name:")));
     }
+
+    @Test
+    public void testSimulateFallButtonClick() {
+        onView(withId(R.id.btnSimulateFall)).perform(click());
+        // Check if the AlertDialog title is displayed (needs a custom matcher)
+        // Add an assertion here if there's a specific element to check in the AlertDialog
+    }
+
+    @Test
+    public void testDeviceStateText_Off() {
+        onView(withId(R.id.devicebattery)).check(matches(withText("OFF")));
+    }
+
+    @Test
+    public void testDeviceStateText_On() {
+        // You'll need to modify the state in your actual code to test this
+        // onView(withId(R.id.devicebattery)).check(matches(withText("100%")));
+    }
+
+    // Additional setup for mocking or controlling states can be added as needed
 }

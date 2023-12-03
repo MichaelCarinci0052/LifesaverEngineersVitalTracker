@@ -1,6 +1,8 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,20 +23,20 @@ import androidx.fragment.app.Fragment;
  */
 
 public class DeviceFragment extends Fragment {
-
+    private TextView battery;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device, container, false);
-        TextView battery = view.findViewById(R.id.batteryLifeTextView);
+        battery = view.findViewById(R.id.batteryLifeTextView);
         // Find the existing toggle device button and set up the click listener
-        Button toggleDeviceButton = view.findViewById(R.id.toggleDeviceButton);
         TextView deviceSelectedTextView = view.findViewById(R.id.deviceselected); // Add this line
+        Button toggleDeviceButton = view.findViewById(R.id.toggleDeviceButton);
         toggleDeviceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String currentText = toggleDeviceButton.getText().toString();
-                if ("Turn On".equals(currentText)) {
+                boolean isTurnedOn = AppPreferencesManager.isDeviceTurnedOn(requireContext());
+                if (!isTurnedOn) {
                     toggleDeviceButton.setText("Turn Off");
                     // Logic to turn the device ON goes here
                     Toast.makeText(getActivity(), "Device turned ON", Toast.LENGTH_SHORT).show();
@@ -45,6 +47,10 @@ public class DeviceFragment extends Fragment {
                     battery.setText("OFF");
                     Toast.makeText(getActivity(), "Device turned OFF", Toast.LENGTH_SHORT).show();
                 }
+
+                // Toggle the device state in the shared preferences
+                AppPreferencesManager.setDeviceState(requireContext(), !isTurnedOn);
+                updateDeviceStateText();
             }
         });
 
@@ -76,5 +82,13 @@ public class DeviceFragment extends Fragment {
             }
         });
         builder.show();
+    }
+
+    private void updateDeviceStateText() {
+        boolean isTurnedOn = AppPreferencesManager.isDeviceTurnedOn(requireContext());
+        TextView deviceStateTextView = getActivity().findViewById(R.id.batteryLifeTextView);
+        if (deviceStateTextView != null) {
+            deviceStateTextView.setText(isTurnedOn ? "100%" : "OFF");
+        }
     }
 }
