@@ -49,10 +49,10 @@ import java.util.HashMap;
 public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
 
-    private EditText editTextUsername;
-    private EditText editTextPassword;
-    private TextInputLayout passwordLayout;
-    private TextInputLayout emailLayout;
+    static EditText editTextUsername;
+    static EditText editTextPassword;
+    private static TextInputLayout passwordLayout;
+    private static TextInputLayout emailLayout;
     private Button buttonLogin;
     private Button buttonRegister;
 
@@ -200,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         passwordLayout.setError(null); // Clear error
         return true;
+
     }
 
     @Override
