@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -18,10 +20,14 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.Manifest;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -40,6 +46,7 @@ import java.util.HashMap;
  */
 
 public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDataChangedListener {
+    public static final int REQUEST_PHONE_CALL = 1;
     private FirebaseAuth mAuth;
     private TextView userAccountName;
     private TextView battery;
@@ -109,6 +116,18 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
 
         return view;
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PHONE_CALL) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                makePhoneCall();
+            } else {
+                // Handle the case where the user denies the permission.
+                Toast.makeText(getContext(), "Permission denied to make phone calls", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
 
     private void showFallDetectionDialog() {
@@ -117,27 +136,46 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
                 .setMessage("We've detected a fall, calling emergency services in: 60")
                 .setPositiveButton("Call Now", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // Code to immediately call emergency services
+                        makePhoneCall();
                     }
                 })
                 .setNegativeButton("Don't Call", null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .create();
 
-        // Timer to update the dialog message every second
-        new CountDownTimer(60000, 1000) {
+        CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
             public void onTick(long millisUntilFinished) {
                 dialog.setMessage("We've detected a fall, calling emergency services in: " + millisUntilFinished / 1000);
             }
 
             public void onFinish() {
                 dialog.setMessage("Calling emergency services now...");
-                // Code to call emergency services after the countdown
+                makePhoneCall();
             }
-        }.start();
+        };
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                countDownTimer.cancel();
+            }
+        });
 
         dialog.show();
+        countDownTimer.start();
     }
+
+    private void makePhoneCall() {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:6473895434"));
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
+        } else {
+            startActivity(callIntent);
+        }
+    }
+
+
 
 
     public interface OnFragmentInteractionListener {
