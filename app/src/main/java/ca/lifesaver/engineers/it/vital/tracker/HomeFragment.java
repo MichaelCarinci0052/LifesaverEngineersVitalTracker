@@ -50,6 +50,7 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
     private FirebaseAuth mAuth;
     private TextView userAccountName;
     private TextView battery;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -182,6 +183,7 @@ public class HomeFragment extends Fragment implements VitalsFragment.OnVitalsDat
         void onSwitchToVitalsFragment();
         void onSwitchToGPSFragment();
         void onSwitchToDeviceFragment();
+
     }
 
     private OnFragmentInteractionListener mListener;
