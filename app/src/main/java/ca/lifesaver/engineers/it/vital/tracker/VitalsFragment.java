@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -84,6 +86,10 @@ public class VitalsFragment extends Fragment {
     private Random random;
     private List<Map<String, Object>> vitalsDataBatch = new ArrayList<>();
     private List<Map<String, Object>> writeVitalsDataBatch = new ArrayList<>();
+    ConnectivityManager connectivityManager;
+
+
+    private boolean online = true;
 
     public VitalsFragment() {
         // Required empty public constructor
@@ -113,23 +119,16 @@ public class VitalsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         handler = new Handler();
         random = new Random();
-
-
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_vitals, container, false);
 
-        return inflater.inflate(R.layout.fragment_vitals, container, false);
+
+        return view;
     }
     private String getCurrentFormattedDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -164,49 +163,74 @@ public class VitalsFragment extends Fragment {
         updateRunnable = new Runnable() {
             @Override
             public void run() {
-                // Generate random data
-                int heartRate = 60 + random.nextInt(40);  // Random value between 60 and 100
-                int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
-                float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
+                ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                if(connectivityManager != null) {
+                    NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                    if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                        // Generate random data
+                        int heartRate = 60 + random.nextInt(40);  // Random value between 60 and 100
+                        int oxygenLevel = 90 + random.nextInt(10);  // Random value between 90 and 100
+                        float bodyTemp = 97.0f + random.nextFloat() * 3.0f;  // Random value between 97.0 and 100.0
 
-                    String formattedDateTime = getCurrentFormattedDateTime();
-                    String formattedDate = getCurrentFormattedDate();
-                    DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document(formattedDate);
+                        String formattedDateTime = getCurrentFormattedDateTime();
+                        String formattedDate = getCurrentFormattedDate();
+                        DocumentReference vitalsDocRef = db.collection("userId").document(userId).collection("vitals").document(formattedDate);
 
-                    Map<String, Object> vitalsDataMap = new HashMap<>();
-                    vitalsDataMap.put("heartRate", heartRate);
-                    vitalsDataMap.put("oxygenLevel", oxygenLevel);
-                    vitalsDataMap.put("bodyTemp", bodyTemp);
-                    vitalsDataMap.put("timestamp", formattedDateTime);
-                    vitalsDataBatch.add(vitalsDataMap);
-                    if (vitalsDataBatch.size() >= BATCH_SIZE) {
-                        writeBatchToFirestore();
-                        vitalsDataBatch.clear();
-                }
+                        Map<String, Object> vitalsDataMap = new HashMap<>();
+                        vitalsDataMap.put("heartRate", heartRate);
+                        vitalsDataMap.put("oxygenLevel", oxygenLevel);
+                        vitalsDataMap.put("bodyTemp", bodyTemp);
+                        vitalsDataMap.put("timestamp", formattedDateTime);
+                        vitalsDataBatch.add(vitalsDataMap);
+                        if (vitalsDataBatch.size() >= BATCH_SIZE) {
+                            writeBatchToFirestore();
+                            vitalsDataBatch.clear();
+                        }
 
 
-                if (heartRate < 60 || heartRate > 100) {
-                    if (notifs)  {sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");};
-                }
-                if (oxygenLevel < 91) {
-                    if (notifs)  {sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");};
-                }
-                if (bodyTemp < 97.0f || bodyTemp > 97.1f) {
-                    if (notifs)  {
-                        sendNotification("Abnormal Body Temperature", String.format("Detected body temperature: %.1f°F", bodyTemp)
-                        );};
-                }
+                        if (heartRate < 60 || heartRate > 100) {
+                            if (notifs) {
+                                sendNotification("Abnormal Heart Rate", "Detected heart rate: " + heartRate + " BPM");
+                            }
+                            ;
+                        }
+                        if (oxygenLevel < 91) {
+                            if (notifs) {
+                                sendNotification("Low Oxygen Level", "Detected oxygen level: " + oxygenLevel + "%");
+                            }
+                            ;
+                        }
+                        if (bodyTemp < 97.0f || bodyTemp > 97.1f) {
+                            if (notifs) {
+                                sendNotification("Abnormal Body Temperature", String.format("Detected body temperature: %.1f°F", bodyTemp)
+                                );
+                            }
+                            ;
+                        }
 
-                // Update the UI
-                tvHeartRate.setText( heartRate + " BPM");
-                tvOxygenLevel.setText(oxygenLevel + "%");
-                tvBodyTemp.setText(String.format("%.1f°F", bodyTemp));
-                if (mListener != null) {
-                    mListener.onDataChanged(
-                            "Heart Rate: " + heartRate + " BPM",
-                            "Oxygen Level: " + oxygenLevel + "%",
-                            String.format("Body Temperature: %.1f°F", bodyTemp)
-                    );
+                        // Update the UI
+                        tvHeartRate.setText(heartRate + " BPM");
+                        tvOxygenLevel.setText(oxygenLevel + "%");
+                        tvBodyTemp.setText(String.format("%.1f°F", bodyTemp));
+                        if (mListener != null) {
+                            mListener.onDataChanged(
+                                    "Heart Rate: " + heartRate + " BPM",
+                                    "Oxygen Level: " + oxygenLevel + "%",
+                                    String.format("Body Temperature: %.1f°F", bodyTemp)
+                            );
+                        }
+                    } else {
+                        tvHeartRate.setText("Offline");
+                        tvOxygenLevel.setText("Offline");
+                        tvBodyTemp.setText(String.format("Offline"));
+                        if (mListener != null) {
+                            mListener.onDataChanged(
+                                    "Heart Rate: Offline",
+                                    "Oxygen Level: Offline",
+                                    String.format("Body Temperature: Offline")
+                            );
+                        }
+                    }
                 }
                 // Schedule the next update
                 handler.postDelayed(this, 2000);  // Update every 2 seconds
