@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="32dp">
+        android:padding="32dp"
+        android:id="@+id/homescreen">
 
         <!-- User's Username -->
         <TextView
