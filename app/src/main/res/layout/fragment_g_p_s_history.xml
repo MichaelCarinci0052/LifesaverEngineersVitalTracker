@@ -210,7 +210,7 @@
             android:id="@+id/button10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clear Markers" />
+            android:text="@string/clear_markers" />
     </LinearLayout>
 
 </LinearLayout>

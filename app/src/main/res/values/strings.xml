@@ -70,4 +70,5 @@
     <string name="register">Register</string>
     <string name="deviceinfo">Device Information</string>
     <string name="add_to_map">Add to Map</string>
+    <string name="clear_markers">Clear Markers</string>
 </resources>

@@ -61,12 +61,14 @@
     <string name="review">Racontez-nous comment nous avons fait !</string>
     <string name="gps_history">Historique GPS</string>
     <string name="device">Appareil</string>
-    <string name="select_date">Select Date</string>
-    <string name="location2">Home \nLocation</string>
-    <string name="back">Back</string>
-    <string name="select_time">Select Time</string>
-    <string name="login">Login</string>
-    <string name="remember_me">Remember me</string>
-    <string name="register">Register</string>
-    <string name="add_to_map">Add to Map</string>
+    <string name="select_date">Sélectionner une date</string>
+    <string name="location2">Accueil \nLocalisation</string>
+    <string name="back">Dos</string>
+    <string name="select_time">Sélectionnez l\'heure</string>
+    <string name="login">Se connecter</string>
+    <string name="remember_me">Souviens-toi de moi</string>
+    <string name="register">Registre</string>
+    <string name="deviceinfo">Informations sur l'appareil</string>
+    <string name="add_to_map">Ajouter à la carte</string>
+    <string name="clear_markers">Effacer les marqueurs</string>
 </resources>
