@@ -46,10 +46,10 @@ import java.util.Map;
 import java.util.Objects;
 
 public class GPSHistoryFragment extends Fragment {
-    TextView[] timestampTextViews = new TextView[10];
+    TextView[] timestampTextViews = new TextView[9];
     Button[] buttons = new Button[10];
-    double[] latitude = new double[10];
-    double[] longitude = new double[10];
+    double[] latitude = new double[9];
+    double[] longitude = new double[9];
     GPSSharedViewModel viewModel;
 
     public GPSHistoryFragment() {
@@ -75,7 +75,6 @@ public class GPSHistoryFragment extends Fragment {
         timestampTextViews[6] = view.findViewById(R.id.textView7);
         timestampTextViews[7] = view.findViewById(R.id.textView8);
         timestampTextViews[8] = view.findViewById(R.id.textView9);
-        timestampTextViews[9] = view.findViewById(R.id.textView10);
 
         buttons[0] = view.findViewById(R.id.button1);
         buttons[1] = view.findViewById(R.id.button2);
@@ -140,8 +139,7 @@ public class GPSHistoryFragment extends Fragment {
         });
 
         buttons[9].setOnClickListener(v -> {
-            viewModel.setLatitude(latitude[9]);
-            viewModel.setLongitude(longitude[9]);
+            viewModel.setDelete(true);
         });
 
         return view;
@@ -155,7 +153,7 @@ public class GPSHistoryFragment extends Fragment {
         CollectionReference locationHistoryRef = db.collection("userId").document(userId)
                 .collection("location_history");
 
-        locationHistoryRef.orderBy(FieldPath.documentId(), Query.Direction.DESCENDING).limit(10).get()
+        locationHistoryRef.orderBy(FieldPath.documentId(), Query.Direction.DESCENDING).limit(9).get()
                 .addOnCompleteListener(task -> {
                    if(task.isSuccessful()){
                        List<DocumentSnapshot> documents = task.getResult().getDocuments();
@@ -163,7 +161,6 @@ public class GPSHistoryFragment extends Fragment {
                            if(i < timestampTextViews.length){
                                String timestamp = documents.get(i).getId();
                                timestampTextViews[i].setText(formatTimestamp(timestamp));
-
                                latitude[i] = documents.get(i).getDouble("latitude");
                                longitude[i] = documents.get(i).getDouble("longitude");
                            }

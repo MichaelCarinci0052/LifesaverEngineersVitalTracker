@@ -61,7 +61,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     double vmLong = 0.0;
     boolean isLatitudeSet = false;
     boolean isLongitudeSet = false;
-    boolean[] markerToggle = new boolean[10] ;
+    boolean markerDelete;
 
 
     @Override
@@ -86,12 +86,9 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
-
+        viewModel = new ViewModelProvider(requireActivity()).get(GPSSharedViewModel.class);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         createLocationCallback();
-
-
-
 
         return view;
     }
@@ -135,9 +132,6 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
 
-        viewModel = new ViewModelProvider(requireActivity()).get(GPSSharedViewModel.class);
-
-
 
         viewModel.getLatitude().observe(getViewLifecycleOwner(), latitude -> {
             if(latitude != null) {
@@ -162,6 +156,14 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     isLongitudeSet = false;
                     isLatitudeSet = false;
                 }
+            }
+        });
+
+        viewModel.getDelete().observe(getViewLifecycleOwner(), delete -> {
+            boolean mapMarkers = viewModel.getDelete().getValue();
+            if(mapMarkers){
+                mMap.clear();
+                viewModel.setDelete(false);
             }
         });
     }

@@ -10,7 +10,7 @@ public class GPSSharedViewModel extends ViewModel {
     private MutableLiveData<Boolean> delete = new MutableLiveData<>();
 
     public GPSSharedViewModel(){
-        delete.setValue(true);
+        delete.setValue(false);
     }
 
     public void setLatitude(double lat) {
@@ -36,4 +36,6 @@ public class GPSSharedViewModel extends ViewModel {
     public MutableLiveData<Boolean> getDelete(){
         return delete;
     }
+
+
 }
