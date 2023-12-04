@@ -5,6 +5,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +48,9 @@ import java.util.Objects;
 public class GPSHistoryFragment extends Fragment {
     TextView[] timestampTextViews = new TextView[10];
     Button[] buttons = new Button[10];
+    double[] latitude = new double[10];
+    double[] longitude = new double[10];
+    GPSSharedViewModel viewModel;
 
     public GPSHistoryFragment() {
         // Required empty public constructor
@@ -65,8 +77,72 @@ public class GPSHistoryFragment extends Fragment {
         timestampTextViews[8] = view.findViewById(R.id.textView9);
         timestampTextViews[9] = view.findViewById(R.id.textView10);
 
+        buttons[0] = view.findViewById(R.id.button1);
+        buttons[1] = view.findViewById(R.id.button2);
+        buttons[2] = view.findViewById(R.id.button3);
+        buttons[3] = view.findViewById(R.id.button4);
+        buttons[4] = view.findViewById(R.id.button5);
+        buttons[5] = view.findViewById(R.id.button6);
+        buttons[6] = view.findViewById(R.id.button7);
+        buttons[7] = view.findViewById(R.id.button8);
+        buttons[8] = view.findViewById(R.id.button9);
+        buttons[9] = view.findViewById(R.id.button10);
+
+        viewModel = new ViewModelProvider(requireActivity()).get(GPSSharedViewModel.class);
+
         // Fetch and display location history
         fetchAndDisplayLocationHistory();
+
+
+        buttons[0].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[0]);
+            viewModel.setLongitude(longitude[0]);
+        });
+
+        buttons[1].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[1]);
+            viewModel.setLongitude(longitude[1]);
+        });
+
+        buttons[2].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[2]);
+            viewModel.setLongitude(longitude[2]);
+        });
+
+        buttons[3].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[3]);
+            viewModel.setLongitude(longitude[3]);
+        });
+
+        buttons[4].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[4]);
+            viewModel.setLongitude(longitude[4]);
+        });
+
+        buttons[5].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[5]);
+            viewModel.setLongitude(longitude[5]);
+        });
+
+        buttons[6].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[6]);
+            viewModel.setLongitude(longitude[6]);
+        });
+
+        buttons[7].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[7]);
+            viewModel.setLongitude(longitude[7]);
+        });
+
+        buttons[8].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[8]);
+            viewModel.setLongitude(longitude[8]);
+        });
+
+        buttons[9].setOnClickListener(v -> {
+            viewModel.setLatitude(latitude[9]);
+            viewModel.setLongitude(longitude[9]);
+        });
 
         return view;
     }
@@ -86,23 +162,26 @@ public class GPSHistoryFragment extends Fragment {
                        for(int i = 0; i < documents.size(); i++){
                            if(i < timestampTextViews.length){
                                String timestamp = documents.get(i).getId();
+                               timestampTextViews[i].setText(formatTimestamp(timestamp));
 
-                               SimpleDateFormat originalFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
-                               SimpleDateFormat newFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-                               Date date = null;
-                               try {
-                                   date = originalFormat.parse(timestamp);
-                               } catch (ParseException e) {
-                                   throw new RuntimeException(e);
-                               }
-                               String formattedTimestamp = newFormat.format(date);
-
-
-                               timestampTextViews[i].setText(formattedTimestamp);
+                               latitude[i] = documents.get(i).getDouble("latitude");
+                               longitude[i] = documents.get(i).getDouble("longitude");
                            }
-
                        }
                    }
                 });
     }
+
+    private String formatTimestamp(String timestamp) {
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        SimpleDateFormat newFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        try {
+            Date date = originalFormat.parse(timestamp);
+            return newFormat.format(date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

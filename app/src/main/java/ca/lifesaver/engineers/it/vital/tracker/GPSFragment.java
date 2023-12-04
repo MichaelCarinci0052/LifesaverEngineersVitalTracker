@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -47,12 +50,18 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     }
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private GoogleMap mMap;
+    public GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private boolean locationUpdatesStarted = false;
     private DocumentReference fbLocation;
     private long lastLocationUpdateInterval = 0;
+    private GPSSharedViewModel viewModel;
+    double vmLat = 0.0;
+    double vmLong = 0.0;
+    boolean isLatitudeSet = false;
+    boolean isLongitudeSet = false;
+    boolean[] markerToggle = new boolean[10] ;
 
 
     @Override
@@ -81,8 +90,13 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         createLocationCallback();
 
+
+
+
         return view;
     }
+
+
 
     private void updateLocationToFirebase(double latitude, double longitude) {
         Map<String, Object> locationMap = new HashMap<>();
@@ -111,7 +125,6 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
@@ -121,6 +134,36 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
+
+        viewModel = new ViewModelProvider(requireActivity()).get(GPSSharedViewModel.class);
+
+
+
+        viewModel.getLatitude().observe(getViewLifecycleOwner(), latitude -> {
+            if(latitude != null) {
+                vmLat = viewModel.getLatitude().getValue();
+                isLatitudeSet = true;
+                if(isLongitudeSet){
+                    LatLng vmLoc = new LatLng(vmLat, vmLong);
+                    mMap.addMarker(new MarkerOptions().position(vmLoc));
+                    isLongitudeSet = false;
+                    isLatitudeSet = false;
+                }
+            }
+        });
+
+        viewModel.getLongitude().observe(getViewLifecycleOwner(), longitude -> {
+            if(longitude != null){
+                vmLong = viewModel.getLongitude().getValue();
+                isLongitudeSet = true;
+                if(isLatitudeSet){
+                    LatLng vmLoc = new LatLng(vmLat, vmLong);
+                    mMap.addMarker(new MarkerOptions().position(vmLoc));
+                    isLongitudeSet = false;
+                    isLatitudeSet = false;
+                }
+            }
+        });
     }
 
     private void createLocationCallback() {
@@ -130,10 +173,6 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                 if (isAdded()) {
                     for (Location location : locationResult.getLocations()) {
                         // Update the user's current location on the map
-                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.clear();
-                        mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.mylocation)));
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                         updateLocationToFirebase(location.getLatitude(), location.getLongitude());
                     }
                 }
@@ -193,4 +232,6 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         fusedLocationClient.removeLocationUpdates(locationCallback);
         locationUpdatesStarted = false;
     }
+
+
 }
