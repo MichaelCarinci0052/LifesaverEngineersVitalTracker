@@ -69,4 +69,5 @@
     <string name="remember_me">Remember me</string>
     <string name="register">Register</string>
     <string name="deviceinfo">Device Information</string>
+    <string name="add_to_map">Add to Map</string>
 </resources>
