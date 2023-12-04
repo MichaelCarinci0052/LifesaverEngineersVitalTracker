@@ -68,7 +68,7 @@
     <string name="login">Se connecter</string>
     <string name="remember_me">Souviens-toi de moi</string>
     <string name="register">Registre</string>
-    <string name="deviceinfo">Informations sur l'appareil</string>
+    <string name="deviceinfo">Informations sur l\'appareil</string>
     <string name="add_to_map">Ajouter à la carte</string>
     <string name="clear_markers">Effacer les marqueurs</string>
 </resources>
