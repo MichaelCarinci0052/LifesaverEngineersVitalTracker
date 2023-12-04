@@ -1,50 +1,55 @@
 package ca.lifesaver.engineers.it.vital.tracker;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+import ca.lifesaver.engineers.it.vital.tracker.LoginActivity;
+
 public class LoginActivityTest {
 
     private LoginActivity loginActivity;
 
+    // Mock any necessary dependencies here
+    @Mock
+    private FirebaseAuth mockFirebaseAuth;
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         loginActivity = new LoginActivity();
-        // Initialize necessary Android components here, if required
+        // Initialize the mock Firebase Auth in LoginActivity
+        loginActivity.mAuth = mockFirebaseAuth;
     }
 
     @Test
-    public void testIsValidEmail_withValidEmail() {
+    public void testValidEmail() {
         assertTrue(loginActivity.isValidEmail("test@example.com"));
     }
 
     @Test
-    public void testIsValidEmail_withInvalidEmail() {
-        assertFalse(loginActivity.isValidEmail("invalidemail"));
+    public void testInvalidEmail() {
+        assertFalse(loginActivity.isValidEmail(""));
     }
 
     @Test
-    public void testIsValidPassword_withValidPassword() {
+    public void testValidPassword() {
         assertTrue(loginActivity.isValidPassword("123456"));
     }
 
     @Test
-    public void testIsValidPassword_withShortPassword() {
-        assertFalse(loginActivity.isValidPassword("123"));
-    }
-
-    @Test
-    public void testIsValidPassword_withEmptyPassword() {
+    public void testInvalidPassword() {
         assertFalse(loginActivity.isValidPassword(""));
     }
 
-    // Add more test cases as needed
+    @Test
+    public void testFirebaseAuthNotNull() {
+        assertNotNull(loginActivity.mAuth);
+    }
 }

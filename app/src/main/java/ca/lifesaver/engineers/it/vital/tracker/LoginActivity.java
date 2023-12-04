@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button buttonLogin;
     private Button buttonRegister;
 
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 9001;
     private CheckBox checkBoxRememberMe;
     private SharedViewModal viewModel;
