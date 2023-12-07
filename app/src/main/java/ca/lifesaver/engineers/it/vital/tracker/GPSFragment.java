@@ -90,6 +90,40 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         createLocationCallback();
 
+        viewModel.getLatitude().observe(getViewLifecycleOwner(), latitude -> {
+            if(latitude != null) {
+                vmLat = viewModel.getLatitude().getValue();
+                isLatitudeSet = true;
+                if(isLongitudeSet){
+                    LatLng vmLoc = new LatLng(vmLat, vmLong);
+                    mMap.addMarker(new MarkerOptions().position(vmLoc));
+                    isLongitudeSet = false;
+                    isLatitudeSet = false;
+                }
+            }
+        });
+
+        viewModel.getLongitude().observe(getViewLifecycleOwner(), longitude -> {
+            if(longitude != null){
+                vmLong = viewModel.getLongitude().getValue();
+                isLongitudeSet = true;
+                if(isLatitudeSet){
+                    LatLng vmLoc = new LatLng(vmLat, vmLong);
+                    mMap.addMarker(new MarkerOptions().position(vmLoc));
+                    isLongitudeSet = false;
+                    isLatitudeSet = false;
+                }
+            }
+        });
+
+        viewModel.getDelete().observe(getViewLifecycleOwner(), delete -> {
+            boolean mapMarkers = viewModel.getDelete().getValue();
+            if(mapMarkers){
+                mMap.clear();
+                viewModel.setDelete(false);
+            }
+        });
+
         return view;
     }
 
@@ -133,39 +167,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         }
 
 
-        viewModel.getLatitude().observe(getViewLifecycleOwner(), latitude -> {
-            if(latitude != null) {
-                vmLat = viewModel.getLatitude().getValue();
-                isLatitudeSet = true;
-                if(isLongitudeSet){
-                    LatLng vmLoc = new LatLng(vmLat, vmLong);
-                    mMap.addMarker(new MarkerOptions().position(vmLoc));
-                    isLongitudeSet = false;
-                    isLatitudeSet = false;
-                }
-            }
-        });
 
-        viewModel.getLongitude().observe(getViewLifecycleOwner(), longitude -> {
-            if(longitude != null){
-                vmLong = viewModel.getLongitude().getValue();
-                isLongitudeSet = true;
-                if(isLatitudeSet){
-                    LatLng vmLoc = new LatLng(vmLat, vmLong);
-                    mMap.addMarker(new MarkerOptions().position(vmLoc));
-                    isLongitudeSet = false;
-                    isLatitudeSet = false;
-                }
-            }
-        });
-
-        viewModel.getDelete().observe(getViewLifecycleOwner(), delete -> {
-            boolean mapMarkers = viewModel.getDelete().getValue();
-            if(mapMarkers){
-                mMap.clear();
-                viewModel.setDelete(false);
-            }
-        });
     }
 
     private void createLocationCallback() {
