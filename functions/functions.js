@@ -200,9 +200,10 @@ exports.syncTemptoFirestore = functions.database
 			console.log("TEMP data has been deleted, no action necessary.");
 			return null;
 		}
+		console.log(vitalsSnapshot);
 		const newVitals = {
 			bodyTemp: vitalsSnapshot.TEMP,
-			//heartRate: vitalsSnapshot.HEART,
+			heartRate: vitalsSnapshot.Heartbeat,
 			timestamp: estTime, // Assuming you store the timestamp as an ISO string
 		};
 
@@ -215,6 +216,7 @@ exports.syncTemptoFirestore = functions.database
 		try {
 			// Use a Firestore transaction to append the new vitals object to the array
 			await admin.firestore().runTransaction(async (transaction) => {
+				console.log(newVitals);
 				const doc = await transaction.get(firestoreRef);
 				const currentVitals =
 					doc.exists && doc.data().vitalsData ? doc.data().vitalsData : [];
