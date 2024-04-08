@@ -23,11 +23,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -55,6 +58,8 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     private LocationCallback locationCallback;
     private boolean locationUpdatesStarted = false;
     private DocumentReference fbLocation;
+
+    private DocumentReference docRef;
     private long lastLocationUpdateInterval = 0;
     private GPSSharedViewModel viewModel;
     double vmLat = 0.0;
@@ -62,6 +67,7 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
     boolean isLatitudeSet = false;
     boolean isLongitudeSet = false;
     boolean markerDelete;
+    private Marker marker;
 
 
     @Override
@@ -78,6 +84,8 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = Objects.requireNonNull(currentUser).getUid();
         fbLocation = db.collection("userId").document(userId);
+
+        docRef = fbLocation.collection("current_location").document("location");
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
@@ -165,19 +173,33 @@ public class GPSFragment extends Fragment implements OnMapReadyCallback{
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
-
-
-
     }
 
-    private void createLocationCallback() {
+    void createLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 if (isAdded()) {
                     for (Location location : locationResult.getLocations()) {
                         // Update the user's current location on the map
-                        updateLocationToFirebase(location.getLatitude(), location.getLongitude());
+                        // updateLocationToFirebase(location.getLatitude(), location.getLongitude());
+                        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                double fbLatitude = 0;
+                                double fbLongitude = 0;
+                                if (documentSnapshot.exists()) {
+                                    fbLatitude = documentSnapshot.getDouble("latitude");
+                                    fbLongitude = documentSnapshot.getDouble("longitude");
+                                }
+
+                                LatLng currentlocation = new LatLng(fbLatitude, fbLongitude);
+                                if(marker != null){
+                                    marker.remove();
+                                }
+                                marker = mMap.addMarker(new MarkerOptions().position(currentlocation));
+                            }
+                        });
                     }
                 }
             }
